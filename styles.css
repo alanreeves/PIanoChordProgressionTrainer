@@ -1,0 +1,535 @@
+:root {
+    --primary: #7e57c2;       /* Rich purple */
+    --secondary: #5c6bc0;     /* Deep indigo blue */
+    --accent1: #26a69a;       /* Teal */
+    --accent2: #ec407a;       /* Rose pink for contrast */
+    --accent3: #4db6ac;       /* Light teal for subtle elements */
+    --dark-bg: #263238;       /* Deep blue-gray background */
+    --dark-card: #37474f;     /* Slightly lighter blue-gray for cards */
+    --dark-input: #455a64;    /* Even lighter blue-gray for inputs */
+    --light-text: #eceff1;    /* Off-white for text */
+    --muted-text: #b0bec5;    /* Muted blue-gray for secondary text */
+}
+
+body {
+    background-color: var(--dark-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--light-text);
+}
+
+.app-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 0;
+    margin-bottom: 0.75rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.card {
+    background-color: var(--dark-card);
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 600;
+    border-bottom: none;
+    padding: 0.5rem 0.75rem;
+}
+
+.card-header h5 {
+    font-size: 1rem;
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: #6a46b0;
+    border-color: #6a46b0;
+}
+
+.btn-danger {
+    background-color: var(--accent2);
+    border-color: var(--accent2);
+}
+
+.btn-danger:hover {
+    background-color: #d81b60;
+    border-color: #d81b60;
+}
+
+.btn-info {
+    background-color: var(--accent1);
+    border-color: var(--accent1);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #00897b;
+    border-color: #00897b;
+    color: white;
+}
+
+/* More compact buttons */
+.btn-lg {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.95rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Form elements with dark theme */
+.form-control, .form-select, .input-group-text {
+    background-color: var(--dark-input);
+    border-color: #546e7a;
+    color: var(--light-text);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--dark-input);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(126, 87, 194, 0.25);
+    color: var(--light-text);
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23eceff1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input {
+    background-color: var(--dark-input);
+    border-color: #546e7a;
+}
+
+.form-label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--muted-text);
+}
+
+h5.text-primary {
+    color: var(--accent1) !important;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Compact section spacing */
+.mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mt-4 {
+    margin-top: 0.75rem !important;
+}
+
+.gap-3 {
+    gap: 0.75rem !important;
+}
+
+/* Piano styling */
+.piano-container {
+    overflow-x: auto;
+    margin: 0 auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    background-color: #1c2427;
+}
+
+.piano {
+    display: flex;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.white-key {
+    width: 40px;
+    height: 150px;
+    background-color: #eceff1;
+    border: 1px solid #37474f;
+    position: relative;
+    z-index: 1;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.black-key {
+    width: 26px;
+    height: 100px;
+    background-color: #263238;
+    position: absolute;
+    z-index: 2;
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.white-key.highlight {
+    background: linear-gradient(to bottom, #b39ddb, var(--primary));
+    position: relative;
+}
+
+.black-key.highlight {
+    background: linear-gradient(to bottom, #7e57c2, #512da8);
+    position: absolute;
+    width: 26px;
+    height: 100px;
+    z-index: 2;
+}
+
+.finger-number {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #263238;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    margin: 0 auto;
+    z-index: 10;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.black-key .finger-number {
+    bottom: 15px;
+    color: white;
+    background-color: var(--accent2);
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    font-size: 14px;
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.progression-display {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    gap: 0.5rem;
+}
+
+.chord-pill {
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    background-color: var(--dark-input);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--muted-text);
+}
+
+.chord-pill.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.countdown-container {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    width: 50px;
+    height: 50px;
+    background: var(--dark-card);
+    border-radius: 50%;
+    border: 3px solid var(--accent2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.countdown {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent2);
+    text-align: center;
+}
+
+.beat-highlight {
+    border-color: var(--primary);
+    animation: beatPulse 0.2s ease-out;
+}
+
+@keyframes beatPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Checkbox group styling */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-item {
+    flex: 0 0 auto;
+}
+
+.control-actions {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.value-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.value-control input {
+    width: 5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Compact volume sliders */
+.compact-volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 80px;
+}
+
+.compact-volume-control label {
+    margin-bottom: 0;
+    color: var(--accent1);
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+/* Compact range slider styling */
+.compact-range {
+    width: 60px;
+    height: 1rem;
+    padding: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.compact-range:focus {
+    outline: none;
+}
+
+.compact-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    margin-top: -4px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.compact-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #546e7a;
+    border-radius: 2px;
+}
+
+.compact-range::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.compact-range::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #546e7a;
+    border-radius: 2px;
+}
+
+/* Make key dropdown shorter */
+select#key-select {
+    max-width: 150px;
+}
+
+/* Make progression settings inputs shorter */
+.value-control input,
+.input-group.input-group-sm,
+input#beats.form-control,
+.form-control-sm, 
+.form-control,
+.input-group {
+    max-width: 120px;
+}
+
+/* Tighter button grouping */
+.control-actions {
+    gap: 0.25rem;
+    justify-content: flex-start !important;
+}
+
+/* Make buttons narrower and grouped */
+.control-actions .btn {
+    flex: 0 0 auto;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+}
+
+@media (max-width: 768px) {
+    .white-key {
+        width: 30px;
+        height: 120px;
+    }
+    .black-key {
+        width: 20px;
+        height: 80px;
+    }
+}
+
+@media (max-width: 576px) {
+    .white-key {
+        width: 22px;
+        height: 100px;
+    }
+    .black-key {
+        width: 15px;
+        height: 60px;
+    }
+}
+/* Add these rules to fix the label colors in the dark theme */
+
+/* Fix general form labels */
+.form-check-label {
+    color: var(--light-text);
+}
+
+/* Fix labels for checkboxes and radio buttons */
+.checkbox-item label, 
+.form-check label,
+.fw-bold {
+    color: var(--light-text);
+}
+
+/* Fix control labels specifically */
+.form-check-label span.fw-bold {
+    color: var(--light-text);
+}
+
+/* Make sure option text in dropdowns is visible */
+option {
+    background-color: var(--dark-input);
+    color: var(--light-text);
+}
+
+/* Updated styling for larger chord pills */
+.chord-pill {
+    padding: 0.5rem 1rem;      /* Increased padding from 0.3rem 0.7rem */
+    border-radius: 1.2rem;     /* Slightly larger border radius */
+    background-color: var(--dark-input);
+    font-weight: 600;
+    font-size: 1.1rem;         /* Increased font size from 0.85rem */
+    color: var(--light-text);  /* Changed from muted-text to light-text for better visibility */
+    margin: 0.3rem;            /* Added margin to space out the pills better */
+    min-width: 4rem;           /* Added minimum width */
+    text-align: center;        /* Center the text */
+}
+
+.chord-pill.active {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 8px rgba(126, 87, 194, 0.5); /* Added subtle glow for active pill */
+}
+
+/* Adjust the progression display container */
+.progression-display {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+    gap: 0.4rem;
+}
+/* Very light grey gradient background for the chord pills panel */
+.progression-display {
+    background: linear-gradient(to right, #e0e0e0, #f5f5f5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Update the chord pill styling for good contrast on very light background */
+.chord-pill {
+    background-color: #455a64; /* Darker blue-grey for pills */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+}
+
+.chord-pill.active {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 8px rgba(126, 87, 194, 0.5);
+}
+
+/* Update the entire Display Area card */
+.card .card-body.p-3 {
+    padding: 0.5rem !important;
+    background-color: #d5d5d5; /* Light grey that matches the gradient */
+}
+/* Update piano keyboard background to match progression settings background */
+.piano-container {
+    overflow-x: auto;
+    margin: 0 auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    background-color: var(--dark-card); /* Match the card background color */
+}
+
+/* Also update the piano keyboard card body to match */
+.card:last-child .card-body {
+    background-color: var(--dark-card);
+}
