@@ -18,265 +18,306 @@
             <div class="col-lg-12">
                 <!-- Practice Settings -->
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Chord Progression Trainer</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <!-- Key Selection -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-3">Key</h5>
-                                <div class="d-flex justify-content-start">
-                                    <select id="key-select" class="form-select">
-                                        <!-- Major keys -->
-                                        <option value="C">C Major</option>
-                                        <option value="C#">C# Major</option>
-                                        <option value="Db">Db Major</option>
-                                        <option value="D">D Major</option>
-                                        <option value="D#">D# Major</option>
-                                        <option value="Eb">Eb Major</option>
-                                        <option value="E">E Major</option>
-                                        <option value="F">F Major</option>
-                                        <option value="F#">F# Major</option>
-                                        <option value="Gb">Gb Major</option>
-                                        <option value="G">G Major</option>
-                                        <option value="G#">G# Major</option>
-                                        <option value="Ab">Ab Major</option>
-                                        <option value="A">A Major</option>
-                                        <option value="A#">A# Major</option>
-                                        <option value="Bb">Bb Major</option>
-                                        <option value="B">B Major</option>
-                                        
-                                        <!-- Minor keys -->
-                                        <option value="Cm">C Minor</option>
-                                        <option value="C#m">C# Minor</option>
-                                        <option value="Dbm">Db Minor</option>
-                                        <option value="Dm">D Minor</option>
-                                        <option value="D#m">D# Minor</option>
-                                        <option value="Ebm">Eb Minor</option>
-                                        <option value="Em">E Minor</option>
-                                        <option value="Fm">F Minor</option>
-                                        <option value="F#m">F# Minor</option>
-                                        <option value="Gbm">Gb Minor</option>
-                                        <option value="Gm">G Minor</option>
-                                        <option value="G#m">G# Minor</option>
-                                        <option value="Abm">Ab Minor</option>
-                                        <option value="Am">A Minor</option>
-                                        <option value="A#m">A# Minor</option>
-                                        <option value="Bbm">Bb Minor</option>
-                                        <option value="Bm">B Minor</option>
-                                    </select>
-                                </div>
+                    <!-- Updated card-header with right chevron -->
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<div class="d-flex align-items-center collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#settings-panel" role="button" aria-expanded="false" aria-controls="settings-panel">
+								<h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Chord Progression Trainer</h5>
+								<i class="bi bi-chevron-down ms-2 collapse-icon"></i>
+							</div>
+							<i class="bi bi-chevron-down right-chevron"></i>
+						</div>
+                    
+                    <div id="settings-panel" class="collapse">
+                        <div class="card-body">
+                            <!-- Settings overlay message (shown when collapsed) -->
+                            <div class="settings-overlay">
+                                <div class="overlay-message">Click for settings</div>
                             </div>
                             
-                            <!-- Hand Selection -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-3">Hand Selection</h5>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input hand-radio" type="radio" name="handSelect" id="right-hand" value="right" checked>
-                                            <label class="form-check-label" for="right-hand">Right Hand</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input hand-radio" type="radio" name="handSelect" id="left-hand" value="left">
-                                            <label class="form-check-label" for="left-hand">Left Hand</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Chord Types -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-3">Chord Types</h5>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-major" value="major" checked>
-                                            <label class="form-check-label" for="type-major">Major</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-minor" value="minor" checked>
-                                            <label class="form-check-label" for="type-minor">Minor</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-dominant7" value="dominant7" checked>
-                                            <label class="form-check-label" for="type-dominant7">7th</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-major7" value="major7" checked>
-                                            <label class="form-check-label" for="type-major7">Major 7th</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-diminished" value="diminished" checked>
-                                            <label class="form-check-label" for="type-diminished">Diminished</label>
-                                        </div>
+                            <div class="row mb-4">
+                                <!-- Key Selection -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-3">Key</h5>
+                                    <div class="d-flex justify-content-start">
+                                        <select id="key-select" class="form-select">
+                                            <!-- Major keys -->
+                                            <option value="C">C Major</option>
+                                            <option value="C#">C# Major</option>
+                                            <option value="Db">Db Major</option>
+                                            <option value="D">D Major</option>
+                                            <option value="D#">D# Major</option>
+                                            <option value="Eb">Eb Major</option>
+                                            <option value="E">E Major</option>
+                                            <option value="F">F Major</option>
+                                            <option value="F#">F# Major</option>
+                                            <option value="Gb">Gb Major</option>
+                                            <option value="G">G Major</option>
+                                            <option value="G#">G# Major</option>
+                                            <option value="Ab">Ab Major</option>
+                                            <option value="A">A Major</option>
+                                            <option value="A#">A# Major</option>
+                                            <option value="Bb">Bb Major</option>
+                                            <option value="B">B Major</option>
+                                            
+                                            <!-- Minor keys -->
+                                            <option value="Cm">C Minor</option>
+                                            <option value="C#m">C# Minor</option>
+                                            <option value="Dbm">Db Minor</option>
+                                            <option value="Dm">D Minor</option>
+                                            <option value="D#m">D# Minor</option>
+                                            <option value="Ebm">Eb Minor</option>
+                                            <option value="Em">E Minor</option>
+                                            <option value="Fm">F Minor</option>
+                                            <option value="F#m">F# Minor</option>
+                                            <option value="Gbm">Gb Minor</option>
+                                            <option value="Gm">G Minor</option>
+                                            <option value="G#m">G# Minor</option>
+                                            <option value="Abm">Ab Minor</option>
+                                            <option value="Am">A Minor</option>
+                                            <option value="A#m">A# Minor</option>
+                                            <option value="Bbm">Bb Minor</option>
+                                            <option value="Bm">B Minor</option>
+                                        </select>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Inversions section -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-3">Inversions</h5>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-root" value="root" checked>
-                                            <label class="form-check-label" for="inv-root">Root Position</label>
+                                
+                                <!-- Hand Selection -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-3">Hand Selection</h5>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input hand-radio" type="radio" name="handSelect" id="right-hand" value="right" checked>
+                                                <label class="form-check-label" for="right-hand">Right Hand</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-first" value="first">
-                                            <label class="form-check-label" for="inv-first">First Inversion</label>
-                                        </div>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-second" value="second">
-                                            <label class="form-check-label" for="inv-second">Second Inversion</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <!-- Left Side: Progression Settings -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-2">Progression Settings</h5>
-                                <div class="row">
-									<!-- Add this inside the Progression Settings section, just before the Length input -->
-									<div class="col-12 mb-2">
-										<label for="progression-style" class="form-label">Progression Style:</label>
-										<select id="progression-style" class="form-select">
-											<option value="Random">Random</option>
-											<option value="Common">Common: I - IV - V - I</option>
-											<option value="Pop 1">Pop 1: I - V - vi - IV</option>
-											<option value="Pop 2">Pop 2: vi - IV - I - V</option>
-											<option value="Jazz & Classical Standard">Jazz & Classical Standard: ii - V - I</option>
-											<option value="12-Bar Blues">12-Bar Blues: I - I - I - I | IV - IV - I - I | V - IV - I - I</option>
-											<option value="Doo-Wop">Doo-Wop: I - vi - ii - V</option>
-											<option value="Classic Rock">Classic Rock: I - bVII - bVI - V</option>
-											<option value="Basic Circle of Fifths">Basic Circle of Fifths: I - V - II - VI - III - IV - I</option>
-											<option value="Common Major Circle of Fifths">Common Major Circle of Fifths: I - IV - vii° - iii - vi - ii - V - I</option>
-											<option value="Jazz-Friendly Circle of Fifths">Jazz-Friendly Circle of Fifths: ii7 - V7 - Imaj7 - IVmaj7 - viiø - III7 - vi7 - II7 - V7</option>
-											<option value="Minor Key Circle of Fifths">Minor Key Circle of Fifths: i - iv - ♭VII - ♭III - ♭VI - ii° - V - i</option>
-											<option value="Harmonic Minor Circle of Fifths">Harmonic Minor Circle of Fifths: i - iv - ♭VII - ♭III - ♭VI - ii° - V7 - i</option>
-										</select>
-									</div>
-                                    <div class="col-6 mb-2">
-                                        <label for="length" class="form-label">Length:</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" id="length" class="form-control" value="16" min="2" max="100">
-                                            <span class="input-group-text">chords</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label for="tempo" class="form-label">Tempo:</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" id="tempo" class="form-control" value="60" min="30" max="240">
-                                            <span class="input-group-text">BPM</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label for="beats" class="form-label">Beats per chord:</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" id="beats" class="form-control" value="4" min="1" max="16">
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label for="delay-time" class="form-label">Delay between reps:</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" id="delay-time" class="form-control" value="3" min="0" max="30">
-                                            <span class="input-group-text">sec</span>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input hand-radio" type="radio" name="handSelect" id="left-hand" value="left">
+                                                <label class="form-check-label" for="left-hand">Left Hand</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right Side: Playback Controls -->
-                            <div class="col-md-6">
-                                <h5 class="text-primary mb-2">Playback Controls</h5>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-check form-switch d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <input class="form-check-input" type="checkbox" id="play-sound" checked>
-                                                <label class="form-check-label" for="play-sound">
-                                                    <span class="fw-bold">Play Chords</span>
+                            <div class="row">
+                                <!-- Chord Types -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-3">Chord Types</h5>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-major" value="major" checked>
+                                                <label class="form-check-label" for="type-major">Major</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-minor" value="minor" checked>
+                                                <label class="form-check-label" for="type-minor">Minor</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-dominant7" value="dominant7" checked>
+                                                <label class="form-check-label" for="type-dominant7">7th</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-major7" value="major7" checked>
+                                                <label class="form-check-label" for="type-major7">Major 7th</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-diminished" value="diminished" checked>
+                                                <label class="form-check-label" for="type-diminished">Diminished</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-minor7" value="minor7">
+                                                <label class="form-check-label" for="type-minor7">Minor 7th</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-augmented" value="augmented">
+                                                <label class="form-check-label" for="type-augmented">Augmented</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-sus2" value="sus2">
+                                                <label class="form-check-label" for="type-sus2">Sus2</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input chord-type-checkbox" type="checkbox" id="type-sus4" value="sus4">
+                                                <label class="form-check-label" for="type-sus4">Sus4</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Inversions section -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-3">Inversions</h5>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-root" value="root" checked>
+                                                <label class="form-check-label" for="inv-root">Root Position</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-first" value="first">
+                                                <label class="form-check-label" for="inv-first">First Inversion</label>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input inversion-checkbox" type="checkbox" id="inv-second" value="second">
+                                                <label class="form-check-label" for="inv-second">Second Inversion</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <!-- Left Side: Progression Settings -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-2">Progression Settings</h5>
+                                    <div class="row">
+                                        <!-- Add this inside the Progression Settings section, just before the Length input -->
+                                        <div class="col-12 mb-2">
+                                            <label for="progression-style" class="form-label">Progression Style:</label>
+                                            <select id="progression-style" class="form-select">
+                                                <option value="Random">Random</option>
+                                                <option value="Common">Common: I-IV-V-I</option>
+                                                <option value="Pop 1">Pop 1: I-V-vi-IV</option>
+                                                <option value="Pop 2">Pop 2: vi-IV-I-V</option>
+                                                <option value="Jazz & Classical Standard">Jazz & Classical Standard: ii-V-I</option>
+                                                <option value="12-Bar Blues">12-Bar Blues: I-I-I-I IV-IV-I-I V-IV-I-I</option>
+                                                <option value="Doo-Wop">Doo-Wop: I-vi-ii-V</option>
+                                                <option value="Classic Rock">Classic Rock: I-bVII-bVI-V</option>
+                                                <option value="Basic Circle of Fifths">Basic Circle of Fifths: I-V-II-VI-III-IV-I</option>
+                                                <option value="Common Major Circle of Fifths">Common Major Circle of Fifths: I-IV-vii°-iii-vi-ii-V-I</option>
+                                                <option value="Jazz-Friendly Circle of Fifths">Jazz-Friendly Circle of Fifths: ii7-V7-Imaj7-IVmaj7-viiø-III7-vi7-II7-V7</option>
+                                                <option value="Minor Key Circle of Fifths">Minor Key Circle of Fifths: i-iv-♭VII-♭III-♭VI-ii°-V-i</option>
+                                                <option value="Harmonic Minor Circle of Fifths">Harmonic Minor Circle of Fifths: i-iv-♭VII-♭III-♭VI-ii°-V7-i</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label for="length" class="form-label">Length:</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="length" class="form-control" value="16" min="2" max="100">
+                                                <span class="input-group-text">chords</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label for="tempo" class="form-label">Tempo:</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="tempo" class="form-control" value="60" min="30" max="240">
+                                                <span class="input-group-text">BPM</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label for="beats" class="form-label">Beats per chord:</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="beats" class="form-control" value="4" min="1" max="16">
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label for="delay-time" class="form-label">Delay between reps:</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="delay-time" class="form-control" value="3" min="0" max="30">
+                                                <span class="input-group-text">sec</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Side: Playback Controls -->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary mb-2">Playback Controls</h5>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-check form-switch d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <input class="form-check-input" type="checkbox" id="play-sound" checked>
+                                                    <label class="form-check-label" for="play-sound">
+                                                        <span class="fw-bold">Play Chords</span>
+                                                    </label>
+                                                </div>
+                                                <div class="compact-volume-control">
+                                                    <label for="chord-volume" class="small">Vol</label>
+                                                    <input type="range" class="compact-range" id="chord-volume" min="0" max="1" step="0.01" value="0.5">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="arpeggiate-chord">
+                                                <label class="form-check-label" for="arpeggiate-chord">
+                                                    <span class="fw-bold">Arpeggiate</span>
                                                 </label>
                                             </div>
-                                            <div class="compact-volume-control">
-                                                <label for="chord-volume" class="small">Vol</label>
-                                                <input type="range" class="compact-range" id="chord-volume" min="0" max="1" step="0.01" value="0.5">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <div class="form-check form-switch d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <input class="form-check-input" type="checkbox" id="metronome">
+                                                    <label class="form-check-label" for="metronome">
+                                                        <span class="fw-bold">Metronome</span>
+                                                    </label>
+                                                </div>
+                                                <div class="compact-volume-control">
+                                                    <label for="metronome-volume" class="small">Vol</label>
+                                                    <input type="range" class="compact-range" id="metronome-volume" min="0" max="1" step="0.01" value="0.5">
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="arpeggiate-chord">
-                                            <label class="form-check-label" for="arpeggiate-chord">
-                                                <span class="fw-bold">Arpeggiate</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-6">
-                                        <div class="form-check form-switch d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <input class="form-check-input" type="checkbox" id="metronome">
-                                                <label class="form-check-label" for="metronome">
-                                                    <span class="fw-bold">Metronome</span>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="slash-notation" checked>
+                                                <label class="form-check-label" for="slash-notation">
+                                                    <span class="fw-bold">Slash Notation</span>
                                                 </label>
                                             </div>
-                                            <div class="compact-volume-control">
-                                                <label for="metronome-volume" class="small">Vol</label>
-                                                <input type="range" class="compact-range" id="metronome-volume" min="0" max="1" step="0.01" value="0.5">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="slash-notation" checked>
-                                            <label class="form-check-label" for="slash-notation">
-                                                <span class="fw-bold">Slash Notation</span>
-                                            </label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Control Buttons in their own row at the bottom -->
-                        <div class="row mt-3">
-                            <div class="col-12 d-flex justify-content-center">
-                                <div class="control-actions d-flex">
-                                    <button id="start-btn" class="btn btn-primary btn-lg">
-                                        <i class="bi bi-play-fill"></i> Start
-                                    </button>
-                                    <button id="stop-btn" class="btn btn-danger btn-lg" disabled>
-                                        <i class="bi bi-stop-fill"></i> Stop
-                                    </button>
-                                    <button id="rewind-btn" class="btn btn-info btn-lg" disabled>
-                                        <i class="bi bi-rewind-fill"></i> Rewind
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Control Buttons Panel - NEW -->
+                <div class="card control-panel">
+                    <div class="card-body d-flex justify-content-center">
+                        <!-- Add this button between the start and stop buttons in the control-panel div -->
+						<div class="control-actions d-flex">
+							<button id="start-btn" class="btn btn-primary btn-lg">
+								<i class="bi bi-play-fill"></i> Start
+							</button>
+							<button id="step-btn" class="btn btn-success btn-lg">
+								<i class="bi bi-skip-forward-fill"></i> Step
+							</button>
+							<button id="stop-btn" class="btn btn-danger btn-lg" disabled>
+								<i class="bi bi-stop-fill"></i> Stop
+							</button>
+							<button id="rewind-btn" class="btn btn-info btn-lg" disabled>
+								<i class="bi bi-rewind-fill"></i> Rewind
+							</button>
+						</div>
                     </div>
                 </div>
 
@@ -307,10 +348,12 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<!-- Add this right before your existing app scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     
     <!-- App Scripts -->
     <script src="music-theory.js"></script>
-    <script src="audio-engine.js"></script>
+    <script src="tone-audio-engine.js"></script>
     <script src="piano-display.js"></script>
     <script src="practice-logic.js"></script>
     <script src="app.js"></script>

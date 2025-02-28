@@ -47,6 +47,7 @@ body {
     font-weight: 600;
     border-bottom: none;
     padding: 0.5rem 0.75rem;
+    position: relative;
 }
 
 .card-header h5 {
@@ -532,4 +533,104 @@ option {
 /* Also update the piano keyboard card body to match */
 .card:last-child .card-body {
     background-color: var(--dark-card);
+}
+
+/* Collapsible settings panel styles */
+.collapse-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.collapse-icon {
+    transition: transform 0.3s ease;
+}
+
+.collapsed .collapse-icon {
+    transform: rotate(180deg);
+}
+
+/* Control Panel Styling */
+.control-panel {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.control-panel .card-body {
+    padding: 0.5rem;
+}
+
+.control-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center !important;
+}
+
+/* Make buttons more prominent */
+.control-actions .btn {
+    flex: 0 0 auto;
+    min-width: 100px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Make the overlay background much more transparent */
+.settings-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(38, 50, 56, 0.2); /* Reduced from 0.7 to 0.2 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Make the overlay message paler and more subtle */
+.overlay-message {
+    font-size: 1.2rem; /* Reduced from 1.5rem */
+    color: rgba(255, 255, 255, 0.7); /* More transparent text */
+    font-weight: 400; /* Reduced from 500 */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);  /* Reduced shadow */
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(126, 87, 194, 0.15); /* Much more transparent */
+    backdrop-filter: blur(2px); /* Reduced blur */
+}
+
+/* Only show overlay when settings are collapsed */
+.collapse:not(.show) .settings-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Add styles for the right chevron */
+.right-chevron {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+/* When collapsed, rotate the right chevron too */
+.collapse-toggle.collapsed + .right-chevron {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Animation for collapse transitions */
+.collapse {
+    transition: height 0.3s ease;
+}
+
+/* Ensure the collapsed panel can be clicked */
+#settings-panel.collapse:not(.show) {
+    display: block;
+    height: 0;
+    overflow: hidden;
 }

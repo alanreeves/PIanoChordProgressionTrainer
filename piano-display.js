@@ -79,21 +79,27 @@ function highlightChordOnPiano(key, type, inversion) {
     
     // Adjust start note for inversions
     if (inversion === 'first') {
-        if (type === 'major' || type === 'dominant7' || type === 'major7') {
+        if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented') {
             startNote = (noteIndex + 4) % 12 + octaveOffset * 12; // Major 3rd
-        } else {
+        } else if (type === 'minor' || type === 'minor7' || type === 'diminished') {
             startNote = (noteIndex + 3) % 12 + octaveOffset * 12; // Minor 3rd
+        } else if (type === 'sus2') {
+            startNote = (noteIndex + 2) % 12 + octaveOffset * 12; // Major 2nd
+        } else if (type === 'sus4') {
+            startNote = (noteIndex + 5) % 12 + octaveOffset * 12; // Perfect 4th
         }
     } else if (inversion === 'second') {
         if (type === 'diminished') {
             startNote = (noteIndex + 6) % 12 + octaveOffset * 12; // Diminished 5th
+        } else if (type === 'augmented') {
+            startNote = (noteIndex + 8) % 12 + octaveOffset * 12; // Augmented 5th
         } else {
             startNote = (noteIndex + 7) % 12 + octaveOffset * 12; // Perfect 5th
         }
     }
     
     // Determine fingering pattern based on hand and chord type
-    const is7thChord = ['dominant7', 'major7'].includes(type);
+    const is7thChord = ['dominant7', 'major7', 'minor7'].includes(type);
     const fingeringPattern = getFingeringPattern(is7thChord, inversion, isRightHand);
     
     // Highlight the keys and add fingering numbers
@@ -190,7 +196,18 @@ function displayProgressionPills(progression) {
         let chordText;
         
         // Base chord symbol without inversion notation
-        const baseChord = `${chord.root}${chord.type === 'minor' ? 'm' : chord.type === 'diminished' ? '°' : chord.type === 'dominant7' ? '7' : chord.type === 'major7' ? 'maj7' : ''}`;
+        // Updated to include new chord types
+        const baseChord = `${chord.root}${
+            chord.type === 'minor' ? 'm' : 
+            chord.type === 'diminished' ? '°' : 
+            chord.type === 'dominant7' ? '7' : 
+            chord.type === 'major7' ? 'maj7' : 
+            chord.type === 'minor7' ? 'm7' : 
+            chord.type === 'augmented' ? '+' : 
+            chord.type === 'sus2' ? 'sus2' : 
+            chord.type === 'sus4' ? 'sus4' : 
+            ''
+        }`;
         
         if (useSlashNotation && chord.inversion !== 'root') {
             // Get proper bass note with correct notation (sharp or flat)
@@ -204,13 +221,44 @@ function displayProgressionPills(progression) {
             let bassNote;
             
             if (chord.inversion === 'first') {
-                // First inversion - bass note is the 3rd (major or minor)
-                const interval = chord.type === 'minor' || chord.type === 'diminished' ? 3 : 4; // Minor 3rd or Major 3rd
+                // First inversion - bass note is the interval specific to chord type
+                let interval;
+                switch(chord.type) {
+                    case 'major':
+                    case 'dominant7':
+                    case 'major7':
+                    case 'augmented':
+                        interval = 4; // Major 3rd
+                        break;
+                    case 'minor':
+                    case 'minor7':
+                    case 'diminished':
+                        interval = 3; // Minor 3rd
+                        break;
+                    case 'sus2':
+                        interval = 2; // Major 2nd
+                        break;
+                    case 'sus4':
+                        interval = 5; // Perfect 4th
+                        break;
+                    default:
+                        interval = 4;
+                }
                 const bassIndex = (rootIndex + interval) % 12;
                 bassNote = noteNames[bassIndex];
             } else if (chord.inversion === 'second') {
-                // Second inversion - bass note is the 5th (perfect or diminished)
-                const interval = chord.type === 'diminished' ? 6 : 7; // Diminished 5th or Perfect 5th
+                // Second inversion - bass note is the 5th (perfect, diminished, or augmented)
+                let interval;
+                switch(chord.type) {
+                    case 'diminished':
+                        interval = 6; // Diminished 5th
+                        break;
+                    case 'augmented':
+                        interval = 8; // Augmented 5th
+                        break;
+                    default:
+                        interval = 7; // Perfect 5th
+                }
                 const bassIndex = (rootIndex + interval) % 12;
                 bassNote = noteNames[bassIndex];
             }

@@ -112,7 +112,8 @@ function normalizeNoteName(root, originalKey) {
 // Function to convert Roman numeral to chord data
 function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Parse the Roman numeral to extract degree, quality, and any modifications
-    let degree, quality, isSeventh = false, isMajorSeventh = false, isDiminished = false, isHalfDiminished = false;
+    let degree, quality, isSeventh = false, isMajorSeventh = false, isMinorSeventh = false;
+    let isDiminished = false, isHalfDiminished = false, isAugmented = false, isSus2 = false, isSus4 = false;
     
     // Create a copy of the romanNumeral for parsing
     let parsedNumeral = romanNumeral;
@@ -162,6 +163,9 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Check for special symbols
     const hasDiminishedSymbol = romanNumeral.includes('°') || romanNumeral.includes('dim');
     const hasHalfDiminishedSymbol = romanNumeral.includes('ø');
+    const hasAugmentedSymbol = romanNumeral.includes('+') || romanNumeral.includes('aug');
+    const hasSus2Symbol = romanNumeral.includes('sus2');
+    const hasSus4Symbol = romanNumeral.includes('sus4');
     
     // Check for 7th chords
     if (romanNumeral.includes('7')) {
@@ -169,6 +173,10 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         // Check if it's a major 7th specifically
         if (romanNumeral.includes('maj7')) {
             isMajorSeventh = true;
+        }
+        // Check if it's a minor 7th specifically
+        else if (romanNumeral.toLowerCase().includes('m7') || (!isUpperCase && romanNumeral.includes('7'))) {
+            isMinorSeventh = true;
         }
     }
     
@@ -179,13 +187,21 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     } else if (hasHalfDiminishedSymbol) {
         quality = 'diminished'; // Using diminished since we don't have half-diminished
         isHalfDiminished = true;
+    } else if (hasAugmentedSymbol) {
+        quality = 'augmented';
+        isAugmented = true;
+    } else if (hasSus2Symbol) {
+        quality = 'sus2';
+        isSus2 = true;
+    } else if (hasSus4Symbol) {
+        quality = 'sus4';
+        isSus4 = true;
     } else if (isMajorSeventh) {
         quality = 'major7';
+    } else if (isMinorSeventh) {
+        quality = 'minor7';
     } else if (isSeventh && isUpperCase) {
         quality = 'dominant7';
-    } else if (isSeventh && !isUpperCase) {
-        // Minor 7th chord - using minor as approximation
-        quality = 'minor';
     } else {
         // Basic triads
         quality = isUpperCase ? 'major' : 'minor';
@@ -318,6 +334,26 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
             type = 'major7';
         }
         
+        // For submediant (vi), possibly make it minor7 if available
+        if (degreeIndex === 5 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
+            type = 'minor7';
+        }
+        
+        // For dominant (V), occasionally make it a sus4 resolving to dominant
+        if (degreeIndex === 4 && selectedTypes.includes('sus4') && Math.random() < 0.15) {
+            type = 'sus4';
+        }
+        
+        // For supertonic (ii), occasionally make it a sus2
+        if (degreeIndex === 1 && selectedTypes.includes('sus2') && Math.random() < 0.15) {
+            type = 'sus2';
+        }
+        
+        // For mediant (III in major or III in minor), occasionally make it augmented
+        if (degreeIndex === 2 && selectedTypes.includes('augmented') && Math.random() < 0.1) {
+            type = 'augmented';
+        }
+        
         // Choose inversion based on voice leading
         // Simple rule: try to minimize movement from previous chord
         let inversion;
@@ -418,12 +454,44 @@ function getChordIntervals(type, inversion) {
                 default: return [0, 4, 7, 11];
             }
             
+        case 'minor7':
+            switch(inversion) {
+                case 'root':   return [0, 3, 7, 10];   // 1-b3-5-b7
+                case 'first':  return [0, 4, 7, 9];    // b3-5-b7-8
+                case 'second': return [0, 3, 5, 8];    // 5-b7-8-b10
+                default: return [0, 3, 7, 10];
+            }
+            
         case 'diminished':
             switch(inversion) {
                 case 'root':   return [0, 3, 6];       // 1-b3-b5
                 case 'first':  return [0, 3, 9];       // b3-b5-1
                 case 'second': return [0, 6, 9];       // b5-1-b3
                 default: return [0, 3, 6];
+            }
+            
+        case 'augmented':
+            switch(inversion) {
+                case 'root':   return [0, 4, 8];       // 1-3-#5
+                case 'first':  return [0, 4, 8];       // 3-#5-1 (enharmonically equivalent)
+                case 'second': return [0, 4, 8];       // #5-1-3 (enharmonically equivalent)
+                default: return [0, 4, 8];
+            }
+            
+        case 'sus2':
+            switch(inversion) {
+                case 'root':   return [0, 2, 7];       // 1-2-5
+                case 'first':  return [0, 5, 10];      // 2-5-8
+                case 'second': return [0, 5, 7];       // 5-8-10
+                default: return [0, 2, 7];
+            }
+            
+        case 'sus4':
+            switch(inversion) {
+                case 'root':   return [0, 5, 7];       // 1-4-5
+                case 'first':  return [0, 2, 7];       // 4-5-8
+                case 'second': return [0, 5, 10];      // 5-8-11
+                default: return [0, 5, 7];
             }
             
         default:
@@ -444,14 +512,22 @@ function getChordStartNote(rootIndex, type, inversion, isRightHand) {
         case 'root':
             return rootIndex + (octaveOffset * 12);
         case 'first':
-            if (type === 'major' || type === 'dominant7' || type === 'major7') {
+            if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented') {
                 return (rootIndex + 4) % 12 + (octaveOffset * 12); // Major 3rd
-            } else {
+            } else if (type === 'minor' || type === 'minor7' || type === 'diminished') {
                 return (rootIndex + 3) % 12 + (octaveOffset * 12); // Minor 3rd
+            } else if (type === 'sus2') {
+                return (rootIndex + 2) % 12 + (octaveOffset * 12); // Major 2nd
+            } else if (type === 'sus4') {
+                return (rootIndex + 5) % 12 + (octaveOffset * 12); // Perfect 4th
+            } else {
+                return (rootIndex + 4) % 12 + (octaveOffset * 12); // Default to Major 3rd
             }
         case 'second':
             if (type === 'diminished') {
                 return (rootIndex + 6) % 12 + (octaveOffset * 12); // Diminished 5th
+            } else if (type === 'augmented') {
+                return (rootIndex + 8) % 12 + (octaveOffset * 12); // Augmented 5th
             } else {
                 return (rootIndex + 7) % 12 + (octaveOffset * 12); // Perfect 5th
             }
@@ -467,13 +543,44 @@ function getBassNote(root, type, inversion) {
     if (inversion === 'root') {
         return root;
     } else if (inversion === 'first') {
-        // First inversion - bass note is the 3rd (major or minor)
-        const interval = type === 'minor' || type === 'diminished' ? 3 : 4; // Minor 3rd or Major 3rd
+        // First inversion - bass note is the interval specific to chord type
+        let interval;
+        switch(type) {
+            case 'major':
+            case 'dominant7':
+            case 'major7':
+            case 'augmented':
+                interval = 4; // Major 3rd
+                break;
+            case 'minor':
+            case 'minor7':
+            case 'diminished':
+                interval = 3; // Minor 3rd
+                break;
+            case 'sus2':
+                interval = 2; // Major 2nd
+                break;
+            case 'sus4':
+                interval = 5; // Perfect 4th
+                break;
+            default:
+                interval = 4; // Default to Major 3rd
+        }
         const bassIndex = (rootIndex + interval) % 12;
         return noteNames[bassIndex];
     } else if (inversion === 'second') {
-        // Second inversion - bass note is the 5th (perfect or diminished)
-        const interval = type === 'diminished' ? 6 : 7; // Diminished 5th or Perfect 5th
+        // Second inversion - bass note is the 5th (perfect, diminished, or augmented)
+        let interval;
+        switch(type) {
+            case 'diminished':
+                interval = 6; // Diminished 5th
+                break;
+            case 'augmented':
+                interval = 8; // Augmented 5th
+                break;
+            default:
+                interval = 7; // Perfect 5th
+        }
         const bassIndex = (rootIndex + interval) % 12;
         return noteNames[bassIndex];
     }

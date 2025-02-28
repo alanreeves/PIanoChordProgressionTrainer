@@ -9,6 +9,8 @@ let isRunning = false;
 let currentProgression = [];
 let currentChordIndex = -1;
 let currentBeat = 0;
+let stepMode = false; // Track if we're in step mode
+let waitingForStep = false; // Track if we're waiting for next step
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
@@ -25,15 +27,6 @@ function getMillisecondsFromBPM(bpm, beatsPerChord) {
     return msPerBeat * beatsPerChord;
 }
 
-// In practice-logic.js, modify the startPractice function to include the progression style:
-
-// In practice-logic.js, modify the startPractice function to include the progression style:
-
-// In practice-logic.js, modify the startPractice function to include the progression style:
-
-// In practice-logic.js, modify the startPractice function to include the progression style:
-
-// Start practice session
 function startPractice() {
     const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
     const style = document.getElementById('progression-style').value;
@@ -63,15 +56,22 @@ function startPractice() {
     // Generate chord progression with the selected style
     currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
     
-    // No need to update the length field anymore as we're honoring the user's input
-    
     // Display progression 
     displayProgressionPills(currentProgression);
     
     isRunning = true;
     startBtn.disabled = true;
+    document.getElementById('step-btn').disabled = false;
     stopBtn.disabled = false;
     rewindBtn.disabled = false;
+    
+    // If Start is pressed explicitly, disable step mode
+    if (!stepMode) {
+        waitingForStep = false;
+        document.getElementById('step-btn').classList.remove('step-active');
+    } else {
+        document.getElementById('step-btn').classList.add('step-active');
+    }
     
     // Reset chord index
     currentChordIndex = -1;
@@ -107,7 +107,7 @@ function startCountdown() {
     }, 1000);
 }
 
-// Start beat counter
+// Modified startBeatCounter function for Tone.js compatibility
 function startBeatCounter() {
     // Clear any existing beat interval
     clearInterval(beatInterval);
@@ -125,7 +125,7 @@ function startBeatCounter() {
     countdownDisplay.querySelector('.countdown').textContent = currentBeat + 1;
     
     // Play metronome for first beat (downbeat)
-    if (metronomeEnabled && audioContext) {
+    if (metronomeEnabled) {
         playMetronomeClick(true); // true for downbeat
         countdownDisplay.classList.add('beat-highlight');
         setTimeout(() => {
@@ -144,7 +144,7 @@ function startBeatCounter() {
         countdownDisplay.querySelector('.countdown').textContent = currentBeat + 1;
         
         // Play metronome click if enabled
-        if (metronomeEnabled && audioContext) {
+        if (metronomeEnabled) {
             playMetronomeClick(currentBeat === 0); // Only true for first beat
             countdownDisplay.classList.add('beat-highlight');
             setTimeout(() => {
@@ -154,7 +154,43 @@ function startBeatCounter() {
     }, msPerBeat);
 }
 
-// Play next chord in progression
+function stepChord() {
+    // If practice is not running at all, start in step mode
+    if (!isRunning) {
+        stepMode = true;
+        document.getElementById('step-btn').classList.add('step-active');
+        startPractice();
+        return;
+    }
+    
+    // Immediately stop any currently playing chord sound
+    stopCurrentChord();
+    
+    // Clear any existing timeout to cancel current chord timing
+    clearTimeout(delayTimeout);
+    clearInterval(beatInterval);
+    
+    // If a chord is currently playing (and we're not already waiting for step),
+    // immediately proceed to the next chord
+    if (isRunning && !waitingForStep) {
+        playNextChord();
+        return;
+    }
+    
+    // If we're waiting for a step, proceed to next chord
+    if (waitingForStep) {
+        waitingForStep = false;
+        playNextChord();
+    }
+    
+    // If regular practice was running, switch to step mode
+    if (isRunning && !stepMode) {
+        stepMode = true;
+        document.getElementById('step-btn').classList.add('step-active');
+    }
+}
+
+// Modified playNextChord function for Tone.js compatibility
 function playNextChord() {
     if (!isRunning) return;
     
@@ -184,17 +220,30 @@ function playNextChord() {
     const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
     const chordDuration = getMillisecondsFromBPM(bpm, beatsPerChord);
     
-    delayTimeout = setTimeout(() => {
-        if (isRunning) {
+    // In step mode, wait for next step after chord plays
+    if (stepMode) {
+        delayTimeout = setTimeout(() => {
+            waitingForStep = true;
+            // If we're at the end of the progression, handle looping
             if (currentChordIndex === currentProgression.length - 1) {
-                // End of progression, start countdown for next repetition
                 clearInterval(beatInterval);
-                startCountdown();
-            } else {
-                playNextChord();
+                // Don't automatically start countdown - wait for step
             }
-        }
-    }, chordDuration);
+        }, chordDuration);
+    } else {
+        // Regular playback - schedule next chord
+        delayTimeout = setTimeout(() => {
+            if (isRunning) {
+                if (currentChordIndex === currentProgression.length - 1) {
+                    // End of progression, start countdown for next repetition
+                    clearInterval(beatInterval);
+                    startCountdown();
+                } else {
+                    playNextChord();
+                }
+            }
+        }, chordDuration);
+    }
 }
 
 // Rewind to previous chord
@@ -246,7 +295,12 @@ function stopPractice() {
     clearInterval(beatInterval);
     countdownDisplay.classList.add('hidden');
     
+    // Reset step mode flags
+    stepMode = false;
+    waitingForStep = false;
+    
     startBtn.disabled = false;
+    document.getElementById('step-btn').disabled = false;
     stopBtn.disabled = true;
     rewindBtn.disabled = true;
 }

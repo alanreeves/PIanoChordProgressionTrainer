@@ -3,6 +3,8 @@
 // Audio context and master gain node
 let audioContext = null;
 let masterGainNode = null;
+let currentOscillators = [];
+
 
 // Create gain nodes for separate volume control
 let chordGainNode = null;
@@ -12,14 +14,13 @@ let metronomeGainNode = null;
 let chordVolume = parseFloat(localStorage.getItem('chordVolume') || 0.5);
 let metronomeVolume = parseFloat(localStorage.getItem('metronomeVolume') || 0.5);
 
-// Initialize audio context (must be done in response to a user action)
 function initAudio() {
     if (audioContext === null) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
         // Create master gain node
         masterGainNode = audioContext.createGain();
-        masterGainNode.gain.value = 0.5; // Reduced master volume from 0.7 to 0.5 for quieter piano sounds
+        masterGainNode.gain.value = 0.5;
         
         // Create separate gain nodes for chords and metronome
         chordGainNode = audioContext.createGain();
@@ -29,21 +30,39 @@ function initAudio() {
         chordGainNode.gain.value = chordVolume;
         metronomeGainNode.gain.value = metronomeVolume;
         
-        // Add a simple compressor for better dynamics
+        // Add a compressor that preserves transients better
         const compressor = audioContext.createDynamicsCompressor();
-        compressor.threshold.value = -15;
-        compressor.knee.value = 10;
-        compressor.ratio.value = 3;
-        compressor.attack.value = 0.005;
-        compressor.release.value = 0.1;
+        compressor.threshold.value = -24;  // Lower threshold to catch more peaks
+        compressor.knee.value = 10;        // Moderate knee
+        compressor.ratio.value = 3;        // Lower ratio to preserve transients
+        compressor.attack.value = 0.003;   // Slightly slower attack to let transients through
+        compressor.release.value = 0.1;    // Quick release
+        
+        // Create a much subtler reverb
+        const convolver = createReverb(audioContext, 1.5, 0.7); // Shorter, drier reverb
+        
+        // Create a dry/wet mix with much less wet signal
+        const reverbGain = audioContext.createGain();
+        reverbGain.gain.value = 0.06; // Just 6% wet (much less reverb)
+        
+        const dryGain = audioContext.createGain();
+        dryGain.gain.value = 0.94; // 94% dry signal
         
         // Connect chord and metronome gain nodes to master gain
-        chordGainNode.connect(masterGainNode);
+        chordGainNode.connect(compressor);
         metronomeGainNode.connect(masterGainNode);
         
-        // Connect master gain to compressor and then to output
-        masterGainNode.connect(compressor);
-        compressor.connect(audioContext.destination);
+        // Connect compressor to both dry chain and reverb chain
+        compressor.connect(dryGain);
+        compressor.connect(reverbGain);
+        reverbGain.connect(convolver);
+        
+        // Connect both dry and wet paths to master
+        dryGain.connect(masterGainNode);
+        convolver.connect(masterGainNode);
+        
+        // Connect master gain to output
+        masterGainNode.connect(audioContext.destination);
     }
 }
 
@@ -91,60 +110,137 @@ function playMetronomeClick(isDownbeat = false) {
     return oscillator;
 }
 
-// Function to play a note with more realistic piano sound
-function playNote(frequency, duration, delay = 0, velocity = 0.6) { // Reduced default velocity from 0.8 to 0.6
-    // Create multiple oscillators for richer harmonics
+function playNote(frequency, duration, delay = 0, velocity = 0.7) {
+    // Create oscillators for a richer sound profile
     const oscillators = [];
     const gainNodes = [];
     
-    // Main frequency (fundamental)
+    // Fundamental frequency - using sine for cleaner bass
     const osc1 = audioContext.createOscillator();
     const gain1 = audioContext.createGain();
-    osc1.type = 'sine'; // Use sine for clearer fundamental
+    osc1.type = 'sine'; // Back to sine for cleaner sound
     osc1.frequency.value = frequency;
     oscillators.push(osc1);
     gainNodes.push(gain1);
     
-    // Overtone 1 (one octave up)
+    // First harmonic (octave up) - strong in piano but not as strong as in organs
     const osc2 = audioContext.createOscillator();
     const gain2 = audioContext.createGain();
     osc2.type = 'sine';
     osc2.frequency.value = frequency * 2;
-    gain2.gain.value = 0.25; // Reduced from 0.35 to 0.25 for quieter overtones
+    gain2.gain.value = 0.25; // Reduced from 0.4 to make less organ-like
     oscillators.push(osc2);
     gainNodes.push(gain2);
     
-    // Overtone 2 (perfect fifth above octave)
+    // Second harmonic (octave + fifth)
     const osc3 = audioContext.createOscillator();
     const gain3 = audioContext.createGain();
     osc3.type = 'sine';
     osc3.frequency.value = frequency * 3;
-    gain3.gain.value = 0.1; // Reduced from 0.15 to 0.1 for quieter overtones
+    gain3.gain.value = 0.08; // Reduced from 0.15
     oscillators.push(osc3);
     gainNodes.push(gain3);
     
-    // Add slight detuning for a more natural sound
-    osc1.detune.value = Math.random() * 4 - 2; // Random detune between -2 and +2 cents
+    // Third harmonic (2 octaves up)
+    const osc4 = audioContext.createOscillator();
+    const gain4 = audioContext.createGain();
+    osc4.type = 'sine';
+    osc4.frequency.value = frequency * 4;
+    gain4.gain.value = 0.05; // Reduced from 0.1
+    oscillators.push(osc4);
+    gainNodes.push(gain4);
     
-    // Apply ADSR envelope for a piano-like sound
+    // Add higher harmonics for brightness
+    const osc5 = audioContext.createOscillator();
+    const gain5 = audioContext.createGain();
+    osc5.type = 'sine';
+    osc5.frequency.value = frequency * 5;
+    gain5.gain.value = 0.02; // Reduced from 0.05
+    oscillators.push(osc5);
+    gainNodes.push(gain5);
+    
+    // Add inharmonicity for low notes (stretched harmonics)
+    // Real pianos have stretched harmonics due to string stiffness
+    if (frequency < 200) {
+        const stretchFactor = 1 + (0.0004 * (200 - frequency));
+        osc2.frequency.value = frequency * 2 * stretchFactor;
+        osc3.frequency.value = frequency * 3 * stretchFactor;
+        osc4.frequency.value = frequency * 4 * stretchFactor;
+        osc5.frequency.value = frequency * 5 * stretchFactor;
+    }
+    
+    // Add enhanced attack noise - crucial for piano character vs organ
+    const noiseLength = 0.03; // Longer attack noise
+    const noiseNode = audioContext.createBufferSource();
+    const noiseGain = audioContext.createGain();
+    const noiseFilter = audioContext.createBiquadFilter();
+    
+    // Create a noise buffer
+    const bufferSize = audioContext.sampleRate * 0.1;
+    const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    
+    // Fill with filtered noise
+    for (let i = 0; i < bufferSize; i++) {
+        noiseData[i] = Math.random() * 2 - 1;
+    }
+    
+    // Set up noise filter - key for piano vs organ distinction
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = frequency * 2; // Center around the first harmonic
+    noiseFilter.Q.value = 1.0; // Not too resonant
+    
+    noiseNode.buffer = noiseBuffer;
+    noiseGain.gain.value = 0.09 * velocity; // Increased noise for more hammer sound
+    
+    // Connect and set up envelope for noise
+    noiseNode.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(chordGainNode);
+    
+    // Configure the noise envelope - crucial for piano attack
     const now = audioContext.currentTime + delay;
-    const attackTime = 0.002; // Extremely short attack for clarity
-    const decayTime = 0.1;
-    const sustainLevel = 0.25; // Reduced from 0.3 to 0.25 for quieter sustain
-    const releaseTime = duration > 1 ? 1.2 : 0.6; // Adjusted release
+    noiseGain.gain.setValueAtTime(0, now);
+    noiseGain.gain.linearRampToValueAtTime(0.09 * velocity, now + 0.001);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + noiseLength);
     
-    // Connect all oscillators through their gain nodes to the chord gain node
+    noiseNode.start(now);
+    noiseNode.stop(now + noiseLength);
+    
+    // Apply piano-specific ADSR envelope
+    // Pianos have very fast attack, quick initial decay, then gradual decay
+    // Organs have slower attack and sustained notes without decay
+    const attackTime = 0.002; // Extremely fast attack (piano vs organ)
+    const initialDecayTime = 0.04; // Very quick initial decay (crucial for piano sound)
+    const initialDecayLevel = 0.3; // Initial decay level
+    const decayTime = frequency < 200 ? 0.08 : 0.05; // Shorter decay times
+    const sustainLevel = 0.05; // Very low sustain (piano vs organ)
+    const releaseTime = frequency < 200 ? 0.4 : 0.2; // Shorter release times
+    
+    // Connect all oscillators through their gain nodes
     oscillators.forEach((osc, i) => {
         osc.connect(gainNodes[i]);
         gainNodes[i].connect(chordGainNode);
         
-        // Apply envelope to each gain node
+        // Apply two-stage decay envelope (crucial for piano vs organ)
         gainNodes[i].gain.setValueAtTime(0, now);
+        
+        // Fast attack
         gainNodes[i].gain.linearRampToValueAtTime(velocity, now + attackTime);
-        gainNodes[i].gain.exponentialRampToValueAtTime(sustainLevel * velocity, now + attackTime + decayTime);
+        
+        // Initial rapid decay - critical for piano character
+        gainNodes[i].gain.exponentialRampToValueAtTime(initialDecayLevel * velocity, now + attackTime + initialDecayTime);
+        
+        // Second slower decay phase
+        gainNodes[i].gain.exponentialRampToValueAtTime(sustainLevel * velocity, now + attackTime + initialDecayTime + decayTime);
+        
+        // Release
         gainNodes[i].gain.setValueAtTime(sustainLevel * velocity, now + duration - releaseTime);
-        gainNodes[i].gain.exponentialRampToValueAtTime(0.001, now + duration); // Can't go to 0 with exponentialRampToValueAtTime
+        gainNodes[i].gain.exponentialRampToValueAtTime(0.001, now + duration);
         gainNodes[i].gain.linearRampToValueAtTime(0, now + duration + 0.01);
+        
+        // Add slight detuning to each oscillator for less organ-like precision
+        osc.detune.setValueAtTime(Math.random() * 6 - 3, now); // -3 to +3 cents
         
         // Start and stop oscillators
         osc.start(now);
@@ -154,7 +250,6 @@ function playNote(frequency, duration, delay = 0, velocity = 0.6) { // Reduced d
     return oscillators;
 }
 
-// Function to play a chord with improved piano sound
 function playChord(notes, duration = 2.0, arpeggiate = false) {
     if (!audioContext) initAudio();
     
@@ -166,17 +261,17 @@ function playChord(notes, duration = 2.0, arpeggiate = false) {
     });
     
     // Variable velocity for more natural sound
-    const baseVelocity = 0.5; // Reduced from 0.7 to 0.5 for quieter chords
+    const baseVelocity = 0.5;
     
     // For arpeggiated chords, we need to stagger notes with a noticeable delay
-    const arpeggioDelay = arpeggiate ? 0.2 : 0.01; // 200ms between notes if arpeggiating, 10ms if not
+    const arpeggioDelay = arpeggiate ? 0.2 : 0.01;
     
     // Slight staggering of notes for more natural sound
     // Emphasize melody note (usually the highest note)
     const allOscillators = frequencies.map((freq, index) => {
         // Slightly emphasize the top note for melody
         let velocity = baseVelocity;
-        if (index === frequencies.length - 1) velocity = baseVelocity * 1.1; // Reduced emphasis from 1.2 to 1.1
+        if (index === frequencies.length - 1) velocity = baseVelocity * 1.1;
         
         // Calculate delay based on whether we're arpeggiating
         const noteDelay = index * arpeggioDelay;
@@ -186,11 +281,18 @@ function playChord(notes, duration = 2.0, arpeggiate = false) {
             (index < frequencies.length - 1 ? duration * 0.8 : duration) : 
             duration;
         
-        return playNote(freq, noteDuration, noteDelay, velocity);
+        // Reduce effective duration to half to create staccato effect
+        const effectiveDuration = noteDuration * 0.5;
+        
+        return playNote(freq, effectiveDuration, noteDelay, velocity);
     });
     
-    return allOscillators.flat();
+    // Store current oscillators for potential immediate stopping
+    currentOscillators = allOscillators.flat();
+    
+    return currentOscillators;
 }
+
 
 // Function to play a chord based on root, type, and inversion
 function playChordSound(root, type, inversion) {
@@ -228,3 +330,84 @@ function playChordSound(root, type, inversion) {
     // Play the chord
     playChord(notes, duration, arpeggiate);
 }
+
+// Add this function to audio-engine.js to stop all current oscillators
+function stopCurrentChord() {
+    if (currentOscillators && currentOscillators.length > 0) {
+        // Stop all oscillators immediately
+        const now = audioContext.currentTime;
+        currentOscillators.forEach(osc => {
+            try {
+                osc.stop(now);
+            } catch (e) {
+                // Ignore errors if oscillator already stopped
+            }
+        });
+        
+        // Clear current oscillators array
+        currentOscillators = [];
+    }
+}
+
+// Updated stepChord function with immediate sound stopping
+function stepChord() {
+    // If practice is not running at all, start in step mode
+    if (!isRunning) {
+        stepMode = true;
+        document.getElementById('step-btn').classList.add('step-active');
+        startPractice();
+        return;
+    }
+    
+    // If a chord is currently playing, stop the sound immediately
+    stopCurrentChord();
+    
+    // Clear any existing timeout to cancel current chord timing
+    clearTimeout(delayTimeout);
+    clearInterval(beatInterval);
+    
+    // If a chord is currently playing (and we're not already waiting for step),
+    // immediately proceed to the next chord
+    if (isRunning && !waitingForStep) {
+        playNextChord();
+        return;
+    }
+    
+    // If we're waiting for a step, proceed to next chord
+    if (waitingForStep) {
+        waitingForStep = false;
+        playNextChord();
+    }
+    
+    // If regular practice was running, switch to step mode
+    if (isRunning && !stepMode) {
+        stepMode = true;
+        document.getElementById('step-btn').classList.add('step-active');
+    }
+}
+
+// Function to create a reverb effect
+function createReverb(audioContext, duration, decay) {
+    const sampleRate = audioContext.sampleRate;
+    const length = sampleRate * duration;
+    const impulse = audioContext.createBuffer(2, length, sampleRate);
+    const impulseL = impulse.getChannelData(0);
+    const impulseR = impulse.getChannelData(1);
+    
+    // Generate the reverb impulse response
+    for (let i = 0; i < length; i++) {
+        const n = i / length;
+        // Exponential decay with some randomness for diffusion
+        const amplitude = Math.pow(1 - n, decay) * (Math.random() * 2 - 1);
+        
+        // Stereo reverb with slight differences between left and right
+        impulseL[i] = amplitude * (1 - (0.1 * Math.random()));
+        impulseR[i] = amplitude * (1 - (0.1 * Math.random()));
+    }
+    
+    const convolver = audioContext.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
+}
+
+F
