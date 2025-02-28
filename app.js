@@ -33,5 +33,32 @@ document.addEventListener('DOMContentLoaded', function() {
         updateMetronomeVolume(this.value);
     });
     
+    // Add event listener for progression style changes
+    document.getElementById('progression-style').addEventListener('change', function() {
+        const style = this.value;
+        const lengthInput = document.getElementById('length');
+        
+        // All progression styles should respect the length input
+        // We'll just suggest a minimum length for predefined styles
+        if (style !== 'Random' && progressionStyles[style] && progressionStyles[style].length > 0) {
+            // If the current length is less than pattern length, suggest the pattern length as minimum
+            if (parseInt(lengthInput.value) < progressionStyles[style].length) {
+                lengthInput.value = progressionStyles[style].length;
+            }
+            
+            // Set a data attribute for minimum length based on the pattern
+            lengthInput.setAttribute('min', progressionStyles[style].length);
+            
+            // Make sure the length input is enabled
+            lengthInput.disabled = false;
+        } else {
+            // For random style, keep the minimum at 2
+            lengthInput.setAttribute('min', '2');
+            
+            // Make sure the length input is enabled
+            lengthInput.disabled = false;
+        }
+    });
+    
     console.log('Piano Chord Progression Trainer initialized successfully');
 });

@@ -25,15 +25,26 @@ function getMillisecondsFromBPM(bpm, beatsPerChord) {
     return msPerBeat * beatsPerChord;
 }
 
+// In practice-logic.js, modify the startPractice function to include the progression style:
+
+// In practice-logic.js, modify the startPractice function to include the progression style:
+
+// In practice-logic.js, modify the startPractice function to include the progression style:
+
+// In practice-logic.js, modify the startPractice function to include the progression style:
+
 // Start practice session
 function startPractice() {
-    // Validate selections
-    const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
     const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+    const style = document.getElementById('progression-style').value;
     
-    if (selectedTypes.length === 0) {
-        alert('Please select at least one chord type.');
-        return;
+    // Only validate chord types if using Random progression
+    if (style === 'Random') {
+        const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+        if (selectedTypes.length === 0) {
+            alert('Please select at least one chord type for random progressions.');
+            return;
+        }
     }
     
     if (selectedInversions.length === 0) {
@@ -47,9 +58,12 @@ function startPractice() {
     // Get settings
     const key = document.getElementById('key-select').value;
     const length = parseInt(document.getElementById('length').value, 10);
+    const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
     
-    // Generate chord progression
-    currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions);
+    // Generate chord progression with the selected style
+    currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
+    
+    // No need to update the length field anymore as we're honoring the user's input
     
     // Display progression 
     displayProgressionPills(currentProgression);

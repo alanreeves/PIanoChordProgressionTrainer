@@ -45,6 +45,23 @@ const minorScaleDegrees = [
 // Maps scale degree indices to semitone offsets from root
 const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
 
+// Predefined progression patterns in Roman numeral notation
+const progressionStyles = {
+    'Random': [], // Empty array means use the random generator
+    'Common': ['I', 'IV', 'V', 'I'],
+    'Pop 1': ['I', 'V', 'vi', 'IV'],
+    'Pop 2': ['vi', 'IV', 'I', 'V'],
+    'Jazz & Classical Standard': ['ii', 'V', 'I'],
+    '12-Bar Blues': ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
+    'Doo-Wop': ['I', 'vi', 'ii', 'V'],
+    'Classic Rock': ['I', 'bVII', 'bVI', 'V'],
+    'Basic Circle of Fifths': ['I', 'V', 'II', 'VI', 'III', 'IV', 'I'],
+    'Common Major Circle of Fifths': ['I', 'IV', 'vii°', 'iii', 'vi', 'ii', 'V', 'I'],
+    'Jazz-Friendly Circle of Fifths': ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
+    'Minor Key Circle of Fifths': ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V', 'i'],
+    'Harmonic Minor Circle of Fifths': ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V7', 'i']
+};
+
 // Function to get name for inversion
 function getInversionName(inversion) {
     switch(inversion) {
@@ -92,11 +109,149 @@ function normalizeNoteName(root, originalKey) {
     return root;
 }
 
-// Generate chord progression
-function generateChordProgression(key, length, selectedTypes, selectedInversions) {
+// Function to convert Roman numeral to chord data
+function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
+    // Parse the Roman numeral to extract degree, quality, and any modifications
+    let degree, quality, isSeventh = false, isMajorSeventh = false, isDiminished = false, isHalfDiminished = false;
+    
+    // Create a copy of the romanNumeral for parsing
+    let parsedNumeral = romanNumeral;
+    
+    // Check for flat symbol before Roman numeral
+    const hasFlat = parsedNumeral.startsWith('b');
+    if (hasFlat) {
+        parsedNumeral = parsedNumeral.substring(1); // Remove the flat symbol for parsing
+    }
+    
+    // Extract the base degree (I, II, III, IV, V, VI, VII)
+    // Check for exact matches first to avoid issues with substrings (like IV vs I)
+    if (parsedNumeral === 'IV' || parsedNumeral === 'iv') {
+        degree = 3; // 0-based index for the 4th degree
+    } else if (parsedNumeral === 'I' || parsedNumeral === 'i') {
+        degree = 0; // 0-based index for the 1st degree
+    } else if (parsedNumeral === 'V' || parsedNumeral === 'v') {
+        degree = 4; // 0-based index for the 5th degree
+    } else if (parsedNumeral.startsWith('vii')) {
+        degree = 6; // 0-based index for the 7th degree
+    } else if (parsedNumeral.startsWith('vi')) {
+        degree = 5; // 0-based index for the 6th degree
+    } else if (parsedNumeral.startsWith('iv')) {
+        degree = 3; // 0-based index for the 4th degree
+    } else if (parsedNumeral.startsWith('iii')) {
+        degree = 2; // 0-based index for the 3rd degree
+    } else if (parsedNumeral.startsWith('ii')) {
+        degree = 1; // 0-based index for the 2nd degree
+    } else if (parsedNumeral.startsWith('VII')) {
+        degree = 6; // 0-based index for the 7th degree
+    } else if (parsedNumeral.startsWith('VI')) {
+        degree = 5; // 0-based index for the 6th degree
+    } else if (parsedNumeral.startsWith('IV')) {
+        degree = 3; // 0-based index for the 4th degree
+    } else if (parsedNumeral.startsWith('III')) {
+        degree = 2; // 0-based index for the 3rd degree
+    } else if (parsedNumeral.startsWith('II')) {
+        degree = 1; // 0-based index for the 2nd degree
+    } else if (parsedNumeral.startsWith('I')) {
+        degree = 0; // 0-based index for the 1st degree
+    }
+    
+    // Determine quality based on case and symbols
+    // Uppercase = major, lowercase = minor
+    const isUpperCase = /^[A-Z]/.test(parsedNumeral);
+    
+    // Check for special symbols
+    const hasDiminishedSymbol = romanNumeral.includes('°') || romanNumeral.includes('dim');
+    const hasHalfDiminishedSymbol = romanNumeral.includes('ø');
+    
+    // Check for 7th chords
+    if (romanNumeral.includes('7')) {
+        isSeventh = true;
+        // Check if it's a major 7th specifically
+        if (romanNumeral.includes('maj7')) {
+            isMajorSeventh = true;
+        }
+    }
+    
+    // Determine chord type - now strictly follow the notation in the romanNumeral
+    if (hasDiminishedSymbol) {
+        quality = 'diminished';
+        isDiminished = true;
+    } else if (hasHalfDiminishedSymbol) {
+        quality = 'diminished'; // Using diminished since we don't have half-diminished
+        isHalfDiminished = true;
+    } else if (isMajorSeventh) {
+        quality = 'major7';
+    } else if (isSeventh && isUpperCase) {
+        quality = 'dominant7';
+    } else if (isSeventh && !isUpperCase) {
+        // Minor 7th chord - using minor as approximation
+        quality = 'minor';
+    } else {
+        // Basic triads
+        quality = isUpperCase ? 'major' : 'minor';
+    }
+    
+    // Calculate the root note
+    let rootIndex = getNoteIndex(keyRoot);
+    
+    // Adjust for minor key if needed
+    const scaleIntervals = isMinorKey ? 
+        [0, 2, 3, 5, 7, 8, 10] : // Natural minor scale intervals
+        majorScaleIntervals;     // Major scale intervals
+    
+    // Apply flat modification if present
+    if (hasFlat) {
+        // Flatten the degree (lower by one semitone)
+        const normalDegreeNote = (rootIndex + scaleIntervals[degree]) % 12;
+        rootIndex = (normalDegreeNote - 1 + 12) % 12; // Ensure positive result with modulo
+    } else {
+        // Use the scale degree directly
+        rootIndex = (rootIndex + scaleIntervals[degree]) % 12;
+    }
+    
+    // Get the note name
+    const root = noteNames[rootIndex];
+    
+    // Choose a random inversion from the selected inversions
+    const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+    const inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+    
+    return {
+        root,
+        type: quality,
+        inversion,
+        degreeIndex: degree
+    };
+}
+
+
+// Modified function to generate chord progression based on style
+function generateChordProgression(key, length, selectedTypes, selectedInversions, style = 'Random') {
     const progression = [];
     const isMinorKey = key.endsWith('m');
     const keyRoot = isMinorKey ? key.slice(0, -1) : key;
+    
+    // If a predefined style is selected
+    if (style !== 'Random' && progressionStyles[style] && progressionStyles[style].length > 0) {
+        const pattern = progressionStyles[style];
+        
+        // Generate the pattern and repeat it to meet the desired length
+        for (let i = 0; i < length; i++) {
+            const romanNumeral = pattern[i % pattern.length];
+            
+            // Convert Roman numeral to actual chord data without modifying the type
+            const chord = romanNumeralToChord(romanNumeral, keyRoot, isMinorKey);
+            
+            // We'll respect the exact chord type from the progression style
+            // and not modify it based on selectedTypes
+            progression.push(chord);
+        }
+        
+        return progression;
+    }
+    
+    // If Random is selected or no valid style is found, use the original random generator
+    // (existing code for random progression generation)
     const keyRootIndex = getNoteIndex(key);
     
     // Use appropriate scale degrees based on key type
@@ -110,7 +265,7 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
     };
     progression.push(firstChord);
     
-    // Generate remaining chords
+    // Generate remaining chords using existing logic
     for (let i = 1; i < length; i++) {
         // Choose a random scale degree, weighted toward strong harmonic relationships
         let degreeIndex;
