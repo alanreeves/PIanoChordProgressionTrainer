@@ -818,3 +818,32 @@ and (max-device-width: 1024px) {
         min-width: 90px;
     }
 }
+/* Make card header visually indicate it's clickable */
+.card-header {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection when double-clicking */
+    transition: background-color 0.2s ease;
+}
+
+.card-header:hover {
+    background: linear-gradient(to right, #8e68d0, #6c79c9); /* Slightly lighter gradient on hover */
+}
+/* Footer styling */
+.blank-space {
+    height: 60px; /* Space below keyboard */
+    width: 100%;
+}
+
+.footer-bar {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: auto;
+}
+
+.footer-bar i {
+    font-style: italic;
+}

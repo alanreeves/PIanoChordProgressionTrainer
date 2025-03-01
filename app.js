@@ -173,6 +173,28 @@ document.addEventListener('DOMContentLoaded', function() {
             updateRightChevron();
         }
         
+        // Make the entire header clickable for the settings panel
+        const settingsHeader = document.querySelector('.card-header');
+        if (settingsHeader) {
+            settingsHeader.addEventListener('click', function(e) {
+                // Prevent clicks on other elements with their own click handlers from triggering twice
+                if (e.target.classList.contains('collapse-toggle') || 
+                    e.target.closest('.collapse-toggle') || 
+                    e.target.classList.contains('right-chevron')) {
+                    return;
+                }
+                
+                // Find the collapse toggle element and click it
+                const collapseToggle = this.querySelector('.collapse-toggle');
+                if (collapseToggle) {
+                    collapseToggle.click();
+                }
+            });
+            
+            // Add cursor pointer to indicate clickable area
+            settingsHeader.style.cursor = 'pointer';
+        }
+        
         // Play a test sound to confirm audio works
         if (typeof pianoSampler !== 'undefined') {
             try {
