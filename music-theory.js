@@ -74,6 +74,12 @@ function getInversionName(inversion) {
 
 // Function to get note index regardless of using sharp or flat notation
 function getNoteIndex(noteName) {
+    // Check if noteName is undefined or null
+    if (!noteName) {
+        console.warn('Warning: Attempted to get note index for undefined or null note name');
+        return 0; // Return a default value (C)
+    }
+    
     // Remove any 'm' for minor keys
     const root = noteName.endsWith('m') ? noteName.slice(0, -1) : noteName;
     
@@ -89,6 +95,12 @@ function getNoteIndex(noteName) {
                 break;
             }
         }
+    }
+    
+    // If still not found, return a safe default
+    if (index === -1) {
+        console.warn(`Could not find note index for: ${noteName}`);
+        return 0; // Default to C
     }
     
     return index;
@@ -110,6 +122,7 @@ function normalizeNoteName(root, originalKey) {
 }
 
 // Function to convert Roman numeral to chord data
+// Function to convert Roman numeral to chord data
 function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Parse the Roman numeral to extract degree, quality, and any modifications
     let degree, quality, isSeventh = false, isMajorSeventh = false, isMinorSeventh = false;
@@ -124,63 +137,90 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         parsedNumeral = parsedNumeral.substring(1); // Remove the flat symbol for parsing
     }
     
+    // First extract any non-Roman numeral suffixes like 7, maj7, etc.
+    // Store the base Roman numeral part
+    let baseNumeral = parsedNumeral;
+    let suffix = '';
+    
+    // Common chord quality indicators
+    const qualitySuffixes = ['7', 'maj7', 'm7', 'ø', '°', 'dim', 'aug', '+', 'sus2', 'sus4'];
+    
+    // Extract the quality suffix
+    for (const qualitySuffix of qualitySuffixes) {
+        if (parsedNumeral.includes(qualitySuffix)) {
+            // Find where the quality suffix starts
+            const suffixIndex = parsedNumeral.indexOf(qualitySuffix);
+            // Extract the base Roman numeral and the suffix
+            baseNumeral = parsedNumeral.substring(0, suffixIndex);
+            suffix = parsedNumeral.substring(suffixIndex);
+            break;
+        }
+    }
+    
+    // If no baseNumeral remains (e.g., if the entire string was "7"), 
+    // use the whole thing as the baseNumeral
+    if (!baseNumeral) {
+        baseNumeral = parsedNumeral;
+    }
+    
+    // Now parse the base Roman numeral to get the degree
     // Extract the base degree (I, II, III, IV, V, VI, VII)
     // Check for exact matches first to avoid issues with substrings (like IV vs I)
-    if (parsedNumeral === 'IV' || parsedNumeral === 'iv') {
+    if (baseNumeral === 'IV' || baseNumeral === 'iv') {
         degree = 3; // 0-based index for the 4th degree
-    } else if (parsedNumeral === 'I' || parsedNumeral === 'i') {
+    } else if (baseNumeral === 'I' || baseNumeral === 'i') {
         degree = 0; // 0-based index for the 1st degree
-    } else if (parsedNumeral === 'V' || parsedNumeral === 'v') {
+    } else if (baseNumeral === 'V' || baseNumeral === 'v') {
         degree = 4; // 0-based index for the 5th degree
-    } else if (parsedNumeral.startsWith('vii')) {
+    } else if (baseNumeral.startsWith('vii')) {
         degree = 6; // 0-based index for the 7th degree
-    } else if (parsedNumeral.startsWith('vi')) {
+    } else if (baseNumeral.startsWith('vi')) {
         degree = 5; // 0-based index for the 6th degree
-    } else if (parsedNumeral.startsWith('iv')) {
+    } else if (baseNumeral.startsWith('iv')) {
         degree = 3; // 0-based index for the 4th degree
-    } else if (parsedNumeral.startsWith('iii')) {
+    } else if (baseNumeral.startsWith('iii')) {
         degree = 2; // 0-based index for the 3rd degree
-    } else if (parsedNumeral.startsWith('ii')) {
+    } else if (baseNumeral.startsWith('ii')) {
         degree = 1; // 0-based index for the 2nd degree
-    } else if (parsedNumeral.startsWith('VII')) {
+    } else if (baseNumeral.startsWith('VII')) {
         degree = 6; // 0-based index for the 7th degree
-    } else if (parsedNumeral.startsWith('VI')) {
+    } else if (baseNumeral.startsWith('VI')) {
         degree = 5; // 0-based index for the 6th degree
-    } else if (parsedNumeral.startsWith('IV')) {
+    } else if (baseNumeral.startsWith('IV')) {
         degree = 3; // 0-based index for the 4th degree
-    } else if (parsedNumeral.startsWith('III')) {
+    } else if (baseNumeral.startsWith('III')) {
         degree = 2; // 0-based index for the 3rd degree
-    } else if (parsedNumeral.startsWith('II')) {
+    } else if (baseNumeral.startsWith('II')) {
         degree = 1; // 0-based index for the 2nd degree
-    } else if (parsedNumeral.startsWith('I')) {
+    } else if (baseNumeral.startsWith('I')) {
         degree = 0; // 0-based index for the 1st degree
     }
     
-    // Determine quality based on case and symbols
-    // Uppercase = major, lowercase = minor
-    const isUpperCase = /^[A-Z]/.test(parsedNumeral);
+    // Determine quality based on case, symbols, and suffix
+    // Uppercase = major, lowercase = minor for the base triad
+    const isUpperCase = /^[A-Z]/.test(baseNumeral);
     
-    // Check for special symbols
-    const hasDiminishedSymbol = romanNumeral.includes('°') || romanNumeral.includes('dim');
-    const hasHalfDiminishedSymbol = romanNumeral.includes('ø');
-    const hasAugmentedSymbol = romanNumeral.includes('+') || romanNumeral.includes('aug');
-    const hasSus2Symbol = romanNumeral.includes('sus2');
-    const hasSus4Symbol = romanNumeral.includes('sus4');
+    // Check for special symbols in the suffix
+    const hasDiminishedSymbol = suffix.includes('°') || suffix.includes('dim');
+    const hasHalfDiminishedSymbol = suffix.includes('ø');
+    const hasAugmentedSymbol = suffix.includes('+') || suffix.includes('aug');
+    const hasSus2Symbol = suffix.includes('sus2');
+    const hasSus4Symbol = suffix.includes('sus4');
     
     // Check for 7th chords
-    if (romanNumeral.includes('7')) {
+    if (suffix.includes('7')) {
         isSeventh = true;
         // Check if it's a major 7th specifically
-        if (romanNumeral.includes('maj7')) {
+        if (suffix.includes('maj7')) {
             isMajorSeventh = true;
         }
         // Check if it's a minor 7th specifically
-        else if (romanNumeral.toLowerCase().includes('m7') || (!isUpperCase && romanNumeral.includes('7'))) {
+        else if (suffix.toLowerCase().includes('m7') || (!isUpperCase && suffix.includes('7'))) {
             isMinorSeventh = true;
         }
     }
     
-    // Determine chord type - now strictly follow the notation in the romanNumeral
+    // Determine chord type based on all indicators
     if (hasDiminishedSymbol) {
         quality = 'diminished';
         isDiminished = true;
@@ -200,7 +240,8 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         quality = 'major7';
     } else if (isMinorSeventh) {
         quality = 'minor7';
-    } else if (isSeventh && isUpperCase) {
+    } else if (isSeventh) {
+        // If it has a 7 but no other specifications, it's a dominant 7th
         quality = 'dominant7';
     } else {
         // Basic triads
