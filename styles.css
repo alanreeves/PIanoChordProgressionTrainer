@@ -747,3 +747,74 @@ option {
     height: 0;
     overflow: hidden;
 }
+/* Fix container padding for better edge fit */
+.container {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 5px;  /* Reduced from 10px */
+    padding-left: 5px;   /* Reduced from 10px */
+    margin-right: auto;
+    margin-left: auto;
+    overflow-x: hidden;  /* Prevent horizontal scrolling */
+}
+
+/* Reduce row margins to prevent overflow */
+.row {
+    margin-right: -3px;  /* Reduced from -5px */
+    margin-left: -3px;   /* Reduced from -5px */
+}
+
+/* Adjust column padding */
+.col-md-6, .col-lg-12, .col-6, .col-12 {
+    padding-right: 3px;  /* Reduced from 5px */
+    padding-left: 3px;   /* Reduced from 5px */
+}
+
+/* iPad 6 specific sizing (9.7 inch) */
+@media only screen 
+and (min-device-width: 768px) 
+and (max-device-width: 1024px) {
+    /* Further reduce container padding */
+    .container {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+    
+    /* Adjust card margins */
+    .card {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Reduce card body padding */
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    /* Make chord pills smaller */
+    .chord-pill {
+        padding: 0.4rem 0.8rem;
+        font-size: 1rem;
+        min-width: 3.5rem;
+    }
+    
+    /* Make progression display padding smaller */
+    .progression-display {
+        padding: 0.75rem;
+    }
+    
+    /* Adjust piano key size for better fit */
+    .white-key {
+        width: 26px;
+        height: 115px;
+    }
+    
+    .black-key {
+        width: 16px;
+        height: 75px;
+    }
+    
+    /* Slightly reduce button size */
+    .control-actions .btn {
+        min-width: 90px;
+    }
+}
