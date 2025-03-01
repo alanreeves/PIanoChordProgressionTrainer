@@ -174,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Play a test sound to confirm audio works
-        if (typeof pianoSynth !== 'undefined') {
+        if (typeof pianoSampler !== 'undefined') {
             try {
                 console.log("Playing test sound...");
-                pianoSynth.triggerAttackRelease("C4", 0.5);
+                pianoSampler.triggerAttackRelease("C4", 0.5);
             } catch (error) {
                 console.error("Error playing test sound:", error);
             }

@@ -15,6 +15,28 @@ body {
     background-color: var(--dark-bg);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--light-text);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Improved responsive layout */
+.row {
+    margin-right: -5px;
+    margin-left: -5px;
+}
+
+.col-md-6, .col-lg-12, .col-6 {
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .app-header {
@@ -162,6 +184,7 @@ h5.text-primary {
     justify-content: center;
     padding: 0;
     background-color: #1c2427;
+    width: 100%;
 }
 
 .piano {
@@ -324,12 +347,26 @@ h5.text-primary {
     display: none;
 }
 
+/* Fix Playback Controls section for better layout on smaller screens */
+.form-check.form-switch {
+    margin-bottom: 0.5rem;
+}
+
+/* Reorganize playback controls for better spacing */
+.form-check.form-switch.d-flex {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
 /* Compact volume sliders */
 .compact-volume-control {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     width: 80px;
+    min-width: 80px;
+    margin-top: 0;
+    margin-left: 0.75rem; /* Reduced from auto to a smaller value */
 }
 
 .compact-volume-control label {
@@ -419,6 +456,61 @@ input#beats.form-control,
     padding-right: 0.6rem;
 }
 
+/* On mobile/tablet, adjust the layout for better positioning */
+@media (max-width: 991px) {
+    /* Give more space between control items */
+    .form-check {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Make volume controls more compact */
+    .compact-volume-control {
+        max-width: 60px;
+    }
+    
+    /* Prevent text wrapping in controls */
+    .form-check-label span.fw-bold {
+        font-size: 0.9rem;
+    }
+    
+    /* Reorganize the playback controls for smaller screens */
+    .playback-row {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Make volume sliders display adjacent to their switches */
+    .form-check.form-switch.d-flex {
+        flex-direction: row;
+        align-items: center !important;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+    
+    .form-check.form-switch.d-flex .compact-volume-control {
+        margin-left: 0.75rem;
+        width: auto;
+        max-width: 80px;
+    }
+    
+    /* Add more space below each control group */
+    .col-12.mb-2 {
+        margin-bottom: 0.75rem !important;
+    }
+}
+
+/* Adjust piano size for tablets */
+@media (max-width: 991px) and (min-width: 577px) {
+    .white-key {
+        width: 28px;
+        height: 120px;
+    }
+    .black-key {
+        width: 18px;
+        height: 80px;
+    }
+}
+
 @media (max-width: 768px) {
     .white-key {
         width: 30px;
@@ -439,7 +531,28 @@ input#beats.form-control,
         width: 15px;
         height: 60px;
     }
+    
+    .control-actions .btn {
+        min-width: unset;
+        width: auto;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-check-label span.fw-bold {
+        font-size: 0.8rem;
+    }
+    
+    .card-header h5 {
+        font-size: 0.9rem;
+    }
+    
+    .chord-pill {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
 }
+
 /* Add these rules to fix the label colors in the dark theme */
 
 /* Fix general form labels */
