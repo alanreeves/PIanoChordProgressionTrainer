@@ -104,95 +104,81 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Add event listener for collapsible settings panel
-        const settingsPanel = document.getElementById('settings-panel');
-        const collapseToggle = document.querySelector('.collapse-toggle');
-        
-        // Make sure settingsPanel starts collapsed
-        if (settingsPanel.classList.contains('show')) {
-            settingsPanel.classList.remove('show');
-        }
-        if (!collapseToggle.classList.contains('collapsed')) {
-            collapseToggle.classList.add('collapsed');
-        }
-        
-        // When settings panel state changes
-        settingsPanel.addEventListener('hidden.bs.collapse', function () {
-            // Make the entire card clickable to expand
-            const card = settingsPanel.closest('.card');
-            card.style.cursor = 'pointer';
+        // Side panel functionality
+        const sidePanel = document.querySelector('.side-panel');
+        const panelToggleBtn = document.querySelector('.panel-toggle-btn');
+        const panelOverlay = document.querySelector('.panel-overlay');
+        const mainContent = document.querySelector('.main-content');
+
+        // Function to toggle the side panel
+        function toggleSidePanel() {
+            sidePanel.classList.toggle('open');
+            panelOverlay.classList.toggle('active');
+            mainContent.classList.toggle('panel-open');
             
-            // Add click event to the entire card when collapsed
-            card.addEventListener('click', function(e) {
-                // Only expand if settings are currently collapsed
-                if (settingsPanel.classList.contains('collapse') && !settingsPanel.classList.contains('show')) {
-                    const bsCollapse = new bootstrap.Collapse(settingsPanel);
-                    bsCollapse.show();
-                }
-            });
-        });
-        
-        settingsPanel.addEventListener('show.bs.collapse', function () {
-            // Remove clickable style when expanded
-            const card = settingsPanel.closest('.card');
-            card.style.cursor = 'default';
-            
-            // Clean up event listeners
-            card.removeEventListener('click', null);
-        });
-        
-        // Make the right chevron functional (if it exists)
-        const rightChevron = document.querySelector('.right-chevron');
-        if (rightChevron) {
-            rightChevron.addEventListener('click', function() {
-                const collapseToggle = document.querySelector('.collapse-toggle');
-                collapseToggle.click(); // Trigger the collapse toggle when right chevron is clicked
+            // Save state to localStorage
+            const isPanelOpen = sidePanel.classList.contains('open');
+            localStorage.setItem('sidePanelOpen', isPanelOpen ? 'true' : 'false');
+        }
+
+        // Toggle button click handler
+        if (panelToggleBtn) {
+            panelToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleSidePanel();
             });
         }
-        
-        // Initial state check - position right in relation to collapse state
-        const updateRightChevron = function() {
-            const collapseToggle = document.querySelector('.collapse-toggle');
-            const rightChevron = document.querySelector('.right-chevron');
-            
-            if (collapseToggle && rightChevron) {
-                if (collapseToggle.classList.contains('collapsed')) {
-                    rightChevron.classList.add('collapsed');
-                } else {
-                    rightChevron.classList.remove('collapsed');
-                }
+
+        // Close panel when clicking overlay
+        if (panelOverlay) {
+            panelOverlay.addEventListener('click', function() {
+                toggleSidePanel();
+            });
+        }
+
+        // Close panel when Escape key is pressed
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidePanel.classList.contains('open')) {
+                toggleSidePanel();
             }
-        };
-        
-        // Update right chevron when collapse state changes (if it exists)
-        if (rightChevron) {
-            settingsPanel.addEventListener('shown.bs.collapse', updateRightChevron);
-            settingsPanel.addEventListener('hidden.bs.collapse', updateRightChevron);
-            
-            // Initial update
-            updateRightChevron();
+        });
+
+        // Restore panel state from localStorage on page load
+        const savedPanelState = localStorage.getItem('sidePanelOpen');
+        if (savedPanelState === 'true') {
+            sidePanel.classList.add('open');
+            panelOverlay.classList.add('active');
+            mainContent.classList.add('panel-open');
         }
-        
-        // Make the entire header clickable for the settings panel
-        const settingsHeader = document.querySelector('.card-header');
-        if (settingsHeader) {
-            settingsHeader.addEventListener('click', function(e) {
-                // Prevent clicks on other elements with their own click handlers from triggering twice
-                if (e.target.classList.contains('collapse-toggle') || 
-                    e.target.closest('.collapse-toggle') || 
-                    e.target.classList.contains('right-chevron')) {
-                    return;
-                }
-                
-                // Find the collapse toggle element and click it
-                const collapseToggle = this.querySelector('.collapse-toggle');
-                if (collapseToggle) {
-                    collapseToggle.click();
-                }
-            });
+
+        // For touch devices, add swipe detection
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Listen for touch start
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        // Listen for touch end
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        // Handle the swipe
+        function handleSwipe() {
+            const swipeThreshold = 100; // Minimum distance for a swipe
             
-            // Add cursor pointer to indicate clickable area
-            settingsHeader.style.cursor = 'pointer';
+            // Left to right swipe (open panel)
+            if (touchEndX - touchStartX > swipeThreshold && !sidePanel.classList.contains('open')) {
+                toggleSidePanel();
+            }
+            
+            // Right to left swipe (close panel)
+            if (touchStartX - touchEndX > swipeThreshold && sidePanel.classList.contains('open')) {
+                toggleSidePanel();
+            }
         }
         
         // Play a test sound to confirm audio works

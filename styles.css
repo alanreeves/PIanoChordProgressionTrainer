@@ -22,21 +22,22 @@ body {
 .container {
     width: 100%;
     max-width: 100%;
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 5px;  /* Reduced from 10px */
+    padding-left: 5px;   /* Reduced from 10px */
     margin-right: auto;
     margin-left: auto;
+    overflow-x: hidden;  /* Prevent horizontal scrolling */
 }
 
 /* Improved responsive layout */
 .row {
-    margin-right: -5px;
-    margin-left: -5px;
+    margin-right: -3px;  /* Reduced from -5px */
+    margin-left: -3px;   /* Reduced from -5px */
 }
 
-.col-md-6, .col-lg-12, .col-6 {
-    padding-right: 5px;
-    padding-left: 5px;
+.col-md-6, .col-lg-12, .col-6, .col-12 {
+    padding-right: 3px;  /* Reduced from 5px */
+    padding-left: 3px;   /* Reduced from 5px */
 }
 
 .app-header {
@@ -70,6 +71,13 @@ body {
     border-bottom: none;
     padding: 0.5rem 0.75rem;
     position: relative;
+    cursor: pointer;
+    user-select: none; /* Prevent text selection when double-clicking */
+    transition: background-color 0.2s ease;
+}
+
+.card-header:hover {
+    background: linear-gradient(to right, #8e68d0, #6c79c9); /* Slightly lighter gradient on hover */
 }
 
 .card-header h5 {
@@ -502,12 +510,12 @@ input#beats.form-control,
 /* Adjust piano size for tablets */
 @media (max-width: 991px) and (min-width: 577px) {
     .white-key {
-        width: 28px;
-        height: 120px;
+        width: 26px;
+        height: 115px;
     }
     .black-key {
-        width: 18px;
-        height: 80px;
+        width: 16px;
+        height: 75px;
     }
 }
 
@@ -648,20 +656,6 @@ option {
     background-color: var(--dark-card);
 }
 
-/* Collapsible settings panel styles */
-.collapse-toggle {
-    cursor: pointer;
-    user-select: none;
-}
-
-.collapse-icon {
-    transition: transform 0.3s ease;
-}
-
-.collapsed .collapse-icon {
-    transform: rotate(180deg);
-}
-
 /* Control Panel Styling */
 .control-panel {
     margin-top: 0.5rem;
@@ -686,148 +680,136 @@ option {
     padding-right: 1rem;
 }
 
-/* Make the overlay background much more transparent */
-.settings-overlay {
-    position: absolute;
+/* Side Panel Styling */
+.side-panel-container {
+    position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(38, 50, 56, 0.2); /* Reduced from 0.7 to 0.2 */
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
+    pointer-events: none; /* Allow clicks to pass through when closed */
+}
+
+.side-panel {
+    position: absolute;
+    top: 0;
+    left: -350px; /* Start off-screen */
+    width: 350px;
+    height: 100%;
+    background-color: var(--dark-card);
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.4);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    pointer-events: auto; /* Capture interactions */
+    z-index: 1001;
+}
+
+.side-panel.open {
+    left: 0;
+}
+
+/* Enhanced Toggle button styling */
+.panel-toggle-btn {
+    position: fixed; /* Change to fixed positioning */
+    top: 50%;
+    left: 0; /* Position at the left edge of the screen */
+    width: 40px;
+    height: 80px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-    pointer-events: none;
-}
-
-/* Make the overlay message paler and more subtle */
-.overlay-message {
-    font-size: 1.2rem; /* Reduced from 1.5rem */
-    color: rgba(255, 255, 255, 0.7); /* More transparent text */
-    font-weight: 400; /* Reduced from 500 */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);  /* Reduced shadow */
-    padding: 0.7rem 1.5rem;
-    border-radius: 0.5rem;
-    background-color: rgba(126, 87, 194, 0.15); /* Much more transparent */
-    backdrop-filter: blur(2px); /* Reduced blur */
-}
-
-/* Only show overlay when settings are collapsed */
-.collapse:not(.show) .settings-overlay {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Add styles for the right chevron */
-.right-chevron {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
+    cursor: pointer;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
     transform: translateY(-50%);
+    padding: 0;
+    z-index: 1002;
+    pointer-events: auto; /* Always clickable */
+    transition: left 0.3s ease; /* Smooth transition */
+}
+
+/* Move the button when panel is open */
+.side-panel.open + .panel-toggle-btn,
+.side-panel.open ~ .panel-toggle-btn {
+    left: 350px; /* Same as panel width */
+}
+
+.panel-toggle-btn i {
+    font-size: 1.5rem;
     transition: transform 0.3s ease;
 }
 
-/* When collapsed, rotate the right chevron too */
-.collapse-toggle.collapsed + .right-chevron {
-    transform: translateY(-50%) rotate(180deg);
+.side-panel.open + .panel-toggle-btn i,
+.side-panel.open ~ .panel-toggle-btn i {
+    transform: rotate(180deg);
 }
 
-/* Animation for collapse transitions */
-.collapse {
-    transition: height 0.3s ease;
+/* Panel header */
+.side-panel-header {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Ensure the collapsed panel can be clicked */
-#settings-panel.collapse:not(.show) {
-    display: block;
-    height: 0;
-    overflow: hidden;
+.side-panel-header h5 {
+    margin-bottom: 0;
+    font-size: 1.1rem;
 }
-/* Fix container padding for better edge fit */
-.container {
+
+.side-panel-content {
+    padding: 1rem;
+}
+
+/* Semi-transparent overlay when panel is open */
+.panel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 100%;
-    padding-right: 5px;  /* Reduced from 10px */
-    padding-left: 5px;   /* Reduced from 10px */
-    margin-right: auto;
-    margin-left: auto;
-    overflow-x: hidden;  /* Prevent horizontal scrolling */
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
 }
 
-/* Reduce row margins to prevent overflow */
-.row {
-    margin-right: -3px;  /* Reduced from -5px */
-    margin-left: -3px;   /* Reduced from -5px */
+.panel-overlay.active {
+    opacity: 1;
+    pointer-events: auto; /* Capture clicks to close */
 }
 
-/* Adjust column padding */
-.col-md-6, .col-lg-12, .col-6, .col-12 {
-    padding-right: 3px;  /* Reduced from 5px */
-    padding-left: 3px;   /* Reduced from 5px */
+/* Make sure the button is visible on small screens */
+@media (max-width: 576px) {
+    .side-panel {
+        width: 85%; /* Wider on small screens */
+        left: -85%;
+    }
+
+    .side-panel.open + .panel-toggle-btn,
+    .side-panel.open ~ .panel-toggle-btn {
+        left: 85%; /* Same as panel width on small screens */
+    }
 }
 
-/* iPad 6 specific sizing (9.7 inch) */
-@media only screen 
-and (min-device-width: 768px) 
-and (max-device-width: 1024px) {
-    /* Further reduce container padding */
-    .container {
-        padding-right: 4px;
-        padding-left: 4px;
-    }
-    
-    /* Adjust card margins */
-    .card {
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Reduce card body padding */
-    .card-body {
-        padding: 0.5rem;
-    }
-    
-    /* Make chord pills smaller */
-    .chord-pill {
-        padding: 0.4rem 0.8rem;
-        font-size: 1rem;
-        min-width: 3.5rem;
-    }
-    
-    /* Make progression display padding smaller */
-    .progression-display {
-        padding: 0.75rem;
-    }
-    
-    /* Adjust piano key size for better fit */
-    .white-key {
-        width: 26px;
-        height: 115px;
-    }
-    
-    .black-key {
-        width: 16px;
-        height: 75px;
-    }
-    
-    /* Slightly reduce button size */
-    .control-actions .btn {
-        min-width: 90px;
-    }
-}
-/* Make card header visually indicate it's clickable */
-.card-header {
-    cursor: pointer;
-    user-select: none; /* Prevent text selection when double-clicking */
-    transition: background-color 0.2s ease;
+/* Adjust main content layout when using side panel */
+.main-content {
+    transition: margin-left 0.3s ease;
 }
 
-.card-header:hover {
-    background: linear-gradient(to right, #8e68d0, #6c79c9); /* Slightly lighter gradient on hover */
+.main-content.panel-open {
+    margin-left: 0; /* We're overlaying, not pushing */
 }
+
 /* Footer styling */
 .blank-space {
     height: 60px; /* Space below keyboard */
@@ -842,8 +824,4 @@ and (max-device-width: 1024px) {
     font-size: 0.85rem;
     width: 100%;
     margin-top: auto;
-}
-
-.footer-bar i {
-    font-style: italic;
 }
