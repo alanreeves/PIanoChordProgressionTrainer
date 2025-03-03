@@ -894,4 +894,8 @@ option {
     width: 100%;
     height: 500px;
     background-color: transparent;
+    overflow: auto;  /* Added this line */
+}
+.modal-dialog-scrollable .modal-body {
+    overflow: hidden; /* Prevent double scrollbars */
 }
