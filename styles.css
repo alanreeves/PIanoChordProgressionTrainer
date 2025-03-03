@@ -40,6 +40,35 @@ body {
     padding-left: 3px;   /* Reduced from 5px */
 }
 
+/* Header styles */
+.app-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.6rem 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 100;
+}
+
+.app-title {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+#help-btn {
+    border-color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+    transition: all 0.2s;
+}
+
+#help-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
 .app-header {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
@@ -191,8 +220,7 @@ h5.text-primary {
     display: flex;
     justify-content: center;
     padding: 0;
-    background-color: #1c2427;
-    width: 100%;
+    background-color: var(--dark-card); /* Match the card background color */
 }
 
 .piano {
@@ -809,22 +837,6 @@ option {
     margin-left: 0; /* We're overlaying, not pushing */
 }
 
-/* Footer styling */
-.blank-space {
-    height: 60px; /* Space below keyboard */
-    width: 100%;
-}
-
-.footer-bar {
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-    color: white;
-    padding: 0.5rem 0.75rem;
-    text-align: left;
-    font-size: 0.85rem;
-    width: 100%;
-    margin-top: auto;
-}
-
 /* Style Display */
 .style-display-container {
     text-align: center;
@@ -843,4 +855,43 @@ option {
     font-weight: 600;
     font-size: 0.95rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer styling */
+.blank-space {
+    height: 20px; /* Reduced space below keyboard */
+    width: 100%;
+}
+
+.footer-bar {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: auto;
+}
+
+/* Help modal styling */
+.modal-content {
+    background-color: var(--dark-card);
+    color: var(--light-text);
+    border: 1px solid var(--dark-input);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--dark-input);
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+}
+
+.modal-footer {
+    border-top: 1px solid var(--dark-input);
+}
+
+#helpContentFrame {
+    border: none;
+    width: 100%;
+    height: 500px;
+    background-color: transparent;
 }
