@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano Chord Progression Trainer</title>
+    <title>pianochords.uk</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -17,9 +17,61 @@
         <div class="panel-overlay"></div>
         <div class="side-panel">
             <div class="side-panel-header">
-                <h5><i class="bi bi-gear-fill me-2"></i>Chord Progression Trainer Settings</h5>
+                <h5><i class="bi bi-gear-fill me-2"></i>PianoChord.uk</h5>
             </div>
             <div class="side-panel-content">
+                <!-- MOVED: Playback Controls to the top -->
+ <div class="col-12 mb-3">
+                    <h5 class="text-primary mb-2">Playback Controls</h5>
+                    <div class="row playback-row">
+                        <div class="col-12 mb-2">
+                            <div class="form-check form-switch d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="play-sound">
+                                <label class="form-check-label" for="play-sound">
+                                    <span class="fw-bold">Play Chords</span>
+                                </label>
+                                <div class="compact-volume-control">
+                                    <label for="chord-volume" class="small">Vol</label>
+                                    <input type="range" class="compact-range" id="chord-volume" min="0" max="1" step="0.01" value="0.5">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="arpeggiate-chord">
+                                <label class="form-check-label" for="arpeggiate-chord">
+                                    <span class="fw-bold">Arpeggiate</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="d-flex align-items-center">
+                                <label for="octave-selector" class="me-2">
+                                    <span class="fw-bold">Octave:</span>
+                                </label>
+                                <select id="octave-selector" class="form-select form-select-sm" style="width: auto; min-width: 70px;">
+                                    <option value="3">3 (Low)</option>
+                                    <option value="4" selected>4 (Middle)</option>
+                                    <option value="5">5 (High)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-check form-switch d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="metronome">
+                                <label class="form-check-label" for="metronome">
+                                    <span class="fw-bold">Metronome</span>
+                                </label>
+                                <div class="compact-volume-control">
+                                    <label for="metronome-volume" class="small">Vol</label>
+                                    <input type="range" class="compact-range" id="metronome-volume" min="0" max="1" step="0.01" value="0.5">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
                 <!-- Key Selection -->
                 <div class="row mb-4">
                     <div class="col-12 mb-3">
@@ -146,6 +198,14 @@
                                     <label class="form-check-label" for="type-sus4">Sus4</label>
                                 </div>
                             </div>
+                            <div class="checkbox-item" style="margin-top: 10px; width: 100%;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="slash-notation" checked>
+                                    <label class="form-check-label" for="slash-notation">
+                                        <span class="fw-bold">Slash Notation</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -227,53 +287,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Playback Controls -->
-                    <div class="col-12">
-                        <h5 class="text-primary mb-2">Playback Controls</h5>
-                        <div class="row playback-row">
-                            <div class="col-12 mb-2">
-                                <div class="form-check form-switch d-flex align-items-center">
-                                    <input class="form-check-input" type="checkbox" id="play-sound" checked>
-                                    <label class="form-check-label" for="play-sound">
-                                        <span class="fw-bold">Play Chords</span>
-                                    </label>
-                                    <div class="compact-volume-control">
-                                        <label for="chord-volume" class="small">Vol</label>
-                                        <input type="range" class="compact-range" id="chord-volume" min="0" max="1" step="0.01" value="0.5">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-2">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="arpeggiate-chord">
-                                    <label class="form-check-label" for="arpeggiate-chord">
-                                        <span class="fw-bold">Arpeggiate</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-2">
-                                <div class="form-check form-switch d-flex align-items-center">
-                                    <input class="form-check-input" type="checkbox" id="metronome">
-                                    <label class="form-check-label" for="metronome">
-                                        <span class="fw-bold">Metronome</span>
-                                    </label>
-                                    <div class="compact-volume-control">
-                                        <label for="metronome-volume" class="small">Vol</label>
-                                        <input type="range" class="compact-range" id="metronome-volume" min="0" max="1" step="0.01" value="0.5">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="slash-notation" checked>
-                                    <label class="form-check-label" for="slash-notation">
-                                        <span class="fw-bold">Slash Notation</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -331,6 +344,10 @@
             </div>
         </div>
     </div>
+	
+	<div id="style-display-container" class="style-display-container">
+        <div id="style-display" class="style-display">Random</div>
+    </div>
 
     <!-- Footer -->
     <div class="blank-space"></div>
@@ -344,6 +361,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     
     <!-- App Scripts -->
+    <script src="security.js"></script>
     <script src="music-theory.js"></script>
     <script src="tone-audio-engine.js"></script>
     <script src="piano-display.js"></script>

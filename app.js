@@ -1,46 +1,20 @@
 // Main Application Initialization
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Create a simple overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    overlay.style.display = 'flex';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = '9999';
-    
-    const button = document.createElement('button');
-    button.textContent = 'Click to Start Audio';
-    button.style.padding = '20px 40px';
-    button.style.fontSize = '20px';
-    button.style.backgroundColor = '#7e57c2';
-    button.style.color = 'white';
-    button.style.border = 'none';
-    button.style.borderRadius = '4px';
-    button.style.cursor = 'pointer';
-    
-    overlay.appendChild(button);
-    document.body.appendChild(overlay);
-    
-    // When the button is clicked
-    button.addEventListener('click', function() {
-        // Start Tone.js
-        Tone.start().then(() => {
-            console.log("Tone.js started successfully");
-            document.body.removeChild(overlay);
-            
-            // After Tone.js is started, continue with initialization
+    // Function to check authorization and continue initialization
+    function checkAuthAndInitialize() {
+        // Check if user is authorized
+        if (window.securityModule.checkAuthorization()) {
+            // User is authorized, continue with initialization
             initializeApp();
-        });
-    });
+        } else {
+            // User is not authorized, show access key dialog
+            window.securityModule.showAccessKeyDialog();
+        }
+    }
     
     // Function to initialize the rest of the app
-    function initializeApp() {
+    window.initializeApp = function() {
         // Build the piano keyboard initially
         buildPiano();
         
@@ -55,8 +29,51 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('rewind-btn').addEventListener('click', rewindChord);
         document.getElementById('step-btn').addEventListener('click', stepChord);
         
+        // Set initial default values based on the selected progression style
+        const initialStyle = document.getElementById('progression-style').value;
+        
+        // Set the initial style display
+        const styleDisplay = document.getElementById('style-display');
+        if (styleDisplay) {
+            const styleOption = document.querySelector(`#progression-style option[value="${initialStyle}"]`);
+            if (styleOption) {
+                styleDisplay.textContent = styleOption.textContent;
+            } else {
+                styleDisplay.textContent = initialStyle;
+            }
+        }
+        
+        if (progressionStyles[initialStyle]) {
+            const styleDefaults = progressionStyles[initialStyle];
+            document.getElementById('length').value = styleDefaults.length;
+            document.getElementById('tempo').value = styleDefaults.tempo;
+            document.getElementById('beats').value = styleDefaults.beatsPerChord;
+            
+            // Set minimum length based on pattern if applicable
+            if (initialStyle !== 'Random' && styleDefaults.pattern && styleDefaults.pattern.length > 0) {
+                document.getElementById('length').setAttribute('min', styleDefaults.pattern.length);
+            }
+        }
+        
         // Initialize audio
         initAudio();
+        
+        // Load saved octave preference if it exists
+        const savedOctave = localStorage.getItem('selectedOctave');
+        if (savedOctave) {
+            document.getElementById('octave-selector').value = savedOctave;
+        }
+        
+        // Add change listener to octave selector to save preference
+        document.getElementById('octave-selector').addEventListener('change', function() {
+            localStorage.setItem('selectedOctave', this.value);
+            
+            // If a chord is currently highlighted, update its display
+            if (currentChordIndex >= 0 && currentProgression.length > 0) {
+                const chord = currentProgression[currentChordIndex];
+                highlightChordOnPiano(chord.root, chord.type, chord.inversion);
+            }
+        });
         
         // Add change listener to slash notation for live update of chord notation
         document.getElementById('slash-notation').addEventListener('change', function() {
@@ -68,6 +85,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Track if Tone.js has been started
+        let toneStarted = false;
+        
         // Add event listeners for volume sliders
         document.getElementById('chord-volume').addEventListener('input', function() {
             updateChordVolume(this.value);
@@ -77,29 +97,76 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMetronomeVolume(this.value);
         });
         
+        // Add event listener for play-sound toggle with Tone.js starter functionality
+        document.getElementById('play-sound').addEventListener('change', function() {
+            if (this.checked && !toneStarted) {
+                // Start Tone.js when checkbox is checked for the first time
+                Tone.start().then(() => {
+                    console.log("Tone.js started successfully");
+                    toneStarted = true;
+                    
+                    // Play a test sound to confirm audio works
+                    if (typeof pianoSampler !== 'undefined') {
+                        try {
+                            console.log("Playing test sound...");
+                            pianoSampler.triggerAttackRelease("C4", 0.5);
+                        } catch (error) {
+                            console.error("Error playing test sound:", error);
+                        }
+                    }
+                }).catch(error => {
+                    console.error("Error starting Tone.js:", error);
+                    // Uncheck the box if there was an error
+                    this.checked = false;
+                });
+            }
+        });
+        
         // Add event listener for progression style changes
         document.getElementById('progression-style').addEventListener('change', function() {
             const style = this.value;
             const lengthInput = document.getElementById('length');
+            const tempoInput = document.getElementById('tempo');
+            const beatsInput = document.getElementById('beats');
             
-            // All progression styles should respect the length input
-            // We'll just suggest a minimum length for predefined styles
-            if (style !== 'Random' && progressionStyles[style] && progressionStyles[style].length > 0) {
-                // If the current length is less than pattern length, suggest the pattern length as minimum
-                if (parseInt(lengthInput.value) < progressionStyles[style].length) {
-                    lengthInput.value = progressionStyles[style].length;
+            // Update the style display
+            const styleDisplay = document.getElementById('style-display');
+            if (styleDisplay) {
+                const styleOption = document.querySelector(`#progression-style option[value="${style}"]`);
+                if (styleOption) {
+                    styleDisplay.textContent = styleOption.textContent;
+                } else {
+                    styleDisplay.textContent = style;
                 }
+            }
+            
+            // Apply default values from the progression style
+            if (progressionStyles[style]) {
+                const styleDefaults = progressionStyles[style];
                 
-                // Set a data attribute for minimum length based on the pattern
-                lengthInput.setAttribute('min', progressionStyles[style].length);
+                // Update length input
+                lengthInput.value = styleDefaults.length;
+                
+                // Update tempo input
+                tempoInput.value = styleDefaults.tempo;
+                
+                // Update beats per chord input
+                beatsInput.value = styleDefaults.beatsPerChord;
+                
+                // Set minimum length based on pattern if applicable
+                if (style !== 'Random' && styleDefaults.pattern && styleDefaults.pattern.length > 0) {
+                    // Set a data attribute for minimum length based on the pattern
+                    lengthInput.setAttribute('min', styleDefaults.pattern.length);
+                } else {
+                    // For random style, keep the minimum at 2
+                    lengthInput.setAttribute('min', '2');
+                }
                 
                 // Make sure the length input is enabled
                 lengthInput.disabled = false;
             } else {
-                // For random style, keep the minimum at 2
+                // Fallback to defaults if style not found
                 lengthInput.setAttribute('min', '2');
-                
-                // Make sure the length input is enabled
                 lengthInput.disabled = false;
             }
         });
@@ -143,13 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Restore panel state from localStorage on page load
-        const savedPanelState = localStorage.getItem('sidePanelOpen');
-        if (savedPanelState === 'true') {
-            sidePanel.classList.add('open');
-            panelOverlay.classList.add('active');
-            mainContent.classList.add('panel-open');
-        }
+        // Set panel to open by default
+        sidePanel.classList.add('open');
+        panelOverlay.classList.add('active');
+        mainContent.classList.add('panel-open');
+        localStorage.setItem('sidePanelOpen', 'true');
 
         // For touch devices, add swipe detection
         let touchStartX = 0;
@@ -181,16 +246,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Play a test sound to confirm audio works
-        if (typeof pianoSampler !== 'undefined') {
-            try {
-                console.log("Playing test sound...");
-                pianoSampler.triggerAttackRelease("C4", 0.5);
-            } catch (error) {
-                console.error("Error playing test sound:", error);
-            }
-        }
-        
         console.log('Piano Chord Progression Trainer initialized successfully');
     }
+    
+    // Start the app directly
+    checkAuthAndInitialize();
 });

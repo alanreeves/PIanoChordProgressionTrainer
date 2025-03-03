@@ -45,21 +45,86 @@ const minorScaleDegrees = [
 // Maps scale degree indices to semitone offsets from root
 const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
 
-// Predefined progression patterns in Roman numeral notation
+// Predefined progression patterns in Roman numeral notation with default values for length, tempo, and beats per chord
 const progressionStyles = {
-    'Random': [], // Empty array means use the random generator
-    'Common': ['I', 'IV', 'V', 'I'],
-    'Pop 1': ['I', 'V', 'vi', 'IV'],
-    'Pop 2': ['vi', 'IV', 'I', 'V'],
-    'Jazz & Classical Standard': ['ii', 'V', 'I'],
-    '12-Bar Blues': ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
-    'Doo-Wop': ['I', 'vi', 'ii', 'V'],
-    'Classic Rock': ['I', 'bVII', 'bVI', 'V'],
-    'Basic Circle of Fifths': ['I', 'V', 'II', 'VI', 'III', 'IV', 'I'],
-    'Common Major Circle of Fifths': ['I', 'IV', 'vii°', 'iii', 'vi', 'ii', 'V', 'I'],
-    'Jazz-Friendly Circle of Fifths': ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
-    'Minor Key Circle of Fifths': ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V', 'i'],
-    'Harmonic Minor Circle of Fifths': ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V7', 'i']
+    'Random': {
+        pattern: [], // Empty array means use the random generator
+        length: 16,
+        tempo: 60,
+        beatsPerChord: 4
+    },
+    'Common': {
+        pattern: ['I', 'IV', 'V', 'I'],
+        length: 16,
+        tempo: 60,
+        beatsPerChord: 1
+    },
+    'Pop 1': {
+        pattern: ['I', 'V', 'vi', 'IV'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 1
+    },
+    'Pop 2': {
+        pattern: ['vi', 'IV', 'I', 'V'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 1
+    },
+    'Jazz & Classical Standard': {
+        pattern: ['ii', 'V', 'I'],
+        length: 15,
+        tempo: 90,
+        beatsPerChord: 1
+    },
+    '12-Bar Blues': {
+        pattern: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
+        length: 24,
+        tempo: 120,
+        beatsPerChord: 1
+    },
+    'Doo-Wop': {
+        pattern: ['I', 'vi', 'ii', 'V'],
+        length: 16,
+        tempo: 120,
+        beatsPerChord: 2
+    },
+    'Classic Rock': {
+        pattern: ['I', 'bVII', 'bVI', 'V'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 1
+    },
+    'Basic Circle of Fifths': {
+        pattern: ['I', 'V', 'II', 'VI', 'III', 'IV', 'I'],
+        length: 16,
+        tempo: 120,
+        beatsPerChord: 2
+    },
+    'Common Major Circle of Fifths': {
+        pattern: ['I', 'IV', 'vii°', 'iii', 'vi', 'ii', 'V', 'I'],
+        length: 16,
+        tempo: 120,
+        beatsPerChord: 2
+    },
+    'Jazz-Friendly Circle of Fifths': {
+        pattern: ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 2
+    },
+    'Minor Key Circle of Fifths': {
+        pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V', 'i'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 2
+    },
+    'Harmonic Minor Circle of Fifths': {
+        pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V7', 'i'],
+        length: 16,
+        tempo: 90,
+        beatsPerChord: 1
+    }
 };
 
 // Function to get name for inversion
@@ -289,8 +354,8 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
     const keyRoot = isMinorKey ? key.slice(0, -1) : key;
     
     // If a predefined style is selected
-    if (style !== 'Random' && progressionStyles[style] && progressionStyles[style].length > 0) {
-        const pattern = progressionStyles[style];
+    if (style !== 'Random' && progressionStyles[style] && progressionStyles[style].pattern.length > 0) {
+        const pattern = progressionStyles[style].pattern;
         
         // Generate the pattern and repeat it to meet the desired length
         for (let i = 0; i < length; i++) {
@@ -542,7 +607,16 @@ function getChordIntervals(type, inversion) {
 
 // Calculate starting note based on root, type, inversion, and hand
 function getChordStartNote(rootIndex, type, inversion, isRightHand) {
-    const octaveOffset = isRightHand ? 4 : 3;  // Right hand: C4, Left hand: C3
+    // Use the selected octave if available, otherwise use default
+    let selectedOctave = 4; // Default to middle C octave
+    const octaveSelector = document.getElementById('octave-selector');
+    if (octaveSelector) {
+        selectedOctave = parseInt(octaveSelector.value, 10);
+    }
+    
+    // Base octave offset on hand selection and the user-selected octave
+    // Right hand: selectedOctave, Left hand: selectedOctave-1
+    const octaveOffset = isRightHand ? selectedOctave : selectedOctave - 1;
     
     // If rootIndex is a string (a note name), convert it to an index
     if (typeof rootIndex === 'string') {

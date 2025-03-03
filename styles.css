@@ -713,7 +713,7 @@ option {
 /* Enhanced Toggle button styling */
 .panel-toggle-btn {
     position: fixed; /* Change to fixed positioning */
-    top: 50%;
+    top: 20px; /* Position at the top instead of middle */
     left: 0; /* Position at the left edge of the screen */
     width: 40px;
     height: 80px;
@@ -726,7 +726,6 @@ option {
     justify-content: center;
     cursor: pointer;
     box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
-    transform: translateY(-50%);
     padding: 0;
     z-index: 1002;
     pointer-events: auto; /* Always clickable */
@@ -824,4 +823,24 @@ option {
     font-size: 0.85rem;
     width: 100%;
     margin-top: auto;
+}
+
+/* Style Display */
+.style-display-container {
+    text-align: center;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.style-display {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
