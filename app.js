@@ -169,7 +169,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengthInput.setAttribute('min', '2');
                 lengthInput.disabled = false;
             }
+
+            // Update the BPM slider to match the new tempo
+            const bpmSlider = document.getElementById('bpm-slider');
+            const bpmValue = document.getElementById('bpm-value');
+            if (bpmSlider && bpmValue && tempoInput) {
+                bpmSlider.value = tempoInput.value;
+                bpmValue.textContent = tempoInput.value;
+            }
         });
+        
+        // Initialize the BPM slider
+        initBpmSlider();
         
         // Side panel functionality
         const sidePanel = document.querySelector('.side-panel');
@@ -247,6 +258,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         console.log('Piano Chord Progression Trainer initialized successfully');
+    }
+    
+    // Function to initialize and sync BPM slider with tempo input
+    function initBpmSlider() {
+        const bpmSlider = document.getElementById('bpm-slider');
+        const bpmValue = document.getElementById('bpm-value');
+        const tempoInput = document.getElementById('tempo');
+        
+        // Set initial slider value from tempo input
+        if (tempoInput && bpmSlider && bpmValue) {
+            bpmSlider.value = tempoInput.value;
+            bpmValue.textContent = tempoInput.value;
+            
+            // Update slider when tempo input changes
+            tempoInput.addEventListener('change', function() {
+                bpmSlider.value = this.value;
+                bpmValue.textContent = this.value;
+            });
+            
+            // Update tempo input when slider changes
+            bpmSlider.addEventListener('input', function() {
+                tempoInput.value = this.value;
+                bpmValue.textContent = this.value;
+                
+                // If there's an active practice session, this will affect the timing
+                // No need to manually trigger beat changes as they'll happen on the next beat
+            });
+        }
     }
     
     // Start the app directly

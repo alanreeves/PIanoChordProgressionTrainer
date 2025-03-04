@@ -51,7 +51,7 @@
         <div class="panel-overlay"></div>
         <div class="side-panel">
             <div class="side-panel-header">
-                <h5><i class="bi bi-gear-fill me-2"></i>PianoChord.uk</h5>
+                <h5><i class="bi bi-gear-fill me-2"></i>Settings</h5>
             </div>
             <div class="side-panel-content">
                 <!-- MOVED: Playback Controls to the top -->
@@ -379,16 +379,24 @@
         </div>
     </div>
 
-    <!-- Selected Style Display -->
-    <div id="style-display-container" class="style-display-container">
-        <div id="style-display" class="style-display">Random</div>
+    <!-- Selected Style Display with BPM Slider (horizontal layout) -->
+    <div class="bottom-controls-container">
+        <div id="style-display-container" class="style-display-container">
+            <div id="style-display" class="style-display">Random</div>
+        </div>
+        <div class="bpm-slider-container">
+            <label for="bpm-slider">BPM</label>
+            <input type="range" id="bpm-slider" min="10" max="240" value="60" class="bpm-range">
+            <span id="bpm-value">60</span>
+        </div>
     </div>
 
     <!-- Footer -->
     <div class="blank-space"></div>
     <div class="footer-bar">
-        <i>&copy; 2005. Soli Deo Gloria</i>
+        <i>&copy; 2025. pianochordsuk@gmail.com     Soli Deo Gloria</i>
     </div>
+
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
