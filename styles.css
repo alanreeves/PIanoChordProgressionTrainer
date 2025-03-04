@@ -828,9 +828,9 @@ option {
     }
 }
 
-/* Adjust main content layout when using side panel */
+/* Adjust main content layout */
 .main-content {
-    transition: margin-left 0.3s ease;
+    transition: margin-top 0.3s ease;
 }
 
 .main-content.panel-open {
@@ -1017,4 +1017,122 @@ option {
     .bpm-range {
         width: 180px;
     }
+}
+/* Settings Dropdown Styling */
+.settings-dropdown-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    pointer-events: none; /* Allow clicks to pass through when closed */
+    display: none; /* Initially hidden */
+}
+
+.settings-dropdown-container.active {
+    display: block;
+    pointer-events: auto;
+}
+
+.settings-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.settings-overlay.active {
+    opacity: 1;
+    pointer-events: auto; /* Capture clicks to close */
+}
+
+.settings-dropdown {
+    position: absolute;
+    top: -800px; /* Start offscreen */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px; /* Narrower than main content */
+    max-height: 80vh;
+    background-color: var(--dark-card);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 10px 10px;
+    transition: top 0.4s ease;
+    overflow-y: auto;
+    pointer-events: auto; /* Capture interactions */
+    z-index: 1001;
+}
+
+.settings-dropdown.active {
+    top: 0;
+}
+
+.settings-dropdown-header {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.settings-dropdown-header h5 {
+    margin-bottom: 0;
+    font-size: 1.1rem;
+}
+
+.settings-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.settings-close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.settings-dropdown-content {
+    padding: 1rem;
+}
+@media (max-width: 768px) {
+    .settings-dropdown {
+        width: 95%;
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 576px) {
+    .settings-dropdown {
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+    }
+}
+* Remove old side panel styles that are no longer needed */
+.side-panel-container, 
+.side-panel,
+.panel-toggle-btn,
+.panel-overlay {
+    display: none !important;
 }
