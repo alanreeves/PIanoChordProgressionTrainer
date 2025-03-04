@@ -120,6 +120,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.checked = false;
                 });
             }
+            
+            // Sync header toggle with settings toggle
+            document.getElementById('header-play-sound').checked = this.checked;
+        });
+        
+        // Add event listener for header play-sound toggle
+        document.getElementById('header-play-sound').addEventListener('change', function() {
+            // Sync the settings panel toggle
+            const settingsToggle = document.getElementById('play-sound');
+            settingsToggle.checked = this.checked;
+            
+            // Trigger the change event on the settings toggle to handle Tone.js initialization
+            const event = new Event('change');
+            settingsToggle.dispatchEvent(event);
         });
         
         // Add event listener for progression style changes
@@ -181,61 +195,60 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize the BPM slider
         initBpmSlider();
-		// Add this to app.js within the 'DOMContentLoaded' event listener, right after initBpmSlider()
-
-// Settings Dropdown Functionality
-function initSettingsDropdown() {
-    const settingsPanel = document.querySelector('.settings-dropdown-container');
-    const settingsDropdown = document.querySelector('.settings-dropdown');
-    const settingsToggleBtn = document.getElementById('settings-btn');
-    const settingsCloseBtn = document.querySelector('.settings-close-btn');
-    const settingsOverlay = document.querySelector('.settings-overlay');
-    const mainContent = document.querySelector('.main-content');
-
-    // Function to toggle the settings dropdown
-    function toggleSettingsPanel() {
-        settingsPanel.classList.toggle('active');
-        settingsDropdown.classList.toggle('active');
-        settingsOverlay.classList.toggle('active');
         
-        // Save state to localStorage
-        const isPanelOpen = settingsPanel.classList.contains('active');
-        localStorage.setItem('settingsPanelOpen', isPanelOpen ? 'true' : 'false');
-    }
+        // Settings Dropdown Functionality
+        function initSettingsDropdown() {
+            const settingsPanel = document.querySelector('.settings-dropdown-container');
+            const settingsDropdown = document.querySelector('.settings-dropdown');
+            const settingsToggleBtn = document.getElementById('settings-btn');
+            const settingsCloseBtn = document.querySelector('.settings-close-btn');
+            const settingsOverlay = document.querySelector('.settings-overlay');
+            const mainContent = document.querySelector('.main-content');
 
-    // Toggle button click handler
-    if (settingsToggleBtn) {
-        settingsToggleBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleSettingsPanel();
-        });
-    }
+            // Function to toggle the settings dropdown
+            function toggleSettingsPanel() {
+                settingsPanel.classList.toggle('active');
+                settingsDropdown.classList.toggle('active');
+                settingsOverlay.classList.toggle('active');
+                
+                // Save state to localStorage
+                const isPanelOpen = settingsPanel.classList.contains('active');
+                localStorage.setItem('settingsPanelOpen', isPanelOpen ? 'true' : 'false');
+            }
 
-    // Close button click handler
-    if (settingsCloseBtn) {
-        settingsCloseBtn.addEventListener('click', function() {
-            toggleSettingsPanel();
-        });
-    }
+            // Toggle button click handler
+            if (settingsToggleBtn) {
+                settingsToggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleSettingsPanel();
+                });
+            }
 
-    // Close panel when clicking overlay
-    if (settingsOverlay) {
-        settingsOverlay.addEventListener('click', function() {
-            toggleSettingsPanel();
-        });
-    }
+            // Close button click handler
+            if (settingsCloseBtn) {
+                settingsCloseBtn.addEventListener('click', function() {
+                    toggleSettingsPanel();
+                });
+            }
 
-    // Close panel when Escape key is pressed
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && settingsPanel.classList.contains('active')) {
-            toggleSettingsPanel();
+            // Close panel when clicking overlay
+            if (settingsOverlay) {
+                settingsOverlay.addEventListener('click', function() {
+                    toggleSettingsPanel();
+                });
+            }
+
+            // Close panel when Escape key is pressed
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && settingsPanel.classList.contains('active')) {
+                    toggleSettingsPanel();
+                }
+            });
         }
-    });
-}
 
-// Initialize the settings dropdown functionality
-initSettingsDropdown();
-        
+        // Initialize the settings dropdown functionality
+        initSettingsDropdown();
+            
         // Side panel functionality
         const sidePanel = document.querySelector('.side-panel');
         const panelToggleBtn = document.querySelector('.panel-toggle-btn');

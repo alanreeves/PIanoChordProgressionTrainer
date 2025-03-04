@@ -11,6 +11,7 @@ let currentChordIndex = -1;
 let currentBeat = 0;
 let stepMode = false; // Track if we're in step mode
 let waitingForStep = false; // Track if we're waiting for next step
+let progressionGenerated = false; // Track if a progression has been generated
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
@@ -55,15 +56,14 @@ function startPractice() {
     
     // Generate chord progression with the selected style
     currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
+    progressionGenerated = true;
     
     // Display progression 
     displayProgressionPills(currentProgression);
     
     isRunning = true;
     startBtn.disabled = true;
-    document.getElementById('step-btn').disabled = false;
     stopBtn.disabled = false;
-    rewindBtn.disabled = false;
     
     // If Start is pressed explicitly, disable step mode
     if (!stepMode) {
@@ -155,12 +155,49 @@ function startBeatCounter() {
 }
 
 function stepChord() {
-    // If practice is not running at all, start in step mode
-    if (!isRunning) {
+    // If no progression generated or previous one was stopped, generate a new one
+    if (!progressionGenerated || !isRunning) {
+        // First, we'll ensure there's a progression to step through
+        const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+        const style = document.getElementById('progression-style').value;
+        
+        // Only validate chord types if using Random progression
+        if (style === 'Random') {
+            const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+            if (selectedTypes.length === 0) {
+                alert('Please select at least one chord type for random progressions.');
+                return;
+            }
+        }
+        
+        if (selectedInversions.length === 0) {
+            alert('Please select at least one inversion to practice.');
+            return;
+        }
+        
+        // Initialize audio on first user interaction
+        initAudio();
+        
+        // Get settings
+        const key = document.getElementById('key-select').value;
+        const length = parseInt(document.getElementById('length').value, 10);
+        const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+        
+        // Generate chord progression with the selected style
+        currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
+        progressionGenerated = true;
+        
+        // Display progression 
+        displayProgressionPills(currentProgression);
+        
+        isRunning = true;
+        stopBtn.disabled = false;
         stepMode = true;
         document.getElementById('step-btn').classList.add('step-active');
-        startPractice();
-        return;
+        
+        // Reset chord index to -1 so next step will show first chord
+        currentChordIndex = -1;
+        waitingForStep = false;
     }
     
     // Immediately stop any currently playing chord sound
@@ -170,24 +207,13 @@ function stepChord() {
     clearTimeout(delayTimeout);
     clearInterval(beatInterval);
     
-    // If a chord is currently playing (and we're not already waiting for step),
-    // immediately proceed to the next chord
-    if (isRunning && !waitingForStep) {
-        playNextChord();
-        return;
-    }
-    
     // If we're waiting for a step, proceed to next chord
     if (waitingForStep) {
         waitingForStep = false;
-        playNextChord();
     }
     
-    // If regular practice was running, switch to step mode
-    if (isRunning && !stepMode) {
-        stepMode = true;
-        document.getElementById('step-btn').classList.add('step-active');
-    }
+    // Proceed to the next chord
+    playNextChord();
 }
 
 // Modified playNextChord function for Tone.js compatibility
@@ -248,14 +274,37 @@ function playNextChord() {
 
 // Rewind to previous chord
 function rewindChord() {
-    if (!isRunning || currentChordIndex <= 0) return;
+    // If no progression has been generated, do nothing
+    if (!progressionGenerated) {
+        return;
+    }
+    
+    // If progression exists but not running, restart in step mode with the last chord
+    if (!isRunning) {
+        isRunning = true;
+        stepMode = true;
+        document.getElementById('step-btn').classList.add('step-active');
+        waitingForStep = false;
+        stopBtn.disabled = false;
+        
+        // Set to the last chord
+        currentChordIndex = currentProgression.length - 1;
+        
+        // Now rewind to the previous (or last) chord
+        currentChordIndex = Math.max(0, currentChordIndex - 1);
+    } else {
+        // If currently on the first chord, loop to the last chord
+        if (currentChordIndex <= 0) {
+            currentChordIndex = currentProgression.length;
+        }
+        
+        // Go back one chord
+        currentChordIndex = (currentChordIndex - 1) % currentProgression.length;
+    }
     
     // Clear any pending timers
     clearTimeout(delayTimeout);
     clearInterval(beatInterval);
-    
-    // Go back one chord
-    currentChordIndex = (currentChordIndex - 1 + currentProgression.length) % currentProgression.length;
     
     // Update active pill
     updateActivePill(currentChordIndex);
@@ -275,16 +324,21 @@ function rewindChord() {
     currentBeat = 0;
     startBeatCounter();
     
-    // Schedule next chord - get total duration from BPM and beats per chord
-    const bpm = parseInt(document.getElementById('tempo').value, 10);
-    const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
-    const chordDuration = getMillisecondsFromBPM(bpm, beatsPerChord);
-    
-    delayTimeout = setTimeout(() => {
-        if (isRunning) {
-            playNextChord();
-        }
-    }, chordDuration);
+    // In step mode, wait for next step
+    if (stepMode) {
+        waitingForStep = true;
+    } else {
+        // Schedule next chord - get total duration from BPM and beats per chord
+        const bpm = parseInt(document.getElementById('tempo').value, 10);
+        const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
+        const chordDuration = getMillisecondsFromBPM(bpm, beatsPerChord);
+        
+        delayTimeout = setTimeout(() => {
+            if (isRunning) {
+                playNextChord();
+            }
+        }, chordDuration);
+    }
 }
 
 // Stop practice session
@@ -300,7 +354,5 @@ function stopPractice() {
     waitingForStep = false;
     
     startBtn.disabled = false;
-    document.getElementById('step-btn').disabled = false;
     stopBtn.disabled = true;
-    rewindBtn.disabled = true;
 }
