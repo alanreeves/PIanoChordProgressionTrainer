@@ -344,24 +344,31 @@
         <div class="row">
             <div class="col-lg-12">
                 <!-- Control Buttons Panel -->
-                <div class="card control-panel">
-                    <div class="card-body d-flex justify-content-center">
-                        <div class="control-actions d-flex">
-                            <button id="start-btn" class="btn btn-primary btn-lg">
-                                <i class="bi bi-play-fill"></i> Start
-                            </button>
-                            <button id="step-btn" class="btn btn-success btn-lg">
-                                <i class="bi bi-skip-forward-fill"></i> Step
-                            </button>
-                            <button id="rewind-btn" class="btn btn-success btn-lg">
-                                <i class="bi bi-rewind-fill"></i> Back
-                            </button>
-                            <button id="stop-btn" class="btn btn-danger btn-lg" disabled>
-                                <i class="bi bi-stop-fill"></i> Stop
-                            </button>
-                        </div>
-                    </div>
-                </div>
+ <!-- Updated Control Buttons Panel -->
+<div class="card control-panel">
+    <div class="card-body d-flex justify-content-center">
+        <div class="control-actions d-flex">
+            <div class="form-check form-switch me-3 d-flex align-items-center">
+                <input class="form-check-input" type="checkbox" id="practice-beats">
+                <label class="form-check-label ms-2" for="practice-beats">
+                    <span class="fw-bold">Add practice beats</span>
+                </label>
+            </div>
+            <button id="start-btn" class="btn btn-primary btn-lg">
+                <i class="bi bi-play-fill"></i> Play
+            </button>
+            <button id="step-btn" class="btn btn-success btn-lg">
+                <i class="bi bi-skip-forward-fill"></i> Step
+            </button>
+            <button id="rewind-btn" class="btn btn-success btn-lg">
+                <i class="bi bi-rewind-fill"></i> Back
+            </button>
+            <button id="stop-btn" class="btn btn-danger btn-lg" disabled>
+                <i class="bi bi-stop-fill"></i> Stop
+            </button>
+        </div>
+    </div>
+</div>
 
                 <!-- Display Area -->
                 <div class="card">

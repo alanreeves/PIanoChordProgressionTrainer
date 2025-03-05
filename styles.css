@@ -1136,3 +1136,48 @@ option {
 .panel-overlay {
     display: none !important;
 }
+/* Styling for Practice Beats feature */
+.control-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center !important;
+    align-items: center;
+}
+
+/* Practice beats checkbox styling */
+.form-check.form-switch.me-3 {
+    margin-right: 1.5rem !important;
+    padding-top: 0.25rem;
+}
+
+/* Make the form-check-input bigger for better visibility */
+#practice-beats {
+    height: 1.25rem;
+    width: 2.5rem;
+}
+
+/* Show "P" for practice beats with a different color */
+.countdown-container.practice-beat .countdown {
+    color: var(--accent1);
+    font-weight: bold;
+}
+
+/* Add a visual cue when in practice mode */
+.countdown-container.practice-beat {
+    border-color: var(--accent1);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .control-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .form-check.form-switch.me-3 {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        justify-content: center;
+        margin-right: 0 !important;
+    }
+}
