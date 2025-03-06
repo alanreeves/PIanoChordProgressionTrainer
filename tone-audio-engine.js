@@ -227,7 +227,16 @@ function playChordSound(root, type, inversion) {
     if (rootIndex === -1) return;
     
     // Get octave offset based on hand selection
-    const isRightHand = document.getElementById('right-hand').checked;
+    let isRightHand;
+    
+    // Handle alternating hands option
+    if (document.getElementById('alternate-hands') && document.getElementById('alternate-hands').checked) {
+        // Since currentAlternatingHand is already toggled in highlightChordOnPiano before this function is called,
+        // we need to use the opposite of what it currently is (since it represents the NEXT chord's hand)
+        isRightHand = currentAlternatingHand === 'left'; // Use the opposite of next hand
+    } else {
+        isRightHand = document.getElementById('right-hand').checked;
+    }
     
     // Calculate the starting MIDI note
     const startNote = getChordStartNote(rootIndex, type, inversion, isRightHand);

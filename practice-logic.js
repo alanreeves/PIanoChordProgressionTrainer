@@ -86,6 +86,11 @@ function startPractice() {
         return;
     }
     
+    // Reset alternating hands to start with right hand
+    if (typeof currentAlternatingHand !== 'undefined') {
+        currentAlternatingHand = 'right';
+    }
+    
     // Initialize audio on first user interaction
     initAudio();
     
@@ -117,22 +122,22 @@ function startPractice() {
     currentChordIndex = -1;
     currentBeat = 0;
     
-    // Start with countdown or play next chord directly
-    const delayTime = parseInt(document.getElementById('delay-time').value, 10);
-    if (delayTime <= 0) {
-        // Start metronome immediately if there's no delay
+    // Start with lead-in beats or play next chord directly
+    const leadInBeats = parseInt(document.getElementById('lead-in-beats').value, 10);
+    if (leadInBeats <= 0) {
+        // Start metronome immediately if there are no lead-in beats
         startMetronome();
         playNextChord();
     } else {
-        // For countdown, metronome will start when playNextChord runs
-        startCountdown();
+        // Start with lead-in beats before the first chord
+        startLeadInBeats();
     }
 }
 
-// Start countdown before playing
-function startCountdown() {
-    const delayTime = parseInt(document.getElementById('delay-time').value, 10);
-    if (delayTime <= 0) {
+// Start lead-in beats before playing
+function startLeadInBeats() {
+    const leadInBeats = parseInt(document.getElementById('lead-in-beats').value, 10);
+    if (leadInBeats <= 0) {
         startMetronome(); // Start metronome first
         playNextChord();
         return;
@@ -140,22 +145,53 @@ function startCountdown() {
     
     // Clear any existing beat interval
     clearInterval(beatInterval);
+    clearInterval(countdownInterval);
     
-    let count = delayTime;
-    countdownDisplay.querySelector('.countdown').textContent = count;
-    countdownDisplay.classList.remove('hidden');
+    // Clear piano highlights and display countdown
     clearPianoHighlights();
+    countdownDisplay.classList.remove('hidden');
     
+    // Get the tempo
+    const bpm = parseInt(document.getElementById('tempo').value, 10);
+    const msPerBeat = (60 * 1000) / bpm; // Convert BPM to milliseconds per beat
+    
+    // Set remaining beats
+    let remainingBeats = leadInBeats;
+    countdownDisplay.querySelector('.countdown').textContent = remainingBeats;
+    
+    // Play first beat immediately with metronome click
+    if (document.getElementById('metronome').checked) {
+        playMetronomeClick(true); // Play as downbeat
+    }
+    
+    // Visual feedback for beat
+    countdownDisplay.classList.add('beat-highlight');
+    setTimeout(() => {
+        countdownDisplay.classList.remove('beat-highlight');
+    }, 200);
+    
+    // Set interval for remaining beats
     countdownInterval = setInterval(() => {
-        count--;
-        countdownDisplay.querySelector('.countdown').textContent = count;
+        remainingBeats--;
+        countdownDisplay.querySelector('.countdown').textContent = remainingBeats;
         
-        if (count <= 0) {
+        // Visual feedback for beat
+        countdownDisplay.classList.add('beat-highlight');
+        setTimeout(() => {
+            countdownDisplay.classList.remove('beat-highlight');
+        }, 200);
+        
+        // Play metronome click if enabled
+        if (document.getElementById('metronome').checked) {
+            playMetronomeClick(remainingBeats === 0); // True for last beat as downbeat
+        }
+        
+        if (remainingBeats <= 0) {
             clearInterval(countdownInterval);
-            startMetronome(); // Start metronome right before the first chord
+            startMetronome(); // Start the regular metronome
             playNextChord();
         }
-    }, 1000);
+    }, msPerBeat);
 }
 
 // Modified startBeatCounter function for Tone.js compatibility
@@ -226,6 +262,11 @@ function stepChord() {
     // Reset practice beat mode if active
     isPracticeBeat = false;
     practiceBeatsRemaining = 0;
+    
+    // Reset alternating hands if this is the first step in a new session
+    if (!isRunning && typeof currentAlternatingHand !== 'undefined') {
+        currentAlternatingHand = 'right';
+    }
 
     // If no progression generated or previous one was stopped, generate a new one
     if (!progressionGenerated || !isRunning) {
@@ -372,9 +413,9 @@ function playNextChord() {
                     practiceBeatsRemaining = beatsPerChord; // Full number of practice beats
                     playNextChord(); // Continue with practice beats
                 } else if (currentChordIndex === currentProgression.length - 1) {
-                    // End of progression, start countdown for next repetition
+                    // End of progression, start lead-in beats for next repetition
                     clearInterval(beatInterval);
-                    startCountdown();
+                    startLeadInBeats();
                 } else {
                     // Regular progression to next chord
                     playNextChord();
@@ -478,5 +519,3 @@ function stopPractice() {
     startBtn.disabled = false;
     stopBtn.disabled = true;
 }
-
-// This function doesn't exist in the original code, removing it to prevent duplication issues

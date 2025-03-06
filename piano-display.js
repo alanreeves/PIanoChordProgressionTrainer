@@ -6,6 +6,9 @@ const numKeys = 36; // 3 octaves
 const notesPerOctave = 12;
 const whiteKeysPerOctave = 7;
 
+// Variable to track the current hand when alternating
+let currentAlternatingHand = 'right'; // Start with right hand by default
+
 // Build the piano keyboard
 function buildPiano() {
     piano.innerHTML = '';
@@ -68,7 +71,16 @@ function highlightChordOnPiano(key, type, inversion) {
     if (noteIndex === -1) return;
     
     // Check which hand is selected
-    const isRightHand = document.getElementById('right-hand').checked;
+    let isRightHand;
+    
+    // Handle alternating hands option
+    if (document.getElementById('alternate-hands').checked) {
+        isRightHand = currentAlternatingHand === 'right';
+        // Toggle the hand for next chord
+        currentAlternatingHand = isRightHand ? 'left' : 'right';
+    } else {
+        isRightHand = document.getElementById('right-hand').checked;
+    }
     
     // Get octave offset based on hand selection
     const octaveOffset = isRightHand ? 1 : 0;  // Right hand: middle octave, Left hand: lower octave
