@@ -57,31 +57,31 @@ const progressionStyles = {
         pattern: ['I', 'IV', 'V', 'I'],
         length: 16,
         tempo: 60,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     'Pop 1': {
         pattern: ['I', 'V', 'vi', 'IV'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     'Pop 2': {
         pattern: ['vi', 'IV', 'I', 'V'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     'Jazz & Classical Standard': {
         pattern: ['ii', 'V', 'I'],
         length: 15,
         tempo: 90,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     '12-Bar Blues': {
         pattern: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
         length: 24,
         tempo: 120,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     'Doo-Wop': {
         pattern: ['I', 'vi', 'ii', 'V'],
@@ -93,37 +93,31 @@ const progressionStyles = {
         pattern: ['I', 'bVII', 'bVI', 'V'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 1
+        beatsPerChord: 4
     },
     'Basic Circle of Fifths': {
         pattern: ['I', 'V', 'II', 'VI', 'III', 'IV', 'I'],
         length: 16,
         tempo: 120,
-        beatsPerChord: 2
+        beatsPerChord: 4
     },
-    'Common Major Circle of Fifths': {
-        pattern: ['I', 'IV', 'vii°', 'iii', 'vi', 'ii', 'V', 'I'],
-        length: 16,
-        tempo: 120,
-        beatsPerChord: 2
-    },
-    'Jazz-Friendly Circle of Fifths': {
+     'Jazz-Friendly Circle of Fifths': {
         pattern: ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 2
+        beatsPerChord: 4
     },
     'Minor Key Circle of Fifths': {
         pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V', 'i'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 2
+        beatsPerChord: 4
     },
     'Harmonic Minor Circle of Fifths': {
         pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V7', 'i'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 1
+        beatsPerChord: 4
     }
 };
 
