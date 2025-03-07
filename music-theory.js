@@ -77,6 +77,13 @@ const progressionStyles = {
         tempo: 90,
         beatsPerChord: 4
     },
+		'Popular Progression Workout': {
+			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I',  'I','I/3', 'vi/5', 'ii/3', 'V',
+			          'I/3', 'iii/3', 'vi', 'IV', 'IV/3', 'vi', 'V',  'I/3','V/5', 'iii', 'IV', 'I'],
+			length: 24,
+			tempo: 90,
+			beatsPerChord: 4
+		},
     '12-Bar Blues': {
         pattern: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
         length: 24,
@@ -101,6 +108,12 @@ const progressionStyles = {
         tempo: 120,
         beatsPerChord: 4
     },
+	'Slash Notation Example': {
+			pattern: ['I', 'IV/3', 'ii/5', 'V7', 'I/3', 'vi', 'ii', 'V7/5', 'I'],
+			length: 18,
+			tempo: 90,
+			beatsPerChord: 2
+		},
      'Jazz-Friendly Circle of Fifths': {
         pattern: ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
         length: 16,
@@ -180,9 +193,26 @@ function normalizeNoteName(root, originalKey) {
     return root;
 }
 
-// Function to convert Roman numeral to chord data
-// Function to convert Roman numeral to chord data
+// Function to convert Roman numeral to chord data with optional slash notation support
 function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
+    // Check if there's slash notation for inversions
+    let specifiedInversion = null;
+    
+    // Check for slash notation (e.g., "I/3" for first inversion)
+    if (romanNumeral.includes('/')) {
+        const [baseNumeral, inversionPart] = romanNumeral.split('/');
+        romanNumeral = baseNumeral; // Remove inversion part for normal parsing
+        
+        // Parse the inversion part
+        if (inversionPart === '3' || inversionPart.toLowerCase() === 'first') {
+            specifiedInversion = 'first';
+        } else if (inversionPart === '5' || inversionPart.toLowerCase() === 'second') {
+            specifiedInversion = 'second';
+        } else if (inversionPart === '1' || inversionPart.toLowerCase() === 'root') {
+            specifiedInversion = 'root';
+        }
+    }
+    
     // Parse the Roman numeral to extract degree, quality, and any modifications
     let degree, quality, isSeventh = false, isMajorSeventh = false, isMinorSeventh = false;
     let isDiminished = false, isHalfDiminished = false, isAugmented = false, isSus2 = false, isSus4 = false;
@@ -328,9 +358,15 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Get the note name
     const root = noteNames[rootIndex];
     
-    // Choose a random inversion from the selected inversions
-    const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
-    const inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+    // If inversion is specified in the slash notation, use it
+    let inversion;
+    if (specifiedInversion) {
+        inversion = specifiedInversion;
+    } else {
+        // Otherwise choose a random inversion from the selected inversions
+        const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+        inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+    }
     
     return {
         root,
