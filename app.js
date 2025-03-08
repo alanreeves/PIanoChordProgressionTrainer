@@ -136,49 +136,23 @@ document.addEventListener('DOMContentLoaded', function() {
             settingsToggle.dispatchEvent(event);
         });
         
-        // Function to update progression display in real-time
-        function updateProgressionDisplay() {
-            // First clear the current display
+        // Function to clear the progression display
+        function clearProgressionDisplay() {
             const progressionDisplay = document.getElementById('progression-display');
             if (progressionDisplay) {
                 progressionDisplay.innerHTML = '';
             }
-            
-            // Get settings
-            const key = document.getElementById('key-select').value;
-            const length = parseInt(document.getElementById('length').value, 10);
-            const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
-            const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
-            const style = document.getElementById('progression-style').value;
-            
-            // Validate settings
-            if (selectedTypes.length === 0 && style === 'Random') {
-                // Don't generate a progression if no chord types are selected for Random style
-                currentProgression = [];
-                currentChordIndex = -1;
-                progressionGenerated = false;
-                return;
-            }
-            
-            if (selectedInversions.length === 0) {
-                // Don't generate a progression if no inversions are selected
-                currentProgression = [];
-                currentChordIndex = -1;
-                progressionGenerated = false;
-                return;
-            }
-            
-            // Generate a new progression
-            currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
-            progressionGenerated = true;
-            currentChordIndex = -1; // Reset current chord index
-            
-            // Display the new progression
-            displayProgressionPills(currentProgression);
+            // Reset progression state
+            currentProgression = [];
+            currentChordIndex = -1;
+            progressionGenerated = false;
         }
         
         // Add event listener for progression style changes
         document.getElementById('progression-style').addEventListener('change', function() {
+            // Clear progression display when style changes
+            clearProgressionDisplay();
+            
             const style = this.value;
             const lengthInput = document.getElementById('length');
             const tempoInput = document.getElementById('tempo');
@@ -232,28 +206,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 bpmSlider.value = tempoInput.value;
                 bpmValue.textContent = tempoInput.value;
             }
-            
-            // Update progression display after settings have been changed
-            updateProgressionDisplay();
         });
         
-        // Update the event listeners for chord types, inversions, key, and hand selection
+        // Add event listeners for chord type checkboxes
         document.querySelectorAll('.chord-type-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateProgressionDisplay);
+            checkbox.addEventListener('change', clearProgressionDisplay);
         });
 
+        // Add event listeners for inversion checkboxes
         document.querySelectorAll('.inversion-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateProgressionDisplay);
+            checkbox.addEventListener('change', clearProgressionDisplay);
         });
 
-        document.getElementById('key-select').addEventListener('change', updateProgressionDisplay);
+        // Add event listener for key selection changes
+        document.getElementById('key-select').addEventListener('change', clearProgressionDisplay);
 
+        // Add event listener for hand selection changes
         document.querySelectorAll('.hand-radio').forEach(radio => {
-            radio.addEventListener('change', updateProgressionDisplay);
+            radio.addEventListener('change', clearProgressionDisplay);
         });
-
-        // Add event listener for length changes
-        document.getElementById('length').addEventListener('change', updateProgressionDisplay);
         
         // Initialize the BPM slider
         initBpmSlider();
@@ -385,66 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 toggleSidePanel();
             }
         }
-        
-			// Modified generateDefaultProgression function with delayed execution
-			function generateDefaultProgression() {
-				console.log('Preparing to generate default progression...');
-				
-				// Use setTimeout to ensure all scripts are loaded
-				setTimeout(function() {
-					console.log('Now generating default progression...');
-					
-					try {
-						// Get current settings
-						const key = document.getElementById('key-select').value;
-						const length = parseInt(document.getElementById('length').value, 10) || 8; // Default to 8 if NaN
-						
-						// Get selected chord types, making sure at least one is selected
-						let selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
-						if (selectedTypes.length === 0) {
-							// If no chord types are selected, default to Major, Minor, and Dominant7
-							console.log('No chord types selected, selecting defaults...');
-							document.getElementById('type-major').checked = true;
-							document.getElementById('type-minor').checked = true;
-							document.getElementById('type-dominant7').checked = true;
-							selectedTypes = ['major', 'minor', 'dominant7'];
-						}
-						
-						// Get selected inversions, making sure at least one is selected
-						let selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
-						if (selectedInversions.length === 0) {
-							// If no inversions are selected, default to Root Position
-							console.log('No inversions selected, selecting root position...');
-							document.getElementById('inv-root').checked = true;
-							selectedInversions = ['root'];
-						}
-						
-						// Force Random style for initial progression
-						const initialStyle = 'Random';
-						
-						console.log('Generating progression with settings:', {
-							key, length, selectedTypes, selectedInversions, initialStyle
-						});
-						
-						// Generate the progression
-						currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, initialStyle);
-						progressionGenerated = true;
-						
-						// Display the progression
-						displayProgressionPills(currentProgression);
-						
-						console.log('Default progression successfully generated');
-					} catch (error) {
-						console.error('Error generating default progression:', error);
-					}
-				}, 500); // 500ms delay to ensure scripts are loaded
-			}
-
-			// When calling generateDefaultProgression, use:
-			// generateDefaultProgression();
-
-        // Generate initial default progression
-        generateDefaultProgression();
         
         console.log('Piano Chord Progression Trainer initialized successfully');
     }

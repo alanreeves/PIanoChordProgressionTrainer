@@ -68,12 +68,11 @@ function stopMetronome() {
     clearInterval(metronomeInterval);
 }
 
-// Updated startPractice function - no longer generates a new progression
 function startPractice() {
     const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
     const style = document.getElementById('progression-style').value;
     
-    // Validate settings
+    // Only validate chord types if using Random progression
     if (style === 'Random') {
         const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
         if (selectedTypes.length === 0) {
@@ -95,21 +94,17 @@ function startPractice() {
     // Initialize audio on first user interaction
     initAudio();
     
-    // Use the existing progression - no need to generate a new one
-    // If there's no existing progression (something went wrong), generate one
-    if (!progressionGenerated || currentProgression.length === 0) {
-        // Get settings
-        const key = document.getElementById('key-select').value;
-        const length = parseInt(document.getElementById('length').value, 10);
-        const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
-        
-        // Generate chord progression with the selected style
-        currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
-        progressionGenerated = true;
-        
-        // Display progression 
-        displayProgressionPills(currentProgression);
-    }
+    // Get settings
+    const key = document.getElementById('key-select').value;
+    const length = parseInt(document.getElementById('length').value, 10);
+    const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+    
+    // Generate chord progression with the selected style
+    currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
+    progressionGenerated = true;
+    
+    // Display progression 
+    displayProgressionPills(currentProgression);
     
     isRunning = true;
     startBtn.disabled = true;
@@ -263,7 +258,6 @@ function startBeatCounter() {
     }, msPerBeat);
 }
 
-// Updated stepChord function - no longer generates a new progression
 function stepChord() {
     // Reset practice beat mode if active
     isPracticeBeat = false;
@@ -274,43 +268,40 @@ function stepChord() {
         currentAlternatingHand = 'right';
     }
 
-    // If no progression or previous one was stopped, ensure we have a valid progression
+    // If no progression generated or previous one was stopped, generate a new one
     if (!progressionGenerated || !isRunning) {
-        // Check if we already have a progression
-        if (currentProgression.length === 0) {
-            // Need to generate a progression first
-            const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
-            const style = document.getElementById('progression-style').value;
-            
-            // Only validate chord types if using Random progression
-            if (style === 'Random') {
-                const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
-                if (selectedTypes.length === 0) {
-                    alert('Please select at least one chord type for random progressions.');
-                    return;
-                }
-            }
-            
-            if (selectedInversions.length === 0) {
-                alert('Please select at least one inversion to practice.');
+        // First, we'll ensure there's a progression to step through
+        const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+        const style = document.getElementById('progression-style').value;
+        
+        // Only validate chord types if using Random progression
+        if (style === 'Random') {
+            const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+            if (selectedTypes.length === 0) {
+                alert('Please select at least one chord type for random progressions.');
                 return;
             }
-            
-            // Initialize audio on first user interaction
-            initAudio();
-            
-            // Get settings
-            const key = document.getElementById('key-select').value;
-            const length = parseInt(document.getElementById('length').value, 10);
-            const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
-            
-            // Generate chord progression with the selected style
-            currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
-            progressionGenerated = true;
-            
-            // Display progression 
-            displayProgressionPills(currentProgression);
         }
+        
+        if (selectedInversions.length === 0) {
+            alert('Please select at least one inversion to practice.');
+            return;
+        }
+        
+        // Initialize audio on first user interaction
+        initAudio();
+        
+        // Get settings
+        const key = document.getElementById('key-select').value;
+        const length = parseInt(document.getElementById('length').value, 10);
+        const selectedTypes = Array.from(document.querySelectorAll('.chord-type-checkbox:checked')).map(cb => cb.value);
+        
+        // Generate chord progression with the selected style
+        currentProgression = generateChordProgression(key, length, selectedTypes, selectedInversions, style);
+        progressionGenerated = true;
+        
+        // Display progression 
+        displayProgressionPills(currentProgression);
         
         isRunning = true;
         stopBtn.disabled = false;
