@@ -78,8 +78,8 @@ const progressionStyles = {
         beatsPerChord: 4
     },
 		'Popular Progression Workout': {
-			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I',  'I','I/3', 'vi/5', 'ii/3', 'V',
-			          'I/3', 'iii/3', 'vi', 'IV', 'IV/3', 'vi', 'V',  'I/3','V/5', 'iii', 'IV', 'I'],
+			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I/3',  'I/3','I/3', 'vi/5', 'ii/3', 'V',
+			          'I/3', 'iii/3', 'vi', 'IV', 'IV/3', 'vi', 'V',  'I/3','V/5', 'iii', 'IV', 'I/3'],
 			length: 24,
 			tempo: 90,
 			beatsPerChord: 4

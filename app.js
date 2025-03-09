@@ -62,16 +62,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const savedOctave = localStorage.getItem('selectedOctave');
         if (savedOctave) {
             document.getElementById('octave-selector').value = savedOctave;
+        } else {
+            // Ensure default is 4 (Middle) if no saved preference
+            document.getElementById('octave-selector').value = '4';
+            localStorage.setItem('selectedOctave', '4');
         }
         
         // Add change listener to octave selector to save preference
         document.getElementById('octave-selector').addEventListener('change', function() {
             localStorage.setItem('selectedOctave', this.value);
             
-            // If a chord is currently highlighted, update its display
+            // Force refresh of current chord display and audio
+            // This ensures the octave change is immediately applied
             if (currentChordIndex >= 0 && currentProgression.length > 0) {
                 const chord = currentProgression[currentChordIndex];
+                
+                // Stop any currently playing chord
+                if (typeof stopCurrentChord === 'function') {
+                    stopCurrentChord();
+                }
+                
+                // Re-highlight and play with new octave setting
                 highlightChordOnPiano(chord.root, chord.type, chord.inversion);
+                
+                // Play chord sound if enabled
+                if (document.getElementById('play-sound').checked) {
+                    playChordSound(chord.root, chord.type, chord.inversion);
+                }
             }
         });
         

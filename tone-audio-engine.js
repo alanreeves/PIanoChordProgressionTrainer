@@ -224,9 +224,11 @@ function stopCurrentChord() {
 function playChordSound(root, type, inversion) {
     // Calculate MIDI note numbers for the chord
     const rootIndex = noteNames.indexOf(root);
-    if (rootIndex === -1) return;
+    if (rootIndex === -1) {
+        return;
+    }
     
-    // Get octave offset based on hand selection
+    // Get hand selection
     let isRightHand;
     
     // Handle alternating hands option

@@ -9,6 +9,14 @@ const whiteKeysPerOctave = 7;
 // Variable to track the current hand when alternating
 let currentAlternatingHand = 'right'; // Start with right hand by default
 
+// Add midiToNoteName function if not already present
+function midiToNoteName(midiNote) {
+    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octave = Math.floor(midiNote / 12) - 1;
+    const noteName = noteNames[midiNote % 12];
+    return noteName + octave;
+}
+
 // Build the piano keyboard
 function buildPiano() {
     piano.innerHTML = '';
@@ -185,6 +193,61 @@ function getFingeringPattern(is7thChord, inversion, isRightHand) {
             }
         }
     }
+}
+
+// Calculate starting note based on root, type, inversion, and hand
+function getChordStartNote(rootIndex, type, inversion, isRightHand) {
+    // Use the selected octave if available, otherwise use default
+    let selectedOctave = 4; // Default to middle C octave
+    const octaveSelector = document.getElementById('octave-selector');
+    if (octaveSelector) {
+        selectedOctave = parseInt(octaveSelector.value, 10);
+    }
+    
+    // Convert rootIndex to a number if it's a string (a note name)
+    if (typeof rootIndex === 'string') {
+        rootIndex = getNoteIndex(rootIndex);
+    }
+    
+    // Adjust octave offset calculation to raise the sound by 2 octaves from previous calculation
+    // Adding 1 to selectedOctave to raise the pitch
+    // Right hand: selectedOctave+1, Left hand: selectedOctave
+    const octaveOffset = isRightHand ? selectedOctave + 1 : selectedOctave;
+    
+    // Define the result variable
+    let result;
+    
+    switch(inversion) {
+        case 'root':
+            result = rootIndex + (octaveOffset * 12);
+            break;
+        case 'first':
+            if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented') {
+                result = (rootIndex + 4) % 12 + (octaveOffset * 12); // Major 3rd
+            } else if (type === 'minor' || type === 'minor7' || type === 'diminished') {
+                result = (rootIndex + 3) % 12 + (octaveOffset * 12); // Minor 3rd
+            } else if (type === 'sus2') {
+                result = (rootIndex + 2) % 12 + (octaveOffset * 12); // Major 2nd
+            } else if (type === 'sus4') {
+                result = (rootIndex + 5) % 12 + (octaveOffset * 12); // Perfect 4th
+            } else {
+                result = (rootIndex + 4) % 12 + (octaveOffset * 12); // Default to Major 3rd
+            }
+            break;
+        case 'second':
+            if (type === 'diminished') {
+                result = (rootIndex + 6) % 12 + (octaveOffset * 12); // Diminished 5th
+            } else if (type === 'augmented') {
+                result = (rootIndex + 8) % 12 + (octaveOffset * 12); // Augmented 5th
+            } else {
+                result = (rootIndex + 7) % 12 + (octaveOffset * 12); // Perfect 5th
+            }
+            break;
+        default:
+            result = rootIndex + (octaveOffset * 12);
+    }
+    
+    return result;
 }
 
 // Clear all piano highlights
