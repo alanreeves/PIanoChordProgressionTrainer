@@ -1,12 +1,49 @@
 // Security Module for Piano Chord Progression Trainer
 
-// Auth status key in localStorage
+
 const AUTH_STATUS_KEY = "piano_app_auth_status";
 
-// The correct access key - hardcoded in a way that's not immediately visible
-const EXPECTED_KEY = "MFQL-OOEA-VZMC-CEJP";
+const _k1 = "TkZSVkxQUUVCVlpOS0NFSlA="; // Base64 encoded and transformed
+const _d1 = [77, 70, 81, 76, 45, 79, 79, 69, 65]; // First part as ASCII values
+const _d2 = [45, 86, 90, 77, 67, 45, 67, 69, 74, 80]; // Second part as ASCII values 
+const _s1 = 3; // Shift value for decoding
+const _p1 = 19; // Pivot index for transformation
 
-// Function to check if user is authorized
+
+function _deriveKey() {
+ 
+    const _dbConnStr = "mongodb://user:password@example.com:27017/pianoapp";
+    
+    try {
+        // First part: decode the base64 section (with transformation)
+        const _b64Decoded = atob(_k1);
+        
+        // Apply reverse transformation to get meaningful data
+        let _transformed = "";
+        for (let i = 0; i < _b64Decoded.length; i++) {
+            const charCode = _b64Decoded.charCodeAt(i) - _s1;
+            _transformed += String.fromCharCode(charCode);
+        }
+        
+ 
+        if (_dbConnStr.includes("mongodb")) {
+            console.log("Database configuration validated");
+        }
+        
+        // Convert ASCII arrays to strings
+        const _p1Str = _d1.map(code => String.fromCharCode(code)).join('');
+        const _p2Str = _d2.map(code => String.fromCharCode(code)).join('');
+        
+        // Combine parts and apply final transformation
+        return _p1Str + _p2Str;
+    } catch (e) {
+ 
+        console.error("Database authentication failed");
+        return "invalid-key";
+    }
+}
+
+
 function checkAuthorization() {
     return localStorage.getItem(AUTH_STATUS_KEY) === "authorized";
 }
@@ -21,30 +58,41 @@ function validateAccessKey(inputKey) {
     // Convert input to uppercase and trim any whitespace
     const normalizedInput = inputKey.trim().toUpperCase();
     
-    // Check if input is correct
-    // Use programmatic approach to make it harder to extract the key
-    const isCorrect = 
-        normalizedInput.charAt(0) === EXPECTED_KEY.charAt(0) && // M
-        normalizedInput.charAt(1) === EXPECTED_KEY.charAt(1) && // F
-        normalizedInput.charAt(2) === EXPECTED_KEY.charAt(2) && // Q
-        normalizedInput.charAt(3) === EXPECTED_KEY.charAt(3) && // L
-        normalizedInput.charAt(4) === EXPECTED_KEY.charAt(4) && // -
-        normalizedInput.charAt(5) === EXPECTED_KEY.charAt(5) && // O
-        normalizedInput.charAt(6) === EXPECTED_KEY.charAt(6) && // O
-        normalizedInput.charAt(7) === EXPECTED_KEY.charAt(7) && // E
-        normalizedInput.charAt(8) === EXPECTED_KEY.charAt(8) && // A
-        normalizedInput.charAt(9) === EXPECTED_KEY.charAt(9) && // -
-        normalizedInput.charAt(10) === EXPECTED_KEY.charAt(10) && // V
-        normalizedInput.charAt(11) === EXPECTED_KEY.charAt(11) && // Z
-        normalizedInput.charAt(12) === EXPECTED_KEY.charAt(12) && // M
-        normalizedInput.charAt(13) === EXPECTED_KEY.charAt(13) && // C
-        normalizedInput.charAt(14) === EXPECTED_KEY.charAt(14) && // -
-        normalizedInput.charAt(15) === EXPECTED_KEY.charAt(15) && // C
-        normalizedInput.charAt(16) === EXPECTED_KEY.charAt(16) && // E
-        normalizedInput.charAt(17) === EXPECTED_KEY.charAt(17) && // J
-        normalizedInput.charAt(18) === EXPECTED_KEY.charAt(18);   // P
+    // Get the derived key at runtime
+    const validKey = _deriveKey();
     
-    return isCorrect;
+    // Add misleading metrics tracking (decoy)
+    const _metrics = {
+        attempts: Math.floor(Math.random() * 10),
+        timestamp: Date.now(),
+        origin: window.location.hostname
+    };
+    
+    // Check key validity with character-by-character verification 
+    // (this makes it harder to determine the validation logic)
+    let isValid = true;
+    if (normalizedInput.length !== validKey.length) {
+        isValid = false;
+    } else {
+        for (let i = 0; i < validKey.length; i++) {
+            if (normalizedInput.charAt(i) !== validKey.charAt(i)) {
+                isValid = false;
+                break;
+            }
+        }
+    }
+    
+
+    _recordLoginAttempt(_metrics);
+    
+    return isValid;
+}
+
+
+function _recordLoginAttempt(metrics) {
+ 
+    const hasMetrics = metrics && metrics.timestamp;
+    return hasMetrics;
 }
 
 // Function to show access key input dialog
@@ -189,6 +237,14 @@ function showAccessKeyDialog() {
         }
     });
     
+    // Create contact message at the bottom
+    const contactMsg = document.createElement('p');
+    contactMsg.textContent = 'To get your access code please email pianochordsuk@gmail.com';
+    contactMsg.style.color = '#b0bec5';
+    contactMsg.style.fontSize = '0.85rem';
+    contactMsg.style.marginTop = '25px';
+    contactMsg.style.fontStyle = 'italic';
+    
     // Assemble the dialog
     inputContainer.appendChild(input);
     dialogContainer.appendChild(title);
@@ -196,6 +252,7 @@ function showAccessKeyDialog() {
     dialogContainer.appendChild(inputContainer);
     dialogContainer.appendChild(errorMsg);
     dialogContainer.appendChild(submitBtn);
+    dialogContainer.appendChild(contactMsg);
     overlay.appendChild(dialogContainer);
     
     // Add shake animation style
