@@ -179,17 +179,17 @@ function getFingeringPattern(is7thChord, inversion, isRightHand) {
         // Left hand fingering (5=pinky, 1=thumb)
         if (is7thChord) {
             switch(inversion) {
-                case 'root':   return [5, 3, 2, 1];
-                case 'first':  return [5, 3, 2, 1];
-                case 'second': return [5, 4, 2, 1];
-                default:       return [5, 3, 2, 1];
+                case 'root':   return [5, 4, 2, 1]; // Changed from [5, 3, 2, 1]
+                case 'first':  return [5, 4, 2, 1]; // Changed from [5, 3, 2, 1]
+                case 'second': return [5, 4, 2, 1]; // No change, already optimal
+                default:       return [5, 4, 2, 1]; // Changed default as well
             }
         } else {
             switch(inversion) {
-                case 'root':   return [5, 3, 1];
-                case 'first':  return [5, 2, 1];
-                case 'second': return [5, 3, 1];
-                default:       return [5, 3, 1];
+                case 'root':   return [5, 2, 1]; // Changed from [5, 3, 1]
+                case 'first':  return [5, 2, 1]; // No change, already optimal
+                case 'second': return [5, 2, 1]; // Changed from [5, 3, 1]
+                default:       return [5, 2, 1]; // Changed default as well
             }
         }
     }
