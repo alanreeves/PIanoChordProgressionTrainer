@@ -183,11 +183,26 @@ function normalizeNoteName(root, originalKey) {
     // Determine if original key uses flat notation
     const isMinor = originalKey.endsWith('m');
     const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
-    const usesFlat = keyRoot.includes('b');
+    
+    // These keys use flat notation (add more comprehensive detection)
+    const flatKeys = ['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 
+                      'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'];
+    
+    const usesFlat = flatKeys.includes(originalKey) || keyRoot.includes('b');
     
     // If original key uses flat notation and this note has a flat equivalent, use it
     if (usesFlat && enharmonicEquivalents[root]) {
         return enharmonicEquivalents[root];
+    }
+    
+    // If original key uses sharp notation and this note has a sharp equivalent, use it
+    if (!usesFlat && enharmonicEquivalents[root] !== undefined) {
+        // Check if this note is actually a flat note that should be converted to sharp
+        for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+            if (flat === root) {
+                return sharp;
+            }
+        }
     }
     
     return root;
@@ -356,7 +371,10 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     }
     
     // Get the note name
-    const root = noteNames[rootIndex];
+    let root = noteNames[rootIndex];
+    
+    // Normalize the note name based on key signature (choose flat vs sharp)
+    root = normalizeNoteName(root, keyRoot);
     
     // If inversion is specified in the slash notation, use it
     let inversion;

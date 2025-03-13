@@ -152,6 +152,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const event = new Event('change');
             settingsToggle.dispatchEvent(event);
         });
+		// Add event listener for header metronome toggle
+		document.getElementById('header-metronome').addEventListener('change', function() {
+			// Sync the settings panel toggle
+			const settingsToggle = document.getElementById('metronome');
+			settingsToggle.checked = this.checked;
+			
+			// Trigger the change event on the settings toggle
+			const event = new Event('change');
+			settingsToggle.dispatchEvent(event);
+		});
+
+		// Also add listener to sync header metronome toggle with settings panel
+		document.getElementById('metronome').addEventListener('change', function() {
+			// Sync the header toggle
+			const headerToggle = document.getElementById('header-metronome');
+			headerToggle.checked = this.checked;
+		});
         
         // Function to clear the progression display
         function clearProgressionDisplay() {

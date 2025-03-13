@@ -179,17 +179,17 @@ function getFingeringPattern(is7thChord, inversion, isRightHand) {
         // Left hand fingering (5=pinky, 1=thumb)
         if (is7thChord) {
             switch(inversion) {
-                case 'root':   return [5, 4, 2, 1]; // Changed from [5, 3, 2, 1]
-                case 'first':  return [5, 4, 2, 1]; // Changed from [5, 3, 2, 1]
-                case 'second': return [5, 4, 2, 1]; // No change, already optimal
-                default:       return [5, 4, 2, 1]; // Changed default as well
+                case 'root':   return [5, 3, 2, 1]; // Standard 7th chord root position
+                case 'first':  return [5, 3, 2, 1]; // First inversion
+                case 'second': return [5, 4, 2, 1]; // Second inversion
+                default:       return [5, 3, 2, 1]; // Default to root position
             }
         } else {
             switch(inversion) {
-                case 'root':   return [5, 2, 1]; // Changed from [5, 3, 1]
-                case 'first':  return [5, 2, 1]; // No change, already optimal
-                case 'second': return [5, 2, 1]; // Changed from [5, 3, 1]
-                default:       return [5, 2, 1]; // Changed default as well
+                case 'root':   return [5, 3, 1]; // Standard triad root position
+                case 'first':  return [5, 2, 1]; // First inversion
+                case 'second': return [5, 3, 1]; // Second inversion
+                default:       return [5, 3, 1]; // Default to root position
             }
         }
     }
@@ -266,13 +266,25 @@ function displayProgressionPills(progression) {
     progressionDisplay.innerHTML = '';
     const useSlashNotation = document.getElementById('slash-notation').checked;
     
+    // Get key information to determine flat/sharp preference
+    const originalKey = document.getElementById('key-select').value;
+    const isMinor = originalKey.endsWith('m');
+    const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
+    const usesFlat = keyRoot.includes('b');
+    
     // Display all chord pills, they will wrap naturally
     progression.forEach((chord, index) => {
         let chordText;
         
+        // Normalize the root note based on key signature
+        let normalizedRoot = chord.root;
+        if (usesFlat && typeof enharmonicEquivalents[normalizedRoot] !== 'undefined') {
+            normalizedRoot = enharmonicEquivalents[normalizedRoot];
+        }
+        
         // Base chord symbol without inversion notation
         // Updated to include new chord types
-        const baseChord = `${chord.root}${
+        const baseChord = `${normalizedRoot}${
             chord.type === 'minor' ? 'm' : 
             chord.type === 'diminished' ? '°' : 
             chord.type === 'dominant7' ? '7' : 
