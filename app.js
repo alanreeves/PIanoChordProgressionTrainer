@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to initialize the rest of the app
     window.initializeApp = function() {
+		// Display initial welcome message
+		const progressionDisplay = document.getElementById('progression-display');
+		if (progressionDisplay) {
+			progressionDisplay.innerHTML = '<div class="welcome-message">Chords will show here when you press "Play" or "Step"</div>';
+		}
         // Build the piano keyboard initially
         buildPiano();
         
