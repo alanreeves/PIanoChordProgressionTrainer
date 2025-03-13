@@ -58,6 +58,33 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Responsive header adjustments */
+@media (max-width: 991px) {
+    .app-title {
+        font-size: 1.1rem;
+    }
+    
+    .form-check-input {
+        width: 2rem;
+        margin-top: 0.1rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .app-title {
+        font-size: 1rem;
+    }
+    
+    .app-header {
+        padding: 0.4rem 0;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.8rem;
+    }
+}
+
 #help-btn {
     border-color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
