@@ -261,6 +261,7 @@ function clearPianoHighlights() {
 }
 
 // Display chord progression as pills
+// Display chord progression as pills
 function displayProgressionPills(progression) {
     const progressionDisplay = document.getElementById('progression-display');
     progressionDisplay.innerHTML = '';
@@ -270,7 +271,18 @@ function displayProgressionPills(progression) {
     const originalKey = document.getElementById('key-select').value;
     const isMinor = originalKey.endsWith('m');
     const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
-    const usesFlat = keyRoot.includes('b');
+    
+    // Proper music theory: Keys that use flat notation in their key signatures
+    const flatKeys = ['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 
+                      'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'];
+    
+    // Keys that use sharp notation in their key signatures
+    const sharpKeys = ['G', 'D', 'A', 'E', 'B', 'F#', 'C#',
+                       'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m'];
+                       
+    // Determine if key uses flat or sharp notation
+    const usesFlat = flatKeys.includes(originalKey);
+    const usesSharp = sharpKeys.includes(originalKey);
     
     // Display all chord pills, they will wrap naturally
     progression.forEach((chord, index) => {
@@ -278,8 +290,37 @@ function displayProgressionPills(progression) {
         
         // Normalize the root note based on key signature
         let normalizedRoot = chord.root;
-        if (usesFlat && typeof enharmonicEquivalents[normalizedRoot] !== 'undefined') {
-            normalizedRoot = enharmonicEquivalents[normalizedRoot];
+        
+        // Special case: Force sharp notation for all notes in sharp keys
+        if (usesSharp) {
+            // If the note is a flat name, convert it to its sharp equivalent
+            for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+                if (flat === normalizedRoot) {
+                    normalizedRoot = sharp;
+                    break;
+                }
+            }
+        }
+        // Special case: Force flat notation for all notes in flat keys
+        else if (usesFlat) {
+            // If the note is a sharp name that has a flat equivalent, use the flat
+            if (enharmonicEquivalents[normalizedRoot]) {
+                normalizedRoot = enharmonicEquivalents[normalizedRoot];
+            }
+        }
+        // For keys not in our explicit lists
+        else if (keyRoot.includes('b')) {
+            if (enharmonicEquivalents[normalizedRoot]) {
+                normalizedRoot = enharmonicEquivalents[normalizedRoot];
+            }
+        }
+        else if (keyRoot.includes('#')) {
+            for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+                if (flat === normalizedRoot) {
+                    normalizedRoot = sharp;
+                    break;
+                }
+            }
         }
         
         // Base chord symbol without inversion notation
@@ -297,12 +338,6 @@ function displayProgressionPills(progression) {
         }`;
         
         if (useSlashNotation && chord.inversion !== 'root') {
-            // Get proper bass note with correct notation (sharp or flat)
-            const originalKey = document.getElementById('key-select').value;
-            const isMinor = originalKey.endsWith('m');
-            const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
-            const usesFlat = keyRoot.includes('b');
-            
             // Calculate the bass note
             const rootIndex = getNoteIndex(chord.root);
             let bassNote;
@@ -351,8 +386,30 @@ function displayProgressionPills(progression) {
             }
             
             // Normalize bass note to match key notation (sharp or flat)
-            if (usesFlat && enharmonicEquivalents[bassNote]) {
-                bassNote = enharmonicEquivalents[bassNote];
+            // Apply the same normalization logic to the bass note
+            if (usesSharp) {
+                // If the note is a flat name, convert it to its sharp equivalent
+                for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+                    if (flat === bassNote) {
+                        bassNote = sharp;
+                        break;
+                    }
+                }
+            } else if (usesFlat) {
+                if (enharmonicEquivalents[bassNote]) {
+                    bassNote = enharmonicEquivalents[bassNote];
+                }
+            } else if (keyRoot.includes('b')) {
+                if (enharmonicEquivalents[bassNote]) {
+                    bassNote = enharmonicEquivalents[bassNote];
+                }
+            } else if (keyRoot.includes('#')) {
+                for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+                    if (flat === bassNote) {
+                        bassNote = sharp;
+                        break;
+                    }
+                }
             }
             
             chordText = `${baseChord}/${bassNote}`;

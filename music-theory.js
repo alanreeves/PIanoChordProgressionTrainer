@@ -180,24 +180,25 @@ function getNoteIndex(noteName) {
 
 // Function to normalize note name to maintain the user's chosen notation (sharp or flat)
 function normalizeNoteName(root, originalKey) {
-    // Determine if original key uses flat notation
+    // Determine if original key is minor
     const isMinor = originalKey.endsWith('m');
     const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
     
-    // These keys use flat notation (add more comprehensive detection)
+    // Proper music theory: Keys that use flat notation in their key signatures
     const flatKeys = ['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 
                       'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'];
     
-    const usesFlat = flatKeys.includes(originalKey) || keyRoot.includes('b');
+    // Keys that use sharp notation in their key signatures
+    const sharpKeys = ['G', 'D', 'A', 'E', 'B', 'F#', 'C#',
+                       'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m'];
     
-    // If original key uses flat notation and this note has a flat equivalent, use it
-    if (usesFlat && enharmonicEquivalents[root]) {
-        return enharmonicEquivalents[root];
-    }
+    // Determine if key uses flat or sharp notation
+    const usesFlat = flatKeys.includes(originalKey);
+    const usesSharp = sharpKeys.includes(originalKey);
     
-    // If original key uses sharp notation and this note has a sharp equivalent, use it
-    if (!usesFlat && enharmonicEquivalents[root] !== undefined) {
-        // Check if this note is actually a flat note that should be converted to sharp
+    // Special case: Force sharp notation for all notes in sharp keys
+    if (usesSharp) {
+        // If the note is a flat name, convert it to its sharp equivalent
         for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
             if (flat === root) {
                 return sharp;
@@ -205,6 +206,31 @@ function normalizeNoteName(root, originalKey) {
         }
     }
     
+    // Special case: Force flat notation for all notes in flat keys
+    if (usesFlat) {
+        // If the note is a sharp name that has a flat equivalent, use the flat
+        if (enharmonicEquivalents[root]) {
+            return enharmonicEquivalents[root];
+        }
+    }
+    
+    // For keys with flats in their name but not in our explicit lists
+    if (!usesSharp && !usesFlat && keyRoot.includes('b')) {
+        if (enharmonicEquivalents[root]) {
+            return enharmonicEquivalents[root];
+        }
+    }
+    
+    // For keys with sharps in their name but not in our explicit lists
+    if (!usesSharp && !usesFlat && keyRoot.includes('#')) {
+        for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
+            if (flat === root) {
+                return sharp;
+            }
+        }
+    }
+    
+    // Default to original root if no conversion applied
     return root;
 }
 
