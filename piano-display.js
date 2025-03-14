@@ -323,6 +323,12 @@ function displayProgressionPills(progression) {
                 }
             }
         }
+		
+		// Add this specific check for the F Major IV chord problem
+		if (originalKey === 'F' && chord.degreeIndex === 3 && normalizedRoot === 'A#') {
+			console.log(`Fixing F Major IV chord: changing ${normalizedRoot} to Bb`);
+			normalizedRoot = 'Bb';
+		}
         
         // Base chord symbol without inversion notation
         // Updated to include new chord types

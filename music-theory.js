@@ -198,8 +198,8 @@ function normalizeNoteName(root, originalKey) {
                        'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m'];
     
     // Determine if key uses flat or sharp notation
-    const usesFlat = flatKeys.includes(originalKey);
-    const usesSharp = sharpKeys.includes(originalKey);
+    const usesFlat = flatKeys.includes(originalKey) || flatKeys.includes(keyRoot);
+    const usesSharp = sharpKeys.includes(originalKey) || sharpKeys.includes(keyRoot);
     
     // Special case: Force sharp notation for all notes in sharp keys
     if (usesSharp) {
@@ -213,6 +213,11 @@ function normalizeNoteName(root, originalKey) {
     
     // Special case: Force flat notation for all notes in flat keys
     if (usesFlat) {
+        // Special case for A#/Bb in F major and other flat keys
+        if (root === 'A#') {
+            return 'Bb';
+        }
+        
         // If the note is a sharp name that has a flat equivalent, use the flat
         if (enharmonicEquivalents[root]) {
             return enharmonicEquivalents[root];
@@ -405,7 +410,13 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     let root = noteNames[rootIndex];
     
     // Normalize the note name based on key signature (choose flat vs sharp)
-    root = normalizeNoteName(root, keyRoot);
+    const fullKeyName = isMinorKey ? keyRoot + 'm' : keyRoot;
+    root = normalizeNoteName(root, fullKeyName);
+	
+	// Direct fix for F Major IV chord
+	if (keyRoot === 'F' && !isMinorKey && degree === 3 && root === 'A#') {
+		root = 'Bb';
+	}
     
     // If inversion is specified in the slash notation, use it
     let inversion;
