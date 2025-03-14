@@ -145,6 +145,8 @@ function getInversionName(inversion) {
 }
 
 // Function to get note index regardless of using sharp or flat notation
+// Replace the current getNoteIndex function in music-theory.js with this improved version:
+
 function getNoteIndex(noteName) {
     // Check if noteName is undefined or null
     if (!noteName) {
@@ -155,23 +157,26 @@ function getNoteIndex(noteName) {
     // Remove any 'm' for minor keys
     const root = noteName.endsWith('m') ? noteName.slice(0, -1) : noteName;
     
-    // Try direct lookup first
+    // Try direct lookup first in the noteNames array (which contains sharp names)
     let index = noteNames.indexOf(root);
     
-    // If not found, could be a flat notation, try to find the equivalent
+    // If not found directly, it might be a flat notation
     if (index === -1) {
-        // Find equivalent sharp name if this is a flat
+        // Check if it's a flat note by looking through our enharmonic equivalents
         for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
             if (flat === root) {
+                // Convert to equivalent sharp for internal processing
                 index = noteNames.indexOf(sharp);
                 break;
             }
         }
     }
     
-    // If still not found, return a safe default
+    // Additional debugging to help identify issues
     if (index === -1) {
-        console.warn(`Could not find note index for: ${noteName}`);
+        console.warn(`Could not find note index for: ${noteName} (root: ${root})`);
+        console.log('Available note names:', noteNames);
+        console.log('Enharmonic equivalents:', enharmonicEquivalents);
         return 0; // Default to C
     }
     

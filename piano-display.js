@@ -74,9 +74,10 @@ function buildPiano() {
 function highlightChordOnPiano(key, type, inversion) {
     clearPianoHighlights();
     
-    // Find base note index
-    const noteIndex = noteNames.indexOf(key);
-    if (noteIndex === -1) return;
+    // Find base note index using our conversion function that handles enharmonics
+    const noteIndex = getNoteIndex(key);
+    // Log for debugging
+    console.log(`Highlighting chord: ${key} ${type} ${inversion} - note index: ${noteIndex}`);
     
     // Check which hand is selected
     let isRightHand;

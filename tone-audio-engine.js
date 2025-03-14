@@ -221,12 +221,12 @@ function stopCurrentChord() {
 }
 
 // Function to play a chord based on root, type, and inversion
+// Function to play a chord based on root, type, and inversion
 function playChordSound(root, type, inversion) {
-    // Calculate MIDI note numbers for the chord
-    const rootIndex = noteNames.indexOf(root);
-    if (rootIndex === -1) {
-        return;
-    }
+    // Calculate MIDI note numbers for the chord using our conversion function
+    const rootIndex = getNoteIndex(root);
+    // Log for debugging
+    console.log(`Playing chord sound: ${root} ${type} ${inversion} - root index: ${rootIndex}`);
     
     // Get hand selection
     let isRightHand;
