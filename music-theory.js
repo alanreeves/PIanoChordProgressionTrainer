@@ -365,6 +365,7 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         let isAugmented = romanNumeral.includes('+') || romanNumeral.includes('aug');
         let isSus2 = romanNumeral.includes('sus2');
         let isSus4 = romanNumeral.includes('sus4');
+        let isAdd9 = romanNumeral.includes('add9'); // Added this line
         
         // Clean up the base Roman numeral for lookup
         // Convert to standard form (I, ii, iii, IV, V, vi, vii°)
@@ -416,13 +417,15 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
             } else if (isDiminished) {
                 type = 'diminished';
             } else if (isHalfDiminished) {
-                type = 'diminished'; // Using diminished since we don't have half-diminished
+                type = 'half-diminished'; 
             } else if (isAugmented) {
                 type = 'augmented';
             } else if (isSus2) {
                 type = 'sus2';
             } else if (isSus4) {
                 type = 'sus4';
+            } else if (isAdd9) {
+                type = 'add9'; // Added this line
             }
             
             // If inversion is specified in the slash notation, use it
@@ -469,6 +472,7 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Parse the Roman numeral to extract degree, quality, and any modifications
     let degree, quality, isSeventh = false, isMajorSeventh = false, isMinorSeventh = false;
     let isDiminished = false, isHalfDiminished = false, isAugmented = false, isSus2 = false, isSus4 = false;
+    let isAdd9 = false; // Added this line
     
     // Create a copy of the romanNumeral for parsing
     let parsedNumeral = romanNumeral;
@@ -485,7 +489,7 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     let suffix = '';
     
     // Common chord quality indicators
-    const qualitySuffixes = ['7', 'maj7', 'm7', 'ø', '°', 'dim', 'aug', '+', 'sus2', 'sus4'];
+    const qualitySuffixes = ['7', 'maj7', 'm7', 'ø', '°', 'dim', 'aug', '+', 'sus2', 'sus4', 'add9']; // Updated this line
     
     // Extract the quality suffix
     for (const qualitySuffix of qualitySuffixes) {
@@ -548,6 +552,7 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     const hasAugmentedSymbol = suffix.includes('+') || suffix.includes('aug');
     const hasSus2Symbol = suffix.includes('sus2');
     const hasSus4Symbol = suffix.includes('sus4');
+    const hasAdd9Symbol = suffix.includes('add9'); // Added this line
     
     // Check for 7th chords
     if (suffix.includes('7')) {
@@ -562,12 +567,17 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         }
     }
     
+    // Check for add9 
+    if (hasAdd9Symbol) {
+        isAdd9 = true;
+    }
+    
     // Determine chord type based on all indicators
     if (hasDiminishedSymbol) {
         quality = 'diminished';
         isDiminished = true;
     } else if (hasHalfDiminishedSymbol) {
-        quality = 'diminished'; // Using diminished since we don't have half-diminished
+        quality = 'half-diminished'; 
         isHalfDiminished = true;
     } else if (hasAugmentedSymbol) {
         quality = 'augmented';
@@ -585,6 +595,8 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     } else if (isSeventh) {
         // If it has a 7 but no other specifications, it's a dominant 7th
         quality = 'dominant7';
+    } else if (isAdd9) {
+        quality = 'add9'; // Added this line
     } else {
         // Basic triads
         quality = isUpperCase ? 'major' : 'minor';
@@ -862,6 +874,14 @@ function getChordIntervals(type, inversion) {
                 case 'second': return [0, 6, 9];       // b5-1-b3
                 default: return [0, 3, 6];
             }
+			
+		case 'half-diminished':
+			switch(inversion) {
+				case 'root':   return [0, 3, 6, 10];   // 1-b3-b5-b7
+				case 'first':  return [0, 3, 7, 9];    // b3-b5-b7-8
+				case 'second': return [0, 4, 6, 9];    // b5-b7-8-b10
+				default: return [0, 3, 6, 10];
+			}
             
         case 'augmented':
             switch(inversion) {
@@ -886,6 +906,14 @@ function getChordIntervals(type, inversion) {
                 case 'second': return [0, 5, 10];      // 5-8-11
                 default: return [0, 5, 7];
             }
+		// Corrected getChordIntervals case for add9 chords
+		case 'add9':
+			switch(inversion) {
+				case 'root':   return [0, 4, 7, 14];   // 1-3-5-9 (9th is an octave + 2nd)
+				case 'first':  return [0, 3, 10, 8];   // 3-5-1-9 (from 3rd base)
+				case 'second': return [0, 7, 5, 12];   // 5-1-3-9 (from 5th base)
+				default: return [0, 4, 7, 14];
+			}
             
         default:
             return [0, 4, 7];  // Default to major triad
@@ -952,6 +980,7 @@ function getBassNote(root, type, inversion) {
             case 'dominant7':
             case 'major7':
             case 'augmented':
+			case 'add9':
                 interval = 4; // Major 3rd
                 break;
             case 'minor':
@@ -959,6 +988,9 @@ function getBassNote(root, type, inversion) {
             case 'diminished':
                 interval = 3; // Minor 3rd
                 break;
+			case 'half-diminished':
+				interval = 3; // Minor 3rd
+				break;
             case 'sus2':
                 interval = 2; // Major 2nd
                 break;

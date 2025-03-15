@@ -71,6 +71,7 @@ function buildPiano() {
 }
 
 // Highlight chord on piano
+// Highlight chord on piano
 function highlightChordOnPiano(key, type, inversion) {
     clearPianoHighlights();
     
@@ -100,9 +101,9 @@ function highlightChordOnPiano(key, type, inversion) {
     
     // Adjust start note for inversions
     if (inversion === 'first') {
-        if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented') {
+        if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented' || type === 'add9') {
             startNote = (noteIndex + 4) % 12 + octaveOffset * 12; // Major 3rd
-        } else if (type === 'minor' || type === 'minor7' || type === 'diminished') {
+        } else if (type === 'minor' || type === 'minor7' || type === 'diminished' || type === 'half-diminished') {
             startNote = (noteIndex + 3) % 12 + octaveOffset * 12; // Minor 3rd
         } else if (type === 'sus2') {
             startNote = (noteIndex + 2) % 12 + octaveOffset * 12; // Major 2nd
@@ -110,7 +111,7 @@ function highlightChordOnPiano(key, type, inversion) {
             startNote = (noteIndex + 5) % 12 + octaveOffset * 12; // Perfect 4th
         }
     } else if (inversion === 'second') {
-        if (type === 'diminished') {
+        if (type === 'diminished' || type === 'half-diminished') {
             startNote = (noteIndex + 6) % 12 + octaveOffset * 12; // Diminished 5th
         } else if (type === 'augmented') {
             startNote = (noteIndex + 8) % 12 + octaveOffset * 12; // Augmented 5th
@@ -120,8 +121,28 @@ function highlightChordOnPiano(key, type, inversion) {
     }
     
     // Determine fingering pattern based on hand and chord type
-    const is7thChord = ['dominant7', 'major7', 'minor7'].includes(type);
-    const fingeringPattern = getFingeringPattern(is7thChord, inversion, isRightHand);
+    const is7thChord = ['dominant7', 'major7', 'minor7', 'half-diminished', 'add9'].includes(type);
+    
+    // Get fingering pattern
+    let fingeringPattern;
+    if (type === 'half-diminished') {
+        // Special fingering for half-diminished chords
+        if (isRightHand) {
+            fingeringPattern = [1, 2, 4, 5]; // Right hand: 1-2-4-5 for all inversions
+        } else {
+            fingeringPattern = [5, 4, 2, 1]; // Left hand: 5-4-2-1 for all inversions 
+        }
+    } else if (type === 'add9') {
+        // Special fingering for add9 chords
+        if (isRightHand) {
+            fingeringPattern = [1, 2, 3, 5]; // Right hand: 1-2-3-5 for all inversions
+        } else {
+            fingeringPattern = [5, 3, 2, 1]; // Left hand: 5-3-2-1 for all inversions
+        }
+    } else {
+        // Use the standard fingering pattern function for other chord types
+        fingeringPattern = getFingeringPattern(is7thChord, inversion, isRightHand);
+    }
     
     // Highlight the keys and add fingering numbers
     intervals.forEach((interval, index) => {
@@ -223,7 +244,7 @@ function getChordStartNote(rootIndex, type, inversion, isRightHand) {
             result = rootIndex + (octaveOffset * 12);
             break;
         case 'first':
-            if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented') {
+            if (type === 'major' || type === 'dominant7' || type === 'major7' || type === 'augmented' || type === 'add9') {
                 result = (rootIndex + 4) % 12 + (octaveOffset * 12); // Major 3rd
             } else if (type === 'minor' || type === 'minor7' || type === 'diminished') {
                 result = (rootIndex + 3) % 12 + (octaveOffset * 12); // Minor 3rd
@@ -303,12 +324,14 @@ function displayProgressionPills(progression) {
         const baseChord = `${normalizedRoot}${
             chord.type === 'minor' ? 'm' : 
             chord.type === 'diminished' ? '°' : 
+			chord.type === 'half-diminished' ? 'ø' : 
             chord.type === 'dominant7' ? '7' : 
             chord.type === 'major7' ? 'maj7' : 
             chord.type === 'minor7' ? 'm7' : 
             chord.type === 'augmented' ? '+' : 
             chord.type === 'sus2' ? 'sus2' : 
             chord.type === 'sus4' ? 'sus4' : 
+			chord.type === 'add9' ? 'add9' : 
             ''
         }`;
         
