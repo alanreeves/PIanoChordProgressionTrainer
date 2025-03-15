@@ -262,76 +262,44 @@ function clearPianoHighlights() {
 }
 
 // Display chord progression as pills
-// Display chord progression as pills
 function displayProgressionPills(progression) {
     const progressionDisplay = document.getElementById('progression-display');
     progressionDisplay.innerHTML = '';
     const useSlashNotation = document.getElementById('slash-notation').checked;
     
-    // Get key information to determine flat/sharp preference
+    // Get key information
     const originalKey = document.getElementById('key-select').value;
     const isMinor = originalKey.endsWith('m');
     const keyRoot = isMinor ? originalKey.slice(0, -1) : originalKey;
     
-    // Proper music theory: Keys that use flat notation in their key signatures
-    const flatKeys = ['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 
-                      'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'];
-    
-    // Keys that use sharp notation in their key signatures
-    const sharpKeys = ['G', 'D', 'A', 'E', 'B', 'F#', 'C#',
-                       'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m'];
-                       
-    // Determine if key uses flat or sharp notation
-    const usesFlat = flatKeys.includes(originalKey);
-    const usesSharp = sharpKeys.includes(originalKey);
+    // Standardize key name for lookup if needed
+    let lookupKey = keyRoot;
+    if (lookupKey === 'A#') lookupKey = 'Bb';
+    if (lookupKey === 'D#') lookupKey = 'Eb';
+    if (lookupKey === 'G#') lookupKey = 'Ab';
     
     // Display all chord pills, they will wrap naturally
     progression.forEach((chord, index) => {
         let chordText;
         
-        // Normalize the root note based on key signature
+        // Get the correct root for this chord
         let normalizedRoot = chord.root;
         
-        // Special case: Force sharp notation for all notes in sharp keys
-        if (usesSharp) {
-            // If the note is a flat name, convert it to its sharp equivalent
-            for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
-                if (flat === normalizedRoot) {
-                    normalizedRoot = sharp;
-                    break;
-                }
+        // For major keys, ensure we use the correct diatonic chord roots
+        if (!isMinor && chord.degreeIndex !== undefined && diatonicMajorChords[lookupKey]) {
+            // Map degree index to Roman numeral
+            const degreeToNumeral = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'];
+            const numeral = degreeToNumeral[chord.degreeIndex];
+            
+            if (numeral && diatonicMajorChords[lookupKey][numeral]) {
+                // Get the correct chord name from our table
+                const correctChord = diatonicMajorChords[lookupKey][numeral];
+                // Extract the root (remove any 'm' or '°' suffixes)
+                normalizedRoot = correctChord.replace(/m|°/g, '');
             }
         }
-        // Special case: Force flat notation for all notes in flat keys
-        else if (usesFlat) {
-            // If the note is a sharp name that has a flat equivalent, use the flat
-            if (enharmonicEquivalents[normalizedRoot]) {
-                normalizedRoot = enharmonicEquivalents[normalizedRoot];
-            }
-        }
-        // For keys not in our explicit lists
-        else if (keyRoot.includes('b')) {
-            if (enharmonicEquivalents[normalizedRoot]) {
-                normalizedRoot = enharmonicEquivalents[normalizedRoot];
-            }
-        }
-        else if (keyRoot.includes('#')) {
-            for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
-                if (flat === normalizedRoot) {
-                    normalizedRoot = sharp;
-                    break;
-                }
-            }
-        }
-		
-		// Add this specific check for the F Major IV chord problem
-		if (originalKey === 'F' && chord.degreeIndex === 3 && normalizedRoot === 'A#') {
-			console.log(`Fixing F Major IV chord: changing ${normalizedRoot} to Bb`);
-			normalizedRoot = 'Bb';
-		}
         
         // Base chord symbol without inversion notation
-        // Updated to include new chord types
         const baseChord = `${normalizedRoot}${
             chord.type === 'minor' ? 'm' : 
             chord.type === 'diminished' ? '°' : 
@@ -345,77 +313,57 @@ function displayProgressionPills(progression) {
         }`;
         
         if (useSlashNotation && chord.inversion !== 'root') {
-            // Calculate the bass note
-            const rootIndex = getNoteIndex(chord.root);
+            // For slash notation, ensure we use the correct bass note based on the key
             let bassNote;
             
-            if (chord.inversion === 'first') {
-                // First inversion - bass note is the interval specific to chord type
-                let interval;
-                switch(chord.type) {
-                    case 'major':
-                    case 'dominant7':
-                    case 'major7':
-                    case 'augmented':
-                        interval = 4; // Major 3rd
-                        break;
-                    case 'minor':
-                    case 'minor7':
-                    case 'diminished':
-                        interval = 3; // Minor 3rd
-                        break;
-                    case 'sus2':
-                        interval = 2; // Major 2nd
-                        break;
-                    case 'sus4':
-                        interval = 5; // Perfect 4th
-                        break;
-                    default:
-                        interval = 4;
+            // If we have degree information and it's a major key, we can look up the proper bass note
+            if (!isMinor && chord.degreeIndex !== undefined && diatonicMajorChords[lookupKey]) {
+                const degreeToNumeral = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'];
+                const numeral = degreeToNumeral[chord.degreeIndex];
+                
+                if (chord.inversion === 'first') {
+                    // For first inversion, bass note is the 3rd of the chord
+                    if (numeral === 'I') {
+                        // For I chord in major, the 3rd is the third scale degree
+                        bassNote = diatonicMajorChords[lookupKey]['iii'].replace(/m|°/g, '');
+                    } else if (numeral === 'IV') {
+                        // For IV chord, the 3rd is the 6th scale degree
+                        bassNote = diatonicMajorChords[lookupKey]['vi'].replace(/m|°/g, '');
+                    } else if (numeral === 'V') {
+                        // For V chord, the 3rd is the 7th scale degree
+                        bassNote = diatonicMajorChords[lookupKey]['vii°'].replace(/°/g, '');
+                    }
+                    // Add more cases as needed for other chord degrees
+                } else if (chord.inversion === 'second') {
+                    // For second inversion, bass note is the 5th of the chord
+                    if (numeral === 'I') {
+                        // For I chord, the 5th is the fifth scale degree
+                        bassNote = diatonicMajorChords[lookupKey]['V'].replace(/m|°/g, '');
+                    } else if (numeral === 'IV') {
+                        // For IV chord, the 5th is the first scale degree (but an octave up)
+                        bassNote = diatonicMajorChords[lookupKey]['I'].replace(/m|°/g, '');
+                    }
+                    // Add more cases as needed
                 }
-                const bassIndex = (rootIndex + interval) % 12;
-                bassNote = noteNames[bassIndex];
-            } else if (chord.inversion === 'second') {
-                // Second inversion - bass note is the 5th (perfect, diminished, or augmented)
-                let interval;
-                switch(chord.type) {
-                    case 'diminished':
-                        interval = 6; // Diminished 5th
-                        break;
-                    case 'augmented':
-                        interval = 8; // Augmented 5th
-                        break;
-                    default:
-                        interval = 7; // Perfect 5th
-                }
-                const bassIndex = (rootIndex + interval) % 12;
-                bassNote = noteNames[bassIndex];
             }
             
-            // Normalize bass note to match key notation (sharp or flat)
-            // Apply the same normalization logic to the bass note
-            if (usesSharp) {
-                // If the note is a flat name, convert it to its sharp equivalent
-                for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
-                    if (flat === bassNote) {
-                        bassNote = sharp;
-                        break;
+            // If we couldn't derive the bass note from the table, fall back to calculation
+            if (!bassNote) {
+                bassNote = getBassNote(normalizedRoot, chord.type, chord.inversion);
+                
+                // Ensure we use correct enharmonic for particular keys
+                if (!isMinor && diatonicMajorChords[lookupKey]) {
+                    // Specific overrides for common problem cases
+                    if (keyRoot === 'F' && bassNote === 'A#') {
+                        bassNote = 'Bb';
                     }
-                }
-            } else if (usesFlat) {
-                if (enharmonicEquivalents[bassNote]) {
-                    bassNote = enharmonicEquivalents[bassNote];
-                }
-            } else if (keyRoot.includes('b')) {
-                if (enharmonicEquivalents[bassNote]) {
-                    bassNote = enharmonicEquivalents[bassNote];
-                }
-            } else if (keyRoot.includes('#')) {
-                for (const [sharp, flat] of Object.entries(enharmonicEquivalents)) {
-                    if (flat === bassNote) {
-                        bassNote = sharp;
-                        break;
+                    if (keyRoot === 'Bb' && bassNote === 'D#') {
+                        bassNote = 'Eb';
                     }
+                    if (keyRoot === 'Eb' && bassNote === 'G#') {
+                        bassNote = 'Ab';
+                    }
+                    // Add more specific cases as needed
                 }
             }
             

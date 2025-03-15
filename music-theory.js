@@ -17,6 +17,64 @@ const enharmonicEquivalents = {
     'Bb': 'A#'
 };
 
+// Define the correct diatonic chords for all major keys
+const diatonicMajorChords = {
+    'C': {
+        'I': 'C', 'ii': 'Dm', 'iii': 'Em', 'IV': 'F', 'V': 'G', 'vi': 'Am', 'vii°': 'B°'
+    },
+    'Cb': {
+        'I': 'Cb', 'ii': 'Dbm', 'iii': 'Ebm', 'IV': 'Fb', 'V': 'Gb', 'vi': 'Abm', 'vii°': 'Bb°'
+    },
+    'C#': {
+        'I': 'C#', 'ii': 'D#m', 'iii': 'E#m', 'IV': 'F#', 'V': 'G#', 'vi': 'A#m', 'vii°': 'B#°'
+    },
+    'D': {
+        'I': 'D', 'ii': 'Em', 'iii': 'F#m', 'IV': 'G', 'V': 'A', 'vi': 'Bm', 'vii°': 'C#°'
+    },
+    'Db': {
+        'I': 'Db', 'ii': 'Ebm', 'iii': 'Fm', 'IV': 'Gb', 'V': 'Ab', 'vi': 'Bbm', 'vii°': 'C°'
+    },
+    'D#': {
+        'I': 'D#', 'ii': 'E#m', 'iii': 'Fxm', 'IV': 'G#', 'V': 'A#', 'vi': 'B#m', 'vii°': 'Cx°'
+    },
+    'E': {
+        'I': 'E', 'ii': 'F#m', 'iii': 'G#m', 'IV': 'A', 'V': 'B', 'vi': 'C#m', 'vii°': 'D#°'
+    },
+    'Eb': {
+        'I': 'Eb', 'ii': 'Fm', 'iii': 'Gm', 'IV': 'Ab', 'V': 'Bb', 'vi': 'Cm', 'vii°': 'D°'
+    },
+    'F': {
+        'I': 'F', 'ii': 'Gm', 'iii': 'Am', 'IV': 'Bb', 'V': 'C', 'vi': 'Dm', 'vii°': 'E°'
+    },
+    'F#': {
+        'I': 'F#', 'ii': 'G#m', 'iii': 'A#m', 'IV': 'B', 'V': 'C#', 'vi': 'D#m', 'vii°': 'E#°'
+    },
+    'G': {
+        'I': 'G', 'ii': 'Am', 'iii': 'Bm', 'IV': 'C', 'V': 'D', 'vi': 'Em', 'vii°': 'F#°'
+    },
+    'Gb': {
+        'I': 'Gb', 'ii': 'Abm', 'iii': 'Bbm', 'IV': 'Cb', 'V': 'Db', 'vi': 'Ebm', 'vii°': 'F°'
+    },
+    'G#': {
+        'I': 'G#', 'ii': 'A#m', 'iii': 'B#m', 'IV': 'C#', 'V': 'D#', 'vi': 'E#m', 'vii°': 'Fx°'
+    },
+    'A': {
+        'I': 'A', 'ii': 'Bm', 'iii': 'C#m', 'IV': 'D', 'V': 'E', 'vi': 'F#m', 'vii°': 'G#°'
+    },
+    'Ab': {
+        'I': 'Ab', 'ii': 'Bbm', 'iii': 'Cm', 'IV': 'Db', 'V': 'Eb', 'vi': 'Fm', 'vii°': 'G°'
+    },
+    'A#': {
+        'I': 'A#', 'ii': 'B#m', 'iii': 'Cxm', 'IV': 'D#', 'V': 'E#', 'vi': 'Fx', 'vii°': 'Gx°'
+    },
+    'B': {
+        'I': 'B', 'ii': 'C#m', 'iii': 'D#m', 'IV': 'E', 'V': 'F#', 'vi': 'G#m', 'vii°': 'A#°'
+    },
+    'Bb': {
+        'I': 'Bb', 'ii': 'Cm', 'iii': 'Dm', 'IV': 'Eb', 'V': 'F', 'vi': 'Gm', 'vii°': 'A°'
+    }
+};
+
 // Maps white key indices (0-based) to note indices (0-based)
 const whiteKeyToNote = [0, 2, 4, 5, 7, 9, 11]; // C, D, E, F, G, A, B
 const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
@@ -144,9 +202,30 @@ function getInversionName(inversion) {
     }
 }
 
-// Function to get note index regardless of using sharp or flat notation
-// Replace the current getNoteIndex function in music-theory.js with this improved version:
+// Extract root from chord notation (e.g., "Bb" from "Bbm7")
+function getChordRoot(chordName) {
+    if (!chordName) return '';
+    
+    // Handle cases like "F#m7", "Bb°", etc.
+    if (chordName.includes('m') || chordName.includes('°') || 
+        chordName.includes('7') || chordName.includes('maj')) {
+        // Extract the root before any modifier
+        if (chordName.length > 1 && (chordName[1] === '#' || chordName[1] === 'b')) {
+            return chordName.substring(0, 2);
+        } else {
+            return chordName[0];
+        }
+    }
+    
+    // For simple chords like "C", "F#", "Bb"
+    if (chordName.length > 1 && (chordName[1] === '#' || chordName[1] === 'b')) {
+        return chordName.substring(0, 2);
+    } else {
+        return chordName[0];
+    }
+}
 
+// Function to get note index regardless of using sharp or flat notation
 function getNoteIndex(noteName) {
     // Check if noteName is undefined or null
     if (!noteName) {
@@ -264,6 +343,129 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
         }
     }
     
+    // If we have a major key, we'll use the diatonic chord table for accurate names
+    if (!isMinorKey) {
+        // Extract base Roman numeral without quality/7th/etc. indicators
+        let baseNumeral = romanNumeral;
+        // Remove everything after number, so we get I, ii, iii, IV, V, vi, vii
+        baseNumeral = baseNumeral.replace(/([IiVv]+)[^IiVv].*/g, '$1');
+        
+        // Check if it has a flat symbol
+        const hasFlat = baseNumeral.startsWith('b');
+        if (hasFlat) {
+            baseNumeral = baseNumeral.substring(1);
+        }
+        
+        // Determine chord quality and embellishments from the roman numeral
+        let isSeventh = romanNumeral.includes('7');
+        let isMajorSeventh = romanNumeral.includes('maj7');
+        let isMinorSeventh = romanNumeral.toLowerCase().includes('m7');
+        let isDiminished = romanNumeral.includes('°') || romanNumeral.includes('dim');
+        let isHalfDiminished = romanNumeral.includes('ø');
+        let isAugmented = romanNumeral.includes('+') || romanNumeral.includes('aug');
+        let isSus2 = romanNumeral.includes('sus2');
+        let isSus4 = romanNumeral.includes('sus4');
+        
+        // Clean up the base Roman numeral for lookup
+        // Convert to standard form (I, ii, iii, IV, V, vi, vii°)
+        const lookupNumeral = baseNumeral.replace(/dim|°|\d+/g, ''); // Remove diminished symbol and numbers
+        
+        let lookupKey = keyRoot;
+        
+        // Convert to standard notation for lookup (use Bb instead of A#, etc.)
+        if (lookupKey === 'A#') lookupKey = 'Bb';
+        if (lookupKey === 'D#') lookupKey = 'Eb';
+        if (lookupKey === 'G#') lookupKey = 'Ab';
+        
+        // Handle flattened scale degrees
+        let adjustedNumeral = lookupNumeral;
+        if (hasFlat) {
+            // Handle special cases for flattened degrees
+            if (lookupNumeral === 'VII') adjustedNumeral = 'vii°';
+            else if (lookupNumeral === 'VI') adjustedNumeral = 'vi';
+            else if (lookupNumeral === 'III') adjustedNumeral = 'iii';
+            // Additional logic for other flattened degrees if needed
+        }
+        
+        // Find chord in the diatonic table
+        if (diatonicMajorChords[lookupKey] && 
+            diatonicMajorChords[lookupKey][adjustedNumeral]) {
+            
+            // Get the base chord from the table
+            let chordFromTable = diatonicMajorChords[lookupKey][adjustedNumeral];
+            
+            // Extract the root and determine if it's minor or diminished by default
+            let root = chordFromTable;
+            let type = 'major';
+            
+            if (chordFromTable.includes('m')) {
+                root = chordFromTable.replace('m', '');
+                type = 'minor';
+            } else if (chordFromTable.includes('°')) {
+                root = chordFromTable.replace('°', '');
+                type = 'diminished';
+            }
+            
+            // Apply any specified embellishments from the original roman numeral
+            if (isMajorSeventh) {
+                type = 'major7';
+            } else if (isMinorSeventh) {
+                type = 'minor7';
+            } else if (isSeventh) {
+                type = 'dominant7';
+            } else if (isDiminished) {
+                type = 'diminished';
+            } else if (isHalfDiminished) {
+                type = 'diminished'; // Using diminished since we don't have half-diminished
+            } else if (isAugmented) {
+                type = 'augmented';
+            } else if (isSus2) {
+                type = 'sus2';
+            } else if (isSus4) {
+                type = 'sus4';
+            }
+            
+            // If inversion is specified in the slash notation, use it
+            let inversion;
+            if (specifiedInversion) {
+                inversion = specifiedInversion;
+            } else {
+                // Otherwise choose a random inversion from the selected inversions
+                const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+                inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+            }
+            
+            // Count steps from key root to determine proper degree index
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const keyRootIndex = getNoteIndex(keyRoot);
+            let chordRootIndex = getNoteIndex(root);
+            
+            // Determine the degree index (0-6) by counting semitones from key root
+            let semitoneDistance = (chordRootIndex - keyRootIndex + 12) % 12;
+            let degreeIndex;
+            
+            // Map semitone distances to diatonic scale degrees
+            switch (semitoneDistance) {
+                case 0: degreeIndex = 0; break;  // I
+                case 2: degreeIndex = 1; break;  // ii
+                case 4: degreeIndex = 2; break;  // iii
+                case 5: degreeIndex = 3; break;  // IV
+                case 7: degreeIndex = 4; break;  // V
+                case 9: degreeIndex = 5; break;  // vi
+                case 11: degreeIndex = 6; break; // vii
+                default: degreeIndex = 0; // Fallback
+            }
+            
+            return {
+                root,
+                type,
+                inversion,
+                degreeIndex
+            };
+        }
+    }
+    
+    // Fall back to original implementation for minor keys or if no match found
     // Parse the Roman numeral to extract degree, quality, and any modifications
     let degree, quality, isSeventh = false, isMajorSeventh = false, isMinorSeventh = false;
     let isDiminished = false, isHalfDiminished = false, isAugmented = false, isSus2 = false, isSus4 = false;
@@ -412,11 +614,6 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
     // Normalize the note name based on key signature (choose flat vs sharp)
     const fullKeyName = isMinorKey ? keyRoot + 'm' : keyRoot;
     root = normalizeNoteName(root, fullKeyName);
-	
-	// Direct fix for F Major IV chord
-	if (keyRoot === 'F' && !isMinorKey && degree === 3 && root === 'A#') {
-		root = 'Bb';
-	}
     
     // If inversion is specified in the slash notation, use it
     let inversion;
