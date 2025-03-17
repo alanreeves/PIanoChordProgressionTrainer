@@ -129,6 +129,7 @@ const progressionStyles = {
         tempo: 90,
         beatsPerChord: 4
     },
+	
     'Jazz & Classical Standard': {
         pattern: ['ii', 'V', 'I'],
         length: 15,
@@ -142,10 +143,22 @@ const progressionStyles = {
 			tempo: 90,
 			beatsPerChord: 4
 		},
+	   'Pachelbel': {
+			pattern: ['I/5', 'V', 'vi/5', 'iii', 'IV/5', 'I', 'IV', 'V'],
+			length: 16,
+			tempo: 110,
+			beatsPerChord: 2
+		},
     '12-Bar Blues': {
         pattern: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
         length: 24,
         tempo: 120,
+        beatsPerChord: 4
+    },
+	'Andalusian Cadence': {
+        pattern: ['i', 'VII', 'VI', 'V'],
+        length: 16,
+        tempo: 80,
         beatsPerChord: 4
     },
     'Doo-Wop': {
@@ -177,19 +190,7 @@ const progressionStyles = {
         length: 16,
         tempo: 90,
         beatsPerChord: 4
-    },
-    'Minor Key Circle of Fifths': {
-        pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V', 'i'],
-        length: 16,
-        tempo: 90,
-        beatsPerChord: 4
-    },
-    'Harmonic Minor Circle of Fifths': {
-        pattern: ['i', 'iv', 'bVII', 'bIII', 'bVI', 'ii°', 'V7', 'i'],
-        length: 16,
-        tempo: 90,
-        beatsPerChord: 4
-    }
+     }
 };
 
 // Function to get name for inversion
