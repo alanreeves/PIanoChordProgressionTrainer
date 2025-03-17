@@ -75,6 +75,61 @@ const diatonicMajorChords = {
     }
 };
 
+// Define the diatonic chords for all minor keys (using natural minor)
+const diatonicMinorChords = {
+    'Cm': {
+        'i': 'Cm', 'ii°': 'D°', 'III': 'Eb', 'iv': 'Fm', 'v': 'Gm', 'VI': 'Ab', 'VII': 'Bb'
+    },
+    'C#m': {
+        'i': 'C#m', 'ii°': 'D#°', 'III': 'E', 'iv': 'F#m', 'v': 'G#m', 'VI': 'A', 'VII': 'B'
+    },
+    'Dbm': {
+        'i': 'Dbm', 'ii°': 'Eb°', 'III': 'Fb', 'iv': 'Gbm', 'v': 'Abm', 'VI': 'Bbb', 'VII': 'Cb'
+    },
+    'Dm': {
+        'i': 'Dm', 'ii°': 'E°', 'III': 'F', 'iv': 'Gm', 'v': 'Am', 'VI': 'Bb', 'VII': 'C'
+    },
+    'D#m': {
+        'i': 'D#m', 'ii°': 'E#°', 'III': 'F#', 'iv': 'G#m', 'v': 'A#m', 'VI': 'B', 'VII': 'C#'
+    },
+    'Ebm': {
+        'i': 'Ebm', 'ii°': 'F°', 'III': 'Gb', 'iv': 'Abm', 'v': 'Bbm', 'VI': 'Cb', 'VII': 'Db'
+    },
+    'Em': {
+        'i': 'Em', 'ii°': 'F#°', 'III': 'G', 'iv': 'Am', 'v': 'Bm', 'VI': 'C', 'VII': 'D'
+    },
+    'Fm': {
+        'i': 'Fm', 'ii°': 'G°', 'III': 'Ab', 'iv': 'Bbm', 'v': 'Cm', 'VI': 'Db', 'VII': 'Eb'
+    },
+    'F#m': {
+        'i': 'F#m', 'ii°': 'G#°', 'III': 'A', 'iv': 'Bm', 'v': 'C#m', 'VI': 'D', 'VII': 'E'
+    },
+    'Gbm': {
+        'i': 'Gbm', 'ii°': 'Ab°', 'III': 'Bbb', 'iv': 'Cbm', 'v': 'Dbm', 'VI': 'Ebb', 'VII': 'Fb'
+    },
+    'Gm': {
+        'i': 'Gm', 'ii°': 'A°', 'III': 'Bb', 'iv': 'Cm', 'v': 'Dm', 'VI': 'Eb', 'VII': 'F'
+    },
+    'G#m': {
+        'i': 'G#m', 'ii°': 'A#°', 'III': 'B', 'iv': 'C#m', 'v': 'D#m', 'VI': 'E', 'VII': 'F#'
+    },
+    'Abm': {
+        'i': 'Abm', 'ii°': 'Bb°', 'III': 'Cb', 'iv': 'Dbm', 'v': 'Ebm', 'VI': 'Fb', 'VII': 'Gb'
+    },
+    'Am': {
+        'i': 'Am', 'ii°': 'B°', 'III': 'C', 'iv': 'Dm', 'v': 'Em', 'VI': 'F', 'VII': 'G'
+    },
+    'A#m': {
+        'i': 'A#m', 'ii°': 'B#°', 'III': 'C#', 'iv': 'D#m', 'v': 'E#m', 'VI': 'F#', 'VII': 'G#'
+    },
+    'Bbm': {
+        'i': 'Bbm', 'ii°': 'C°', 'III': 'Db', 'iv': 'Ebm', 'v': 'Fm', 'VI': 'Gb', 'VII': 'Ab'
+    },
+    'Bm': {
+        'i': 'Bm', 'ii°': 'C#°', 'III': 'D', 'iv': 'Em', 'v': 'F#m', 'VI': 'G', 'VII': 'A'
+    }
+};
+
 // Maps white key indices (0-based) to note indices (0-based)
 const whiteKeyToNote = [0, 2, 4, 5, 7, 9, 11]; // C, D, E, F, G, A, B
 const isBlackKey = [false, true, false, true, false, false, true, false, true, false, true, false];
@@ -102,6 +157,20 @@ const minorScaleDegrees = [
 
 // Maps scale degree indices to semitone offsets from root
 const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
+// Add a natural minor scale intervals array
+const naturalMinorScaleIntervals = [0, 2, 3, 5, 7, 8, 10]; // Natural minor: W-H-W-W-H-W-W
+
+// Add common progression patterns for minor keys
+const minorKeyNextDegrees = {
+    0: [3, 4, 6],  // i → iv, v, VII
+    1: [4, 0],     // ii° → v, i
+    2: [5, 0],     // III → VI, i
+    3: [0, 6],     // iv → i, VII
+    4: [0, 2],     // v → i, III
+    5: [2, 3],     // VI → III, iv
+    6: [0, 4]      // VII → i, v
+};
+
 
 // Predefined progression patterns in Roman numeral notation with default values for length, tempo, and beats per chord
 const progressionStyles = {
@@ -155,7 +224,7 @@ const progressionStyles = {
         tempo: 120,
         beatsPerChord: 4
     },
-	'Andalusian Cadence': {
+	'Andalusian Cadence ': {
         pattern: ['i', 'VII', 'VI', 'V'],
         length: 16,
         tempo: 80,
@@ -341,6 +410,128 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
             specifiedInversion = 'second';
         } else if (inversionPart === '1' || inversionPart.toLowerCase() === 'root') {
             specifiedInversion = 'root';
+        }
+    }
+    
+    // If we have a minor key, we'll use the diatonic minor chord table
+    if (isMinorKey) {
+        // Extract base Roman numeral without quality/7th/etc. indicators
+        let baseNumeral = romanNumeral;
+        // Remove everything after number, so we get i, ii°, III, iv, v, VI, vii°
+        baseNumeral = baseNumeral.replace(/([IiVv]+)[^IiVv].*/g, '$1');
+        
+        // Check if it has a flat symbol
+        const hasFlat = baseNumeral.startsWith('b');
+        if (hasFlat) {
+            baseNumeral = baseNumeral.substring(1);
+        }
+        
+        // Determine chord quality and embellishments from the roman numeral
+        let isSeventh = romanNumeral.includes('7');
+        let isMajorSeventh = romanNumeral.includes('maj7');
+        let isMinorSeventh = romanNumeral.toLowerCase().includes('m7');
+        let isDiminished = romanNumeral.includes('°') || romanNumeral.includes('dim');
+        let isHalfDiminished = romanNumeral.includes('ø');
+        let isAugmented = romanNumeral.includes('+') || romanNumeral.includes('aug');
+        let isSus2 = romanNumeral.includes('sus2');
+        let isSus4 = romanNumeral.includes('sus4');
+        let isAdd9 = romanNumeral.includes('add9');
+        
+        // Clean up the base Roman numeral for lookup
+        const lookupNumeral = baseNumeral.replace(/dim|°|\d+/g, ''); // Remove diminished symbol and numbers
+        
+        let lookupKey = keyRoot + 'm'; // Add 'm' to indicate minor key
+        
+        // Convert to standard notation for lookup if needed
+        if (lookupKey === 'A#m') lookupKey = 'Bbm';
+        if (lookupKey === 'D#m') lookupKey = 'Ebm';
+        if (lookupKey === 'G#m') lookupKey = 'Abm';
+        
+        // Handle flattened scale degrees
+        let adjustedNumeral = lookupNumeral;
+        if (hasFlat) {
+            // Handle special cases for flattened degrees if needed
+            // For minor keys, this might be less common but still possible
+        }
+        
+        // Find chord in the diatonic minor table
+        if (diatonicMinorChords[lookupKey] && 
+            diatonicMinorChords[lookupKey][adjustedNumeral]) {
+            
+            // Get the base chord from the table
+            let chordFromTable = diatonicMinorChords[lookupKey][adjustedNumeral];
+            
+            // Extract the root and determine if it's minor or diminished by default
+            let root = chordFromTable;
+            let type = 'major';
+            
+            if (chordFromTable.includes('m')) {
+                root = chordFromTable.replace('m', '');
+                type = 'minor';
+            } else if (chordFromTable.includes('°')) {
+                root = chordFromTable.replace('°', '');
+                type = 'diminished';
+            }
+            
+            // Apply any specified embellishments from the original roman numeral
+            if (isMajorSeventh) {
+                type = 'major7';
+            } else if (isMinorSeventh) {
+                type = 'minor7';
+            } else if (isSeventh) {
+                type = 'dominant7';
+            } else if (isDiminished) {
+                type = 'diminished';
+            } else if (isHalfDiminished) {
+                type = 'half-diminished'; 
+            } else if (isAugmented) {
+                type = 'augmented';
+            } else if (isSus2) {
+                type = 'sus2';
+            } else if (isSus4) {
+                type = 'sus4';
+            } else if (isAdd9) {
+                type = 'add9';
+            }
+            
+            // If inversion is specified in the slash notation, use it
+            let inversion;
+            if (specifiedInversion) {
+                inversion = specifiedInversion;
+            } else {
+                // Otherwise choose a random inversion from the selected inversions
+                const selectedInversions = Array.from(document.querySelectorAll('.inversion-checkbox:checked')).map(cb => cb.value);
+                inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+            }
+            
+            // Count steps from key root to determine proper degree index
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const keyRootIndex = getNoteIndex(keyRoot);
+            let chordRootIndex = getNoteIndex(root);
+            
+            // Determine the degree index (0-6) by counting semitones from key root
+            // For minor keys, the pattern is different from major
+            let semitoneDistance = (chordRootIndex - keyRootIndex + 12) % 12;
+            let degreeIndex;
+            
+            // Map semitone distances to minor scale degrees
+            switch (semitoneDistance) {
+                case 0: degreeIndex = 0; break;  // i
+                case 2: degreeIndex = 1; break;  // ii
+                case 3: degreeIndex = 2; break;  // III
+                case 5: degreeIndex = 3; break;  // iv
+                case 7: degreeIndex = 4; break;  // v
+                case 8: degreeIndex = 5; break;  // VI
+                case 10: degreeIndex = 6; break; // vii
+                default: degreeIndex = 0; // Fallback
+            }
+            
+            return {
+                root,
+                type,
+                inversion,
+                degreeIndex
+            };
         }
     }
     
@@ -647,7 +838,7 @@ function romanNumeralToChord(romanNumeral, keyRoot, isMinorKey) {
 }
 
 
-// Modified function to generate chord progression based on style
+// Modify the generateChordProgression function to correctly handle minor keys
 function generateChordProgression(key, length, selectedTypes, selectedInversions, style = 'Random') {
     const progression = [];
     const isMinorKey = key.endsWith('m');
@@ -672,9 +863,8 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
         return progression;
     }
     
-    // If Random is selected or no valid style is found, use the original random generator
-    // (existing code for random progression generation)
-    const keyRootIndex = getNoteIndex(key);
+    // If Random is selected or no valid style is found, use the improved random generator
+    const keyRootIndex = getNoteIndex(keyRoot);
     
     // Use appropriate scale degrees based on key type
     const scaleDegrees = isMinorKey ? minorScaleDegrees : majorScaleDegrees;
@@ -683,18 +873,19 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
     const firstChord = {
         root: keyRoot,
         type: isMinorKey ? 'minor' : 'major',
-        inversion: selectedInversions[Math.floor(Math.random() * selectedInversions.length)]
+        inversion: selectedInversions[Math.floor(Math.random() * selectedInversions.length)],
+        degreeIndex: 0 // Tonic is degree 0
     };
     progression.push(firstChord);
     
-    // Generate remaining chords using existing logic
+    // Generate remaining chords using improved logic
     for (let i = 1; i < length; i++) {
         // Choose a random scale degree, weighted toward strong harmonic relationships
         let degreeIndex;
         const prevDegreeIndex = progression[i-1].degreeIndex || 0;
         
-        // Common chord progressions in Western music
-        const commonNextDegrees = {
+        // Use appropriate common next degrees based on key type
+        const commonNextDegrees = isMinorKey ? minorKeyNextDegrees : {
             0: [3, 4, 5],  // I → IV, V, vi
             1: [4, 6],     // ii → V, vii°
             2: [5, 3],     // iii → vi, IV
@@ -715,78 +906,106 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
         // Get chord info for this degree
         const degreeInfo = scaleDegrees[degreeIndex];
         
-        // Calculate the root note for this chord
-        const rootOffset = majorScaleIntervals[degreeIndex];
+        // Calculate the root note for this chord using the appropriate scale intervals
+        const scaleIntervals = isMinorKey ? naturalMinorScaleIntervals : majorScaleIntervals;
+        const rootOffset = scaleIntervals[degreeIndex];
         const rootIndex = (keyRootIndex + rootOffset) % 12;
         let root = noteNames[rootIndex];
         
         // Normalize root note to maintain notation consistency with selected key
         root = normalizeNoteName(root, key);
         
-        // Determine chord type (ensure it's in selected types)
+        // Determine chord type based on diatonic structure
         let type = degreeInfo.type;
-        if (!selectedTypes.includes(type)) {
-            // Fall back to a type from selected types
-            type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+        
+        // Check if the diatonic type is in the selected types
+        const isDiatonicTypeSelected = selectedTypes.includes(type);
+        
+        // If the diatonic type isn't selected, use a more appropriate fallback logic
+        if (!isDiatonicTypeSelected) {
+            // For minor keys, more appropriately map chord types
+            if (isMinorKey) {
+                if (type === 'minor') {
+                    // If minor isn't selected, prefer major or dominant7
+                    if (selectedTypes.includes('major')) type = 'major';
+                    else if (selectedTypes.includes('dominant7')) type = 'dominant7';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                } else if (type === 'major') {
+                    // If major isn't selected, prefer minor or major7
+                    if (selectedTypes.includes('minor')) type = 'minor';
+                    else if (selectedTypes.includes('major7')) type = 'major7';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                } else if (type === 'diminished') {
+                    // If diminished isn't selected, try half-diminished or minor
+                    if (selectedTypes.includes('half-diminished')) type = 'half-diminished';
+                    else if (selectedTypes.includes('minor')) type = 'minor';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                }
+            } else {
+                // For major keys, similar appropriate mappings
+                if (type === 'major') {
+                    if (selectedTypes.includes('dominant7')) type = 'dominant7';
+                    else if (selectedTypes.includes('major7')) type = 'major7';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                } else if (type === 'minor') {
+                    if (selectedTypes.includes('minor7')) type = 'minor7';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                } else if (type === 'diminished') {
+                    if (selectedTypes.includes('half-diminished')) type = 'half-diminished';
+                    else type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                }
+            }
         }
         
-        // For dominant and leading tones, possibly make them 7th chords
-        if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.7) {
-            type = 'dominant7';
+        // Enhancements for more musical chord selections in minor keys
+        if (isMinorKey) {
+            // For minor v chord, sometimes make it a dominant V if selected
+            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.4) {
+                type = 'dominant7';
+            }
+            
+            // For III chord, occasionally make it major7 if selected
+            if (degreeIndex === 2 && selectedTypes.includes('major7') && Math.random() < 0.3) {
+                type = 'major7';
+            }
+            
+            // For iv chord, occasionally make it minor7 if selected
+            if (degreeIndex === 3 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
+                type = 'minor7';
+            }
+        } else {
+            // Existing major key enhancements
+            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.7) {
+                type = 'dominant7';
+            }
+            
+            if (degreeIndex === 0 && selectedTypes.includes('major7') && Math.random() < 0.3) {
+                type = 'major7';
+            }
+            
+            if (degreeIndex === 5 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
+                type = 'minor7';
+            }
         }
         
-        // For tonic, possibly make it major7 in major keys
-        if (degreeIndex === 0 && !isMinorKey && selectedTypes.includes('major7') && Math.random() < 0.3) {
-            type = 'major7';
-        }
-        
-        // For submediant (vi), possibly make it minor7 if available
-        if (degreeIndex === 5 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
-            type = 'minor7';
-        }
-        
-        // For dominant (V), occasionally make it a sus4 resolving to dominant
-        if (degreeIndex === 4 && selectedTypes.includes('sus4') && Math.random() < 0.15) {
-            type = 'sus4';
-        }
-        
-        // For supertonic (ii), occasionally make it a sus2
-        if (degreeIndex === 1 && selectedTypes.includes('sus2') && Math.random() < 0.15) {
-            type = 'sus2';
-        }
-        
-        // For mediant (III in major or III in minor), occasionally make it augmented
-        if (degreeIndex === 2 && selectedTypes.includes('augmented') && Math.random() < 0.1) {
-            type = 'augmented';
-        }
-        
-        // Choose inversion based on voice leading
-        // Simple rule: try to minimize movement from previous chord
+        // Choose inversion based on voice leading (existing code)
         let inversion;
         if (i > 0 && Math.random() < 0.7) {
-            // Pick inversion that creates smoother voice leading
-            // This is a simplification - real voice leading is more complex
+            // Voice leading code remains unchanged
             const prevRoot = progression[i-1].root;
             const prevType = progression[i-1].type;
             const prevInv = progression[i-1].inversion;
             
-            // Approximate the top note of the previous chord
             let prevTopNote;
             if (prevInv === 'root') {
-                // In root position, the top note is the 5th
                 prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' ? 7 : 7)) % 12;
             } else if (prevInv === 'first') {
-                // In first inversion, the top note is often the root
                 prevTopNote = getNoteIndex(prevRoot);
             } else {
-                // In second inversion, the top note is often the 3rd
                 prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' ? 3 : 4)) % 12;
             }
             
-            // Calculate distance to possible top notes for each inversion
             const distances = {};
-            
-            // Filter to only allowed inversions
             const allowedInversions = selectedInversions.filter(inv => inv);
             
             for (const inv of allowedInversions) {
@@ -799,18 +1018,15 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
                     topNote = (rootIndex + (type === 'minor' ? 3 : 4)) % 12; // 3rd
                 }
                 
-                // Calculate smallest distance (accounting for octave wrapping)
                 let dist = Math.abs(topNote - prevTopNote);
                 dist = Math.min(dist, 12 - dist);
                 distances[inv] = dist;
             }
             
-            // Choose inversion with smallest distance (or random if tie)
             const minDist = Math.min(...Object.values(distances));
             const bestInversions = Object.keys(distances).filter(inv => distances[inv] === minDist);
             inversion = bestInversions[Math.floor(Math.random() * bestInversions.length)];
         } else {
-            // Random inversion
             inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
         }
         
