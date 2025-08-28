@@ -68,6 +68,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize audio
         initAudio();
         
+        // Show Android audio help if needed
+        if (/Android/i.test(navigator.userAgent)) {
+            setTimeout(() => {
+                if (typeof window.pwaManager !== 'undefined' && window.pwaManager && 
+                    typeof window.pwaManager.showAndroidAudioHelp === 'function') {
+                    window.pwaManager.showAndroidAudioHelp();
+                }
+            }, 2000); // Show after 2 seconds to let app load
+        }
+        
         // Load saved octave preference if it exists
         const savedOctave = localStorage.getItem('selectedOctave');
         if (savedOctave) {
@@ -124,28 +134,52 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMetronomeVolume(this.value);
         });
         
-        // Add event listener for play-sound toggle with Tone.js starter functionality
-        document.getElementById('play-sound').addEventListener('change', function() {
+        // Add event listener for play-sound toggle with enhanced Android support
+        document.getElementById('play-sound').addEventListener('change', async function() {
             if (this.checked && !toneStarted) {
-                // Start Tone.js when checkbox is checked for the first time
-                Tone.start().then(() => {
-                    console.log("Tone.js started successfully");
+                // Show loading state
+                const originalText = this.nextElementSibling.innerHTML;
+                this.nextElementSibling.innerHTML = '<span class="fw-bold">Initializing Audio...</span>';
+                this.disabled = true;
+                
+                try {
+                    // Start Tone.js when checkbox is checked for the first time
+                    await Tone.start();
+                    console.log('Tone.js started successfully');
                     toneStarted = true;
                     
-                    // Play a test sound to confirm audio works
-                    if (typeof pianoSampler !== 'undefined') {
-                        try {
-                            console.log("Playing test sound...");
-                            pianoSampler.triggerAttackRelease("C4", 0.5);
-                        } catch (error) {
-                            console.error("Error playing test sound:", error);
+                    // Initialize audio components for Android
+                    if (typeof isAndroidDevice !== 'undefined' && isAndroidDevice()) {
+                        console.log('Android device - initializing audio components');
+                        if (typeof initializeAudioComponents !== 'undefined') {
+                            await initializeAudioComponents();
                         }
                     }
-                }).catch(error => {
-                    console.error("Error starting Tone.js:", error);
-                    // Uncheck the box if there was an error
+                    
+                    // Play a test sound to confirm audio works
+                    if (typeof pianoSampler !== 'undefined' && pianoSampler) {
+                        try {
+                            console.log('Playing test sound...');
+                            pianoSampler.triggerAttackRelease('C4', 0.5);
+                        } catch (error) {
+                            console.error('Error playing test sound:', error);
+                        }
+                    }
+                    
+                    // Restore original text
+                    this.nextElementSibling.innerHTML = originalText;
+                    this.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Error starting Tone.js:', error);
+                    // Show error and uncheck the box
                     this.checked = false;
-                });
+                    this.nextElementSibling.innerHTML = originalText;
+                    this.disabled = false;
+                    
+                    // Show user-friendly error message
+                    alert('Audio initialization failed. Please try again or check your device\'s audio settings.');
+                }
             }
             
             // Sync header toggle with settings toggle
@@ -158,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const settingsToggle = document.getElementById('play-sound');
             settingsToggle.checked = this.checked;
             
-            // Trigger the change event on the settings toggle to handle Tone.js initialization
+            // Trigger the change event on the settings toggle to handle audio initialization
             const event = new Event('change');
             settingsToggle.dispatchEvent(event);
         });
@@ -407,62 +441,99 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Piano Chord Progression Trainer initialized successfully');
     }
     
-    // Function to initialize PWA controls
-    function initPWAControls() {
-        // Update version display
-        function updateVersionDisplay() {
-            const versionDisplay = document.getElementById('app-version-display');
-            const connectionStatus = document.getElementById('connection-status');
-            
-            if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
-                const version = window.pwaManager.getVersion();
-                if (versionDisplay) {
-                    versionDisplay.textContent = version || '1.0.0';
-                }
+        // Function to initialize PWA controls
+        function initPWAControls() {
+            // Update version display
+            function updateVersionDisplay() {
+                const versionDisplay = document.getElementById('app-version-display');
+                const connectionStatus = document.getElementById('connection-status');
+                const installStatus = document.getElementById('install-status');
                 
-                // Update connection status
-                if (connectionStatus) {
-                    connectionStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
-                    connectionStatus.className = navigator.onLine ? 'small text-success' : 'small text-warning';
-                }
-            } else {
-                if (versionDisplay) {
-                    versionDisplay.textContent = '1.0.0';
+                if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+                    const version = window.pwaManager.getVersion();
+                    if (versionDisplay) {
+                        versionDisplay.textContent = version || '1.0.0';
+                    }
+                    
+                    // Update connection status
+                    if (connectionStatus) {
+                        connectionStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
+                        connectionStatus.className = navigator.onLine ? 'small text-success' : 'small text-warning';
+                    }
+                    
+                    // Update install status
+                    if (installStatus) {
+                        const isPWA = window.pwaManager.isPWA();
+                        installStatus.textContent = isPWA ? 'Installed' : 'Not Installed';
+                        installStatus.className = isPWA ? 'text-success' : 'text-muted';
+                    }
+                } else {
+                    if (versionDisplay) {
+                        versionDisplay.textContent = '1.0.0';
+                    }
                 }
             }
+            
+            // Check for updates button handler
+            const updateBtn = document.getElementById('check-update-btn');
+            if (updateBtn) {
+                updateBtn.addEventListener('click', function() {
+                    if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+                        this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Checking...';
+                        this.disabled = true;
+                        
+                        window.pwaManager.checkForUpdates();
+                        
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check for Updates';
+                            this.disabled = false;
+                            updateVersionDisplay();
+                        }, 2000);
+                    } else {
+                        alert('PWA Manager not available');
+                    }
+                });
+            }
+            
+            // Install app button handler
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) {
+                installBtn.addEventListener('click', function() {
+                    if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+                        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Installing...';
+                        this.disabled = true;
+                        
+                        window.pwaManager.triggerInstall().then(success => {
+                            if (success) {
+                                this.style.display = 'none';
+                                updateVersionDisplay();
+                            } else {
+                                this.innerHTML = '<i class="bi bi-download"></i> Install App';
+                                this.disabled = false;
+                            }
+                        }).catch(() => {
+                            this.innerHTML = '<i class="bi bi-download"></i> Install App';
+                            this.disabled = false;
+                        });
+                    } else {
+                        alert('PWA Manager not available');
+                    }
+                });
+            }
+            
+            // Initial version display
+            updateVersionDisplay();
+            
+            // Update version display periodically
+            setInterval(updateVersionDisplay, 10000); // Every 10 seconds
+            
+            // Listen for online/offline events
+            window.addEventListener('online', updateVersionDisplay);
+            window.addEventListener('offline', updateVersionDisplay);
+            
+            // Listen for PWA installation events
+            window.addEventListener('appinstalled', updateVersionDisplay);
         }
-        
-        // Check for updates button handler
-        const updateBtn = document.getElementById('check-update-btn');
-        if (updateBtn) {
-            updateBtn.addEventListener('click', function() {
-                if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
-                    this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Checking...';
-                    this.disabled = true;
-                    
-                    window.pwaManager.checkForUpdates();
-                    
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check for Updates';
-                        this.disabled = false;
-                        updateVersionDisplay();
-                    }, 2000);
-                } else {
-                    alert('PWA Manager not available');
-                }
-            });
-        }
-        
-        // Initial version display
-        updateVersionDisplay();
-        
-        // Update version display periodically
-        setInterval(updateVersionDisplay, 10000); // Every 10 seconds
-        
-        // Listen for online/offline events
-        window.addEventListener('online', updateVersionDisplay);
-        window.addEventListener('offline', updateVersionDisplay);
-    }
     
     // Function to initialize and sync BPM slider with tempo input
     function initBpmSlider() {

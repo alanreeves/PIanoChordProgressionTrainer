@@ -22,6 +22,7 @@ The Piano Chord Progression Trainer has been upgraded to a full Progressive Web 
 - **Version Detection**: Automatically detects version changes
 - **Cache Management**: Updates cache when new version is available
 - **Update Notifications**: Shows user-friendly update messages
+- **Install Prompts**: Shows install button when version changes are detected
 - **Force Updates**: Option to manually check for updates
 
 ## Files Added
@@ -107,8 +108,15 @@ The app includes an SVG icon that works as a fallback. For best results:
 ```
 User visits app → Service worker checks version → 
 New version found → Downloads updates → 
-Notifies user → App updated
+Notifies user → Shows install button (if not installed) → App updated
 ```
+
+### Install Button Behavior
+- **Version Changes**: Install button appears automatically when new version is detected
+- **Settings Panel**: Persistent install button in PWA controls section
+- **Update Notifications**: Install button included in update notifications for non-installed users
+- **iOS Support**: Falls back to manual instructions for iOS devices
+- **Installation Success**: Button disappears and shows success notification after install
 
 ### Force Update
 Users can manually trigger updates via:

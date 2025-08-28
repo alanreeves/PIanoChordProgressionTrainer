@@ -1308,7 +1308,11 @@ option {
 
 .update-notification,
 .connection-status,
-.ios-install-hint {
+.ios-install-hint,
+.version-install-notification,
+.install-instructions,
+.install-success,
+.android-audio-help {
     position: fixed;
     top: 70px; /* Below header */
     left: 50%;
@@ -1321,10 +1325,76 @@ option {
 
 .update-notification .alert,
 .connection-status .alert,
-.ios-install-hint .alert {
+.ios-install-hint .alert,
+.version-install-notification .alert,
+.install-instructions .alert,
+.install-success .alert,
+.android-audio-help .alert {
     pointer-events: all;
     animation: slideInFromTop 0.5s ease-out;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Android audio help notification */
+.android-audio-help .alert {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    border: none;
+    color: #212529;
+    font-size: 0.9rem;
+}
+
+.android-audio-help .btn-close {
+    filter: brightness(0.3);
+}
+
+/* Version install notification specific styling */
+.version-install-notification .alert {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    color: white;
+}
+
+.version-install-notification .btn-light {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.9);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.version-install-notification .btn-light:hover {
+    background-color: white;
+    border-color: white;
+    color: var(--primary);
+}
+
+.version-install-notification .btn-close {
+    filter: invert(1);
+}
+
+/* Install button in settings */
+#install-app-btn {
+    transition: all 0.3s ease;
+}
+
+#install-app-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Install status indicator */
+#install-status.text-success {
+    font-weight: 600;
+}
+
+/* Install success notification */
+.install-success .alert {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    color: white;
+}
+
+.install-success .btn-close {
+    filter: invert(1);
 }
 
 @keyframes slideInFromTop {

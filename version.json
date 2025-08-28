@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "buildTime": "2025-01-28T00:00:00Z",
-  "description": "Initial PWA release with automatic versioning",
-  "cacheVersion": "v1.0.0"
+  "version": "1.0.2",
+  "buildTime": "2025-08-28T11:54:15Z",
+  "description": "Reverted unnecessary Android audio changes",
+  "cacheVersion": "v1.0.2"
 }
