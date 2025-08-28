@@ -172,93 +172,107 @@ const minorKeyNextDegrees = {
 };
 
 
-// Predefined progression patterns in Roman numeral notation with default values for length, tempo, and beats per chord
+// Predefined progression patterns in Roman numeral notation with default values for length, tempo, time signature, and note value
 const progressionStyles = {
     'Random': {
         pattern: [], // Empty array means use the random generator
         length: 16,
         tempo: 60,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
     'Common': {
         pattern: ['I', 'IV', 'V', 'I'],
         length: 16,
         tempo: 60,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
     'Pop 1': {
         pattern: ['I', 'V', 'vi', 'IV'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
     'Pop 2': {
         pattern: ['vi', 'IV', 'I', 'V'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
 	
     'Jazz & Classical Standard': {
         pattern: ['ii', 'V', 'I'],
         length: 15,
         tempo: 90,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
 		'Popular Progression Workout': {
 			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I/3',  'I/3','I/3', 'vi/5', 'ii/3', 'V',
 			          'I/3', 'iii/3', 'vi', 'IV', 'IV/3', 'vi', 'V',  'I/3','V/5', 'iii', 'IV', 'I/3'],
 			length: 24,
 			tempo: 90,
-			beatsPerChord: 4
+			timeSignature: '4/4',
+			noteValue: 1
 		},
 	   'Pachelbel': {
 			pattern: ['I/5', 'V', 'vi/5', 'iii', 'IV/5', 'I', 'IV', 'V'],
 			length: 16,
 			tempo: 110,
-			beatsPerChord: 2
+			timeSignature: '4/4',
+			noteValue: 2
 		},
     '12-Bar Blues': {
         pattern: ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'I'],
         length: 24,
         tempo: 120,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
 	'Andalusian Cadence ': {
         pattern: ['i', 'VII', 'VI', 'V'],
         length: 16,
         tempo: 80,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
     'Doo-Wop': {
         pattern: ['I', 'vi', 'ii', 'V'],
         length: 16,
         tempo: 120,
-        beatsPerChord: 2
+        timeSignature: '4/4',
+        noteValue: 2
     },
     'Classic Rock': {
         pattern: ['I', 'bVII', 'bVI', 'V'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
     'Basic Circle of Fifths': {
         pattern: ['I', 'V', 'II', 'VI', 'III', 'IV', 'I'],
         length: 16,
         tempo: 120,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
     },
 	'Slash Notation Example': {
 			pattern: ['I', 'IV/3', 'ii/5', 'V7', 'I/3', 'vi', 'ii', 'V7/5', 'I'],
 			length: 18,
 			tempo: 90,
-			beatsPerChord: 2
+			timeSignature: '4/4',
+			noteValue: 2
 		},
      'Jazz-Friendly Circle of Fifths': {
         pattern: ['ii7', 'V7', 'Imaj7', 'IVmaj7', 'viiø', 'III7', 'vi7', 'II7', 'V7'],
         length: 16,
         tempo: 90,
-        beatsPerChord: 4
+        timeSignature: '4/4',
+        noteValue: 1
      }
 };
 
@@ -1238,3 +1252,38 @@ function getBassNote(root, type, inversion) {
     
     return root;
 }
+
+// Helper functions for time signature handling
+function parseTimeSignature(timeSignature) {
+    const parts = timeSignature.split('/');
+    return {
+        numerator: parseInt(parts[0], 10),
+        denominator: parseInt(parts[1], 10)
+    };
+}
+
+function getBeatsPerBar(timeSignature) {
+    const { numerator, denominator } = parseTimeSignature(timeSignature);
+    
+    // For compound time signatures (denominators 8), calculate differently
+    if (denominator === 8) {
+        // Compound time: group beats by 3
+        if (numerator === 6) return 2;  // 6/8 = 2 dotted quarter beats
+        if (numerator === 9) return 3;  // 9/8 = 3 dotted quarter beats  
+        if (numerator === 12) return 4; // 12/8 = 4 dotted quarter beats
+        return Math.ceil(numerator / 3); // General compound time
+    }
+    
+    // For simple time signatures, numerator is the number of beats
+    return numerator;
+}
+
+function calculateChordDurationInBeats(timeSignature, noteValue) {
+    const beatsPerBar = getBeatsPerBar(timeSignature);
+    return beatsPerBar / noteValue;
+}
+
+// Make functions globally accessible
+window.parseTimeSignature = parseTimeSignature;
+window.getBeatsPerBar = getBeatsPerBar;
+window.calculateChordDurationInBeats = calculateChordDurationInBeats;

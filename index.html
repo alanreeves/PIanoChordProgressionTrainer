@@ -380,9 +380,25 @@
                                 </div>
                             </div>
                             <div class="col-6 mb-2">
-                                <label for="beats" class="form-label">Beats per chord:</label>
+                                <label for="time-signature" class="form-label">Time Signature:</label>
                                 <div class="input-group input-group-sm">
-                                    <input type="number" id="beats" class="form-control" value="4" min="1" max="16">
+                                    <select id="time-signature" class="form-select">
+                                        <option value="2/4">2/4</option>
+                                        <option value="3/4">3/4</option>
+                                        <option value="4/4" selected>4/4</option>
+                                        <option value="5/4">5/4</option>
+                                        <option value="6/8">6/8</option>
+                                        <option value="7/8">7/8</option>
+                                        <option value="9/8">9/8</option>
+                                        <option value="12/8">12/8</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <label for="note-value" class="form-label">Note Value:</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" id="note-value" class="form-control" value="1" min="1" max="16">
+                                    <span class="input-group-text">chords/bar</span>
                                 </div>
                             </div>
                             <div class="col-6 mb-2">

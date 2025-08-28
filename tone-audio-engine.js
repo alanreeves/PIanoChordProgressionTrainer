@@ -355,16 +355,20 @@ function playChordSound(root, type, inversion) {
     // Check if arpeggiation is enabled
     const arpeggiate = document.getElementById('arpeggiate-chord').checked;
     
-    // Calculate chord duration in seconds based on BPM
+    // Calculate chord duration in seconds based on BPM, time signature, and note value
     // Default to 2 seconds if not in a practice session
     let duration = 2.0;
     
-    if (document.getElementById('beats') && document.getElementById('tempo')) {
+    if (document.getElementById('time-signature') && document.getElementById('tempo') && document.getElementById('note-value')) {
         const bpm = parseInt(document.getElementById('tempo').value, 10);
-        const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
+        const timeSignature = document.getElementById('time-signature').value;
+        const noteValue = parseInt(document.getElementById('note-value').value, 10);
         
-        // Duration in seconds = (beats per chord * 60) / BPM
-        duration = (beatsPerChord * 60) / bpm;
+        // Calculate chord duration in beats
+        const chordDurationInBeats = calculateChordDurationInBeats(timeSignature, noteValue);
+        
+        // Duration in seconds = (chord duration in beats * 60) / BPM
+        duration = (chordDurationInBeats * 60) / bpm;
     }
     
     // Play the chord (apply 50% duration for staccato)

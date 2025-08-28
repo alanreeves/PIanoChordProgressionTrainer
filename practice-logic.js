@@ -15,6 +15,8 @@ let waitingForStep = false; // Track if we're waiting for next step
 let progressionGenerated = false; // Track if a progression has been generated
 let isPracticeBeat = false; // Track if we're in a practice beat period
 let practiceBeatsRemaining = 0; // Counter for remaining practice beats
+let currentChordRepetitions = 0; // Track how many times current chord has been played
+let totalChordRepetitions = 1; // Total times current chord should be played based on note value
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
@@ -22,13 +24,16 @@ const stopBtn = document.getElementById('stop-btn');
 const rewindBtn = document.getElementById('rewind-btn');
 const countdownDisplay = document.getElementById('countdown-display');
 
-// Function to calculate milliseconds from BPM
-function getMillisecondsFromBPM(bpm, beatsPerChord) {
+// Function to calculate milliseconds from BPM using time signature and note value
+function getMillisecondsFromBPM(bpm, timeSignature, noteValue) {
     // Calculate milliseconds per beat: (60,000 ms / BPM)
     const msPerBeat = (60 * 1000) / bpm;
     
+    // Calculate chord duration in beats based on time signature and note value
+    const chordDurationInBeats = calculateChordDurationInBeats(timeSignature, noteValue);
+    
     // Calculate total chord duration in milliseconds
-    return msPerBeat * beatsPerChord;
+    return msPerBeat * chordDurationInBeats;
 }
 
 // New function to start the standalone metronome
@@ -42,10 +47,14 @@ function startMetronome() {
     
     // Get the tempo from the interface
     const bpm = parseInt(document.getElementById('tempo').value, 10);
-    const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
+    const timeSignature = document.getElementById('time-signature').value;
+    const noteValue = parseInt(document.getElementById('note-value').value, 10);
     
     // Calculate beat interval duration in milliseconds
     const msPerBeat = (60 * 1000) / bpm;
+    
+    // Get beats per bar for the metronome pattern
+    const beatsPerBar = getBeatsPerBar(timeSignature);
     
     // We'll sync metronome with the main beat of each chord
     playMetronomeClick(true); // Play initial downbeat
@@ -58,8 +67,8 @@ function startMetronome() {
         }
         
         // This will be in sync with the beat counter
-        // true for first beat of chord (downbeat), false for others
-        playMetronomeClick(currentBeat % beatsPerChord === 0);
+        // true for first beat of bar (downbeat), false for others
+        playMetronomeClick(currentBeat % beatsPerBar === 0);
     }, msPerBeat);
 }
 
@@ -109,6 +118,11 @@ function startPractice() {
     isRunning = true;
     startBtn.disabled = true;
     stopBtn.disabled = false;
+    
+    // Reset chord repetition counters
+    currentChordIndex = -1;
+    currentChordRepetitions = 0;
+    totalChordRepetitions = 1;
     
     // If Start is pressed explicitly, disable step mode
     if (!stepMode) {
@@ -161,6 +175,8 @@ function startLeadInBeats() {
     
     // Play first beat immediately with metronome click
     if (document.getElementById('metronome').checked) {
+        const timeSignature = document.getElementById('time-signature').value;
+        const beatsPerBar = getBeatsPerBar(timeSignature);
         playMetronomeClick(true); // Play as downbeat
     }
     
@@ -183,6 +199,8 @@ function startLeadInBeats() {
         
         // Play metronome click if enabled
         if (document.getElementById('metronome').checked) {
+            const timeSignature = document.getElementById('time-signature').value;
+            const beatsPerBar = getBeatsPerBar(timeSignature);
             playMetronomeClick(remainingBeats === 0); // True for last beat as downbeat
         }
         
@@ -201,13 +219,15 @@ function startBeatCounter() {
     
     // Get settings
     const bpm = parseInt(document.getElementById('tempo').value, 10);
+    const timeSignature = document.getElementById('time-signature').value;
+    const noteValue = parseInt(document.getElementById('note-value').value, 10);
     
-    // In practice beat mode, we always use 1 beat at a time
+    // Calculate beats per chord from time signature and note value
     let beatsPerChord;
     if (isPracticeBeat) {
         beatsPerChord = 1;
     } else {
-        beatsPerChord = parseInt(document.getElementById('beats').value, 10);
+        beatsPerChord = calculateChordDurationInBeats(timeSignature, noteValue);
     }
     
     // Calculate beat interval duration in milliseconds
@@ -308,8 +328,10 @@ function stepChord() {
         stepMode = true;
         document.getElementById('step-btn').classList.add('step-active');
         
-        // Reset chord index to -1 so next step will show first chord
+        // Reset chord repetition counters
         currentChordIndex = -1;
+        currentChordRepetitions = 0;
+        totalChordRepetitions = 1;
         waitingForStep = false;
         
         // Start metronome if enabled
@@ -336,6 +358,12 @@ function stepChord() {
 function playNextChord() {
     if (!isRunning) return;
     
+    // Check if we have a valid progression
+    if (!currentProgression || currentProgression.length === 0) {
+        console.warn('No chord progression available');
+        return;
+    }
+    
     // Check if we're in a practice beat period
     if (isPracticeBeat) {
         if (practiceBeatsRemaining > 0) {
@@ -346,9 +374,11 @@ function playNextChord() {
             currentBeat = 0;
             startBeatCounter();
             
-            // Schedule next beat
+            // Schedule next beat - use proper time signature and note value
             const bpm = parseInt(document.getElementById('tempo').value, 10);
-            const chordDuration = getMillisecondsFromBPM(bpm, 1); // 1 beat at a time
+            const timeSignature = document.getElementById('time-signature').value;
+            const noteValue = parseInt(document.getElementById('note-value').value, 10);
+            const chordDuration = getMillisecondsFromBPM(bpm, timeSignature, noteValue) / calculateChordDurationInBeats(timeSignature, noteValue); // 1 beat at a time
             
             delayTimeout = setTimeout(() => {
                 if (isRunning) {
@@ -363,11 +393,28 @@ function playNextChord() {
         }
     }
     
-    // Move to next chord or loop back to beginning
-    currentChordIndex = (currentChordIndex + 1) % currentProgression.length;
-    
-    // Update active chord pill
-    updateActivePill(currentChordIndex);
+    // Handle initial state when currentChordIndex is -1
+    if (currentChordIndex === -1) {
+        currentChordIndex = 0;
+        currentChordRepetitions = 1;
+        // Update active chord pill
+        updateActivePill(currentChordIndex);
+    } else {
+        // Check if we need to play the same chord again (based on note value)
+        if (currentChordRepetitions < totalChordRepetitions) {
+            // Increment repetition counter
+            currentChordRepetitions++;
+        } else {
+            // Move to next chord or loop back to beginning
+            currentChordIndex = (currentChordIndex + 1) % currentProgression.length;
+            
+            // Reset repetition counter for new chord
+            currentChordRepetitions = 1;
+            
+            // Update active chord pill
+            updateActivePill(currentChordIndex);
+        }
+    }
     
     // Get current chord
     const chord = currentProgression[currentChordIndex];
@@ -386,8 +433,14 @@ function playNextChord() {
     
     // Get settings
     const bpm = parseInt(document.getElementById('tempo').value, 10);
-    const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
-    const chordDuration = getMillisecondsFromBPM(bpm, beatsPerChord);
+    const timeSignature = document.getElementById('time-signature').value;
+    const noteValue = parseInt(document.getElementById('note-value').value, 10);
+    
+    // Calculate how many times each chord should be played based on note value
+    totalChordRepetitions = noteValue;
+    
+    // Calculate chord duration based on time signature and note value
+    const chordDuration = getMillisecondsFromBPM(bpm, timeSignature, noteValue);
     
     // Check if practice beats are enabled
     const practiceModeEnabled = document.getElementById('practice-beats') && 
@@ -398,7 +451,7 @@ function playNextChord() {
         delayTimeout = setTimeout(() => {
             waitingForStep = true;
             // If we're at the end of the progression, handle looping
-            if (currentChordIndex === currentProgression.length - 1) {
+            if (currentChordIndex === currentProgression.length - 1 && currentChordRepetitions >= totalChordRepetitions) {
                 clearInterval(beatInterval);
                 // Don't automatically start countdown - wait for step
             }
@@ -410,14 +463,14 @@ function playNextChord() {
                 if (practiceModeEnabled) {
                     // Set up for practice beats
                     isPracticeBeat = true;
-                    practiceBeatsRemaining = beatsPerChord; // Full number of practice beats
+                    practiceBeatsRemaining = calculateChordDurationInBeats(timeSignature, noteValue); // Full number of practice beats
                     playNextChord(); // Continue with practice beats
-                } else if (currentChordIndex === currentProgression.length - 1) {
+                } else if (currentChordIndex === currentProgression.length - 1 && currentChordRepetitions >= totalChordRepetitions) {
                     // End of progression, start lead-in beats for next repetition
                     clearInterval(beatInterval);
                     startLeadInBeats();
                 } else {
-                    // Regular progression to next chord
+                    // Regular progression to next chord or repeat current chord
                     playNextChord();
                 }
             }
@@ -428,7 +481,7 @@ function playNextChord() {
 // Rewind to previous chord
 function rewindChord() {
     // If no progression has been generated, do nothing
-    if (!progressionGenerated) {
+    if (!progressionGenerated || !currentProgression || currentProgression.length === 0) {
         return;
     }
     
@@ -450,16 +503,29 @@ function rewindChord() {
         // Set to the last chord
         currentChordIndex = currentProgression.length - 1;
         
-        // Now rewind to the previous (or last) chord
-        currentChordIndex = Math.max(0, currentChordIndex - 1);
-    } else {
-        // If currently on the first chord, loop to the last chord
-        if (currentChordIndex <= 0) {
-            currentChordIndex = currentProgression.length;
-        }
+        // Reset repetition counter
+        currentChordRepetitions = 0;
         
-        // Go back one chord
-        currentChordIndex = (currentChordIndex - 1) % currentProgression.length;
+        // Now rewind to the previous (or last) chord
+        if (currentChordIndex > 0) {
+            currentChordIndex = currentChordIndex - 1;
+            currentChordRepetitions = 0; // Reset repetitions for new chord
+        }
+    } else {
+        // If we're in the middle of repeating a chord, go back to the start of that chord's repetitions
+        if (currentChordRepetitions > 1) {
+            currentChordRepetitions = 1; // Reset to first repetition of current chord
+        } else {
+            // If currently on the first repetition, go to the previous chord
+            if (currentChordIndex > 0) {
+                currentChordIndex = currentChordIndex - 1;
+                currentChordRepetitions = 0; // Will be set to 1 in playNextChord
+            } else {
+                // If currently on the first chord, loop to the last chord
+                currentChordIndex = currentProgression.length - 1;
+                currentChordRepetitions = 0; // Will be set to 1 in playNextChord
+            }
+        }
     }
     
     // Clear any pending timers
@@ -488,10 +554,11 @@ function rewindChord() {
     if (stepMode) {
         waitingForStep = true;
     } else {
-        // Schedule next chord - get total duration from BPM and beats per chord
+        // Schedule next chord - get total duration from BPM, time signature, and note value
         const bpm = parseInt(document.getElementById('tempo').value, 10);
-        const beatsPerChord = parseInt(document.getElementById('beats').value, 10);
-        const chordDuration = getMillisecondsFromBPM(bpm, beatsPerChord);
+        const timeSignature = document.getElementById('time-signature').value;
+        const noteValue = parseInt(document.getElementById('note-value').value, 10);
+        const chordDuration = getMillisecondsFromBPM(bpm, timeSignature, noteValue);
         
         delayTimeout = setTimeout(() => {
             if (isRunning) {

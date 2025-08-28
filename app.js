@@ -57,7 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const styleDefaults = progressionStyles[initialStyle];
             document.getElementById('length').value = styleDefaults.length;
             document.getElementById('tempo').value = styleDefaults.tempo;
-            document.getElementById('beats').value = styleDefaults.beatsPerChord;
+            document.getElementById('time-signature').value = styleDefaults.timeSignature;
+            document.getElementById('note-value').value = styleDefaults.noteValue;
+            
+            // Set lead-in beats to match the time signature
+            const beatsPerBar = getBeatsPerBar(styleDefaults.timeSignature);
+            document.getElementById('lead-in-beats').value = beatsPerBar;
             
             // Set minimum length based on pattern if applicable
             if (initialStyle !== 'Random' && styleDefaults.pattern && styleDefaults.pattern.length > 0) {
@@ -257,8 +262,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update tempo input
                 tempoInput.value = styleDefaults.tempo;
                 
-                // Update beats per chord input
-                beatsInput.value = styleDefaults.beatsPerChord;
+                // Update time signature and note value inputs
+                document.getElementById('time-signature').value = styleDefaults.timeSignature;
+                document.getElementById('note-value').value = styleDefaults.noteValue;
+                
+                // Update lead-in beats to match the time signature
+                const beatsPerBar = getBeatsPerBar(styleDefaults.timeSignature);
+                document.getElementById('lead-in-beats').value = beatsPerBar;
+                
+                // Update note value max based on time signature
+                updateNoteValueMax();
                 
                 // Set minimum length based on pattern if applicable
                 if (style !== 'Random' && styleDefaults.pattern && styleDefaults.pattern.length > 0) {
@@ -304,6 +317,34 @@ document.addEventListener('DOMContentLoaded', function() {
             radio.addEventListener('change', clearProgressionDisplay);
         });
         
+        // Function to update note value max based on time signature
+        function updateNoteValueMax() {
+            const timeSignature = document.getElementById('time-signature').value;
+            const noteValueInput = document.getElementById('note-value');
+            const beatsPerBar = getBeatsPerBar(timeSignature);
+            noteValueInput.setAttribute('max', beatsPerBar);
+            
+            // Ensure current value doesn't exceed max
+            if (parseInt(noteValueInput.value) > beatsPerBar) {
+                noteValueInput.value = beatsPerBar;
+            }
+        }
+        
+        // Add event listener for time signature changes
+        document.getElementById('time-signature').addEventListener('change', function() {
+            updateNoteValueMax();
+            
+            // Update lead-in beats to match time signature if it's currently at default (4)
+            const leadInBeatsInput = document.getElementById('lead-in-beats');
+            if (leadInBeatsInput && leadInBeatsInput.value === '4') {
+                const beatsPerBar = getBeatsPerBar(this.value);
+                leadInBeatsInput.value = beatsPerBar;
+            }
+        });
+        
+        // Initialize note value max
+        updateNoteValueMax();
+        
         // Initialize the BPM slider
         initBpmSlider();
         
@@ -314,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const settingsToggleBtn = document.getElementById('settings-btn');
             const settingsCloseBtn = document.querySelector('.settings-close-btn');
             const settingsOverlay = document.querySelector('.settings-overlay');
-            const mainContent = document.querySelector('.main-content');
 
             // Function to toggle the settings dropdown
             function toggleSettingsPanel() {
@@ -351,8 +391,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Close panel when Escape key is pressed
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && settingsPanel.classList.contains('active')) {
-                    toggleSettingsPanel();
+                if (e.key === 'Escape') {
+                    const settingsPanel = document.querySelector('.settings-dropdown-container');
+                    if (settingsPanel && settingsPanel.classList.contains('active')) {
+                        // Close settings panel if open
+                        settingsPanel.classList.remove('active');
+                        document.querySelector('.settings-dropdown').classList.remove('active');
+                        document.querySelector('.settings-overlay').classList.remove('active');
+                    }
                 }
             });
         }
@@ -364,82 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             initPWAControls();
         }, 500);
-            
-        // Side panel functionality
-        const sidePanel = document.querySelector('.side-panel');
-        const panelToggleBtn = document.querySelector('.panel-toggle-btn');
-        const panelOverlay = document.querySelector('.panel-overlay');
-        const mainContent = document.querySelector('.main-content');
 
-        // Function to toggle the side panel
-        function toggleSidePanel() {
-            sidePanel.classList.toggle('open');
-            panelOverlay.classList.toggle('active');
-            mainContent.classList.toggle('panel-open');
-            
-            // Save state to localStorage
-            const isPanelOpen = sidePanel.classList.contains('open');
-            localStorage.setItem('sidePanelOpen', isPanelOpen ? 'true' : 'false');
-        }
-
-        // Toggle button click handler
-        if (panelToggleBtn) {
-            panelToggleBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                toggleSidePanel();
-            });
-        }
-
-        // Close panel when clicking overlay
-        if (panelOverlay) {
-            panelOverlay.addEventListener('click', function() {
-                toggleSidePanel();
-            });
-        }
-
-        // Close panel when Escape key is pressed
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidePanel.classList.contains('open')) {
-                toggleSidePanel();
-            }
-        });
-
-        // Set panel to open by default
-        sidePanel.classList.add('open');
-        panelOverlay.classList.add('active');
-        mainContent.classList.add('panel-open');
-        localStorage.setItem('sidePanelOpen', 'true');
-
-        // For touch devices, add swipe detection
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        // Listen for touch start
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-
-        // Listen for touch end
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-
-        // Handle the swipe
-        function handleSwipe() {
-            const swipeThreshold = 100; // Minimum distance for a swipe
-            
-            // Left to right swipe (open panel)
-            if (touchEndX - touchStartX > swipeThreshold && !sidePanel.classList.contains('open')) {
-                toggleSidePanel();
-            }
-            
-            // Right to left swipe (close panel)
-            if (touchStartX - touchEndX > swipeThreshold && sidePanel.classList.contains('open')) {
-                toggleSidePanel();
-            }
-        }
-        
         console.log('Piano Chord Progression Trainer initialized successfully');
     }
     

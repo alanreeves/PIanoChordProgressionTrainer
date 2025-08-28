@@ -1163,8 +1163,8 @@ option {
     top: -800px; /* Start offscreen */
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 600px; /* Narrower than main content */
+    width: 100%;
+    max-width: 100%; /* Full screen width */
     max-height: 80vh;
     background-color: var(--dark-card);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
@@ -1259,6 +1259,31 @@ option {
 #practice-beats {
     height: 1.25rem;
     width: 2.5rem;
+}
+
+/* Add specific styling for number inputs to prevent chevron overlay */
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Specific styling for note value input */
+#note-value {
+    -moz-appearance: textfield;
+    appearance: textfield;
+    padding: 0.25rem 0.5rem; /* Add padding to prevent text overlap */
+}
+
+#note-value::-webkit-outer-spin-button,
+#note-value::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Show "P" for practice beats with a different color */
