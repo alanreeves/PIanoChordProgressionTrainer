@@ -1,6 +1,6 @@
 {
-  "version": "1.0.2",
-  "buildTime": "2025-08-28T11:54:15Z",
-  "description": "Reverted unnecessary Android audio changes",
-  "cacheVersion": "v1.0.2"
+  "version": "1.0.3",
+  "buildTime": "2025-08-28T13:53:23Z",
+  "description": "Fixed PWA Manager initialization and version display issues",
+  "cacheVersion": "v1.0.3"
 }

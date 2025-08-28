@@ -559,6 +559,8 @@ let pwaManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     pwaManager = new PWAManager();
+    // Make sure it's available globally after creation
+    window.pwaManager = pwaManager;
 });
 
 // Export for use in other modules
@@ -566,6 +568,5 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = PWAManager;
 }
 
-// Make available globally
+// Make class available globally
 window.PWAManager = PWAManager;
-window.pwaManager = pwaManager;

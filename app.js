@@ -360,8 +360,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize the settings dropdown functionality
         initSettingsDropdown();
         
-        // Initialize PWA controls
-        initPWAControls();
+        // Initialize PWA controls with a small delay to ensure PWA Manager is ready
+        setTimeout(() => {
+            initPWAControls();
+        }, 500);
             
         // Side panel functionality
         const sidePanel = document.querySelector('.side-panel');
@@ -444,15 +446,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Function to initialize PWA controls
         function initPWAControls() {
             // Update version display
-            function updateVersionDisplay() {
+            async function updateVersionDisplay() {
                 const versionDisplay = document.getElementById('app-version-display');
                 const connectionStatus = document.getElementById('connection-status');
                 const installStatus = document.getElementById('install-status');
                 
+                // Try to get version from PWA Manager first
                 if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
                     const version = window.pwaManager.getVersion();
                     if (versionDisplay) {
-                        versionDisplay.textContent = version || '1.0.0';
+                        versionDisplay.textContent = version || 'Loading...';
                     }
                     
                     // Update connection status
@@ -468,8 +471,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         installStatus.className = isPWA ? 'text-success' : 'text-muted';
                     }
                 } else {
+                    // PWA Manager not available, try to fetch version directly
                     if (versionDisplay) {
-                        versionDisplay.textContent = '1.0.0';
+                        try {
+                            const response = await fetch('/version.json');
+                            const versionData = await response.json();
+                            versionDisplay.textContent = versionData.version || '1.0.0';
+                        } catch (error) {
+                            console.error('Failed to load version:', error);
+                            versionDisplay.textContent = '1.0.0';
+                        }
+                    }
+                    
+                    // Update connection status
+                    if (connectionStatus) {
+                        connectionStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
+                        connectionStatus.className = navigator.onLine ? 'small text-success' : 'small text-warning';
+                    }
+                    
+                    // Update install status
+                    if (installStatus) {
+                        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                                     window.navigator.standalone === true;
+                        installStatus.textContent = isPWA ? 'Installed' : 'Not Installed';
+                        installStatus.className = isPWA ? 'text-success' : 'text-muted';
                     }
                 }
             }
@@ -490,7 +515,26 @@ document.addEventListener('DOMContentLoaded', function() {
                             updateVersionDisplay();
                         }, 2000);
                     } else {
-                        alert('PWA Manager not available');
+                        // PWA Manager not available, try manual update check
+                        this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Checking...';
+                        this.disabled = true;
+                        
+                        // Force service worker update if available
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.getRegistration().then(registration => {
+                                if (registration) {
+                                    registration.update().then(() => {
+                                        console.log('Service worker update triggered');
+                                    });
+                                }
+                            });
+                        }
+                        
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check for Updates';
+                            this.disabled = false;
+                            updateVersionDisplay();
+                        }, 2000);
                     }
                 });
             }
@@ -521,8 +565,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
-            // Initial version display
+            // Initial version display with retry
             updateVersionDisplay();
+            
+            // Retry version display after a short delay if PWA Manager wasn't ready
+            setTimeout(() => {
+                updateVersionDisplay();
+            }, 1000);
             
             // Update version display periodically
             setInterval(updateVersionDisplay, 10000); // Every 10 seconds
