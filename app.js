@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to initialize the rest of the app
     window.initializeApp = function() {
+        // Initialize PWA Manager if available
+        if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+            console.log('PWA Manager available, version:', window.pwaManager.getVersion());
+        }
+        
 		// Display initial welcome message
 		const progressionDisplay = document.getElementById('progression-display');
 		if (progressionDisplay) {
@@ -320,6 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initialize the settings dropdown functionality
         initSettingsDropdown();
+        
+        // Initialize PWA controls
+        initPWAControls();
             
         // Side panel functionality
         const sidePanel = document.querySelector('.side-panel');
@@ -397,6 +405,63 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         console.log('Piano Chord Progression Trainer initialized successfully');
+    }
+    
+    // Function to initialize PWA controls
+    function initPWAControls() {
+        // Update version display
+        function updateVersionDisplay() {
+            const versionDisplay = document.getElementById('app-version-display');
+            const connectionStatus = document.getElementById('connection-status');
+            
+            if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+                const version = window.pwaManager.getVersion();
+                if (versionDisplay) {
+                    versionDisplay.textContent = version || '1.0.0';
+                }
+                
+                // Update connection status
+                if (connectionStatus) {
+                    connectionStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
+                    connectionStatus.className = navigator.onLine ? 'small text-success' : 'small text-warning';
+                }
+            } else {
+                if (versionDisplay) {
+                    versionDisplay.textContent = '1.0.0';
+                }
+            }
+        }
+        
+        // Check for updates button handler
+        const updateBtn = document.getElementById('check-update-btn');
+        if (updateBtn) {
+            updateBtn.addEventListener('click', function() {
+                if (typeof window.pwaManager !== 'undefined' && window.pwaManager) {
+                    this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Checking...';
+                    this.disabled = true;
+                    
+                    window.pwaManager.checkForUpdates();
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check for Updates';
+                        this.disabled = false;
+                        updateVersionDisplay();
+                    }, 2000);
+                } else {
+                    alert('PWA Manager not available');
+                }
+            });
+        }
+        
+        // Initial version display
+        updateVersionDisplay();
+        
+        // Update version display periodically
+        setInterval(updateVersionDisplay, 10000); // Every 10 seconds
+        
+        // Listen for online/offline events
+        window.addEventListener('online', updateVersionDisplay);
+        window.addEventListener('offline', updateVersionDisplay);
     }
     
     // Function to initialize and sync BPM slider with tempo input

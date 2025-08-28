@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon-preview { margin: 10px; display: inline-block; text-align: center; }
+        .icon-preview img { border: 1px solid #ccc; }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <h2>Piano Chords PWA Icon Generator</h2>
+    <p>This page generates PNG icons from the SVG. Open developer tools and run the generation script.</p>
+    
+    <div id="previews"></div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        // Icon sizes needed for PWA
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function generateIcons() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const previewsDiv = document.getElementById('previews');
+            
+            // SVG content (same as in icon.svg)
+            const svgContent = `
+                <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#7e57c2;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#5c6bc0;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="512" height="512" rx="64" fill="url(#bgGradient)"/>
+                  <rect x="80" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="130" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="180" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="230" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="280" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="330" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="380" y="200" width="40" height="120" fill="#eceff1" rx="4"/>
+                  <rect x="105" y="200" width="25" height="75" fill="#263238" rx="2"/>
+                  <rect x="155" y="200" width="25" height="75" fill="#263238" rx="2"/>
+                  <rect x="255" y="200" width="25" height="75" fill="#263238" rx="2"/>
+                  <rect x="305" y="200" width="25" height="75" fill="#263238" rx="2"/>
+                  <rect x="355" y="200" width="25" height="75" fill="#263238" rx="2"/>
+                  <circle cx="150" cy="150" r="12" fill="#26a69a"/>
+                  <rect x="162" y="120" width="3" height="30" fill="#26a69a"/>
+                  <circle cx="300" cy="370" r="12" fill="#ec407a"/>
+                  <rect x="312" y="340" width="3" height="30" fill="#ec407a"/>
+                  <circle cx="380" cy="130" r="12" fill="#4db6ac"/>
+                  <rect x="392" y="100" width="3" height="30" fill="#4db6ac"/>
+                  <text x="256" y="80" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white">Piano</text>
+                  <text x="256" y="440" font-family="Arial, sans-serif" font-size="24" font-weight="normal" text-anchor="middle" fill="white">Chords</text>
+                </svg>
+            `;
+            
+            sizes.forEach(size => {
+                canvas.width = size;
+                canvas.height = size;
+                
+                const img = new Image();
+                const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(svgBlob);
+                
+                img.onload = function() {
+                    ctx.clearRect(0, 0, size, size);
+                    ctx.drawImage(img, 0, 0, size, size);
+                    
+                    // Convert to PNG and create download link
+                    canvas.toBlob(function(blob) {
+                        const link = document.createElement('a');
+                        link.download = `icon-${size}x${size}.png`;
+                        link.href = URL.createObjectURL(blob);
+                        
+                        // Create preview
+                        const preview = document.createElement('div');
+                        preview.className = 'icon-preview';
+                        
+                        const previewImg = document.createElement('img');
+                        previewImg.src = link.href;
+                        previewImg.width = Math.min(size, 128);
+                        previewImg.height = Math.min(size, 128);
+                        
+                        const label = document.createElement('div');
+                        label.textContent = `${size}x${size}`;
+                        
+                        const downloadBtn = document.createElement('button');
+                        downloadBtn.textContent = 'Download';
+                        downloadBtn.onclick = () => link.click();
+                        
+                        preview.appendChild(previewImg);
+                        preview.appendChild(label);
+                        preview.appendChild(downloadBtn);
+                        previewsDiv.appendChild(preview);
+                    }, 'image/png');
+                    
+                    URL.revokeObjectURL(url);
+                };
+                
+                img.src = url;
+            });
+        }
+        
+        // Auto-generate icons when page loads
+        window.addEventListener('load', generateIcons);
+        
+        console.log('Icon generator ready. Icons will be generated automatically.');
+        console.log('You can also call generateIcons() manually from the console.');
+    </script>
+</body>
+</html>

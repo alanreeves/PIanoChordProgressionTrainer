@@ -9,6 +9,12 @@
     --dark-input: #455a64;    /* Even lighter blue-gray for inputs */
     --light-text: #eceff1;    /* Off-white for text */
     --muted-text: #b0bec5;    /* Muted blue-gray for secondary text */
+    
+    /* iOS Safe Area Support */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
 }
 
 body {
@@ -17,6 +23,28 @@ body {
     color: var(--light-text);
     margin: 0;
     padding: 0;
+}
+
+/* iOS-specific styles */
+body.ios-device {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+}
+
+/* PWA mode styles */
+body.pwa-mode {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.pwa-mode .app-header {
+    padding-top: calc(0.6rem + var(--safe-area-inset-top));
+}
+
+body.pwa-mode .footer-bar {
+    padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
 }
 
 .container {
@@ -1264,4 +1292,101 @@ option {
     text-align: center;
     width: 100%;
     padding: 1rem 0.5rem;
+}
+
+/* PWA-specific styles */
+.version-badge {
+    display: inline-block;
+    margin-left: 0.25rem;
+}
+
+.version-info {
+    font-size: 0.75rem;
+    color: var(--muted-text);
+    margin-left: 0.5rem;
+}
+
+.update-notification,
+.connection-status,
+.ios-install-hint {
+    position: fixed;
+    top: 70px; /* Below header */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 90%;
+    max-width: 500px;
+    pointer-events: none;
+}
+
+.update-notification .alert,
+.connection-status .alert,
+.ios-install-hint .alert {
+    pointer-events: all;
+    animation: slideInFromTop 0.5s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* iOS PWA install hint specific styling */
+.ios-install-hint .alert {
+    background: linear-gradient(135deg, var(--accent1), var(--accent3));
+    border: none;
+    color: white;
+}
+
+.ios-install-hint .btn-close {
+    filter: invert(1);
+}
+
+/* PWA display mode detection */
+@media (display-mode: standalone) {
+    body {
+        padding-top: var(--safe-area-inset-top);
+    }
+    
+    .app-header {
+        padding-top: calc(0.6rem + var(--safe-area-inset-top));
+    }
+    
+    .ios-install-hint {
+        display: none !important;
+    }
+}
+
+/* Enhanced version display in footer */
+.footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-bar .version-info {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive adjustments for notifications */
+@media (max-width: 576px) {
+    .update-notification,
+    .connection-status,
+    .ios-install-hint {
+        width: 95%;
+        top: 60px;
+    }
+    
+    .version-badge .badge {
+        font-size: 0.65rem;
+    }
 }
