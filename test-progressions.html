@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Chord Progressions</title>
+    <script src="music-theory.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px; padding: 10px; font-size: 16px; }
+        .test-results { margin: 20px 0; padding: 15px; background-color: #f0f0f0; border-radius: 5px; }
+        .chord-list { list-style-type: none; padding: 0; }
+        .chord-list li { padding: 5px; margin: 2px 0; background-color: #e0e0e0; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Test Improved Chord Progressions</h1>
+    <button onclick="testProgression('C', 'Major')">Test C Major</button>
+    <button onclick="testProgression('Am', 'Minor')">Test A Minor</button>
+    <button onclick="testMultipleProgressions()">Test Multiple Progressions</button>
+    <button onclick="testRepetitionAvoidance()">Test Repetition Avoidance</button>
+    
+    <div id="output"></div>
+
+    <script>
+        // Mock the required DOM functions for our test
+        document.querySelectorAll = function(selector) {
+            if (selector.includes('inversion')) {
+                return [
+                    { value: 'root' },
+                    { value: 'first' },
+                    { value: 'second' }
+                ];
+            }
+            return [];
+        };
+
+        function testProgression(key, mode) {
+            const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished'];
+            const selectedInversions = ['root', 'first', 'second'];
+            const length = 8;
+            
+            const progression = generateChordProgression(key, length, selectedTypes, selectedInversions, 'Random');
+            
+            let output = `<div class="test-results"><h2>${key} ${mode} Random Progression:</h2><ul class="chord-list">`;
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion}) - Scale Degree: ${chord.degreeIndex}</li>`;
+            });
+            output += '</ul></div>';
+            
+            document.getElementById('output').innerHTML = output;
+        }
+
+        function testMultipleProgressions() {
+            let output = '<div class="test-results"><h2>Multiple Progression Test:</h2>';
+            
+            for (let i = 0; i < 3; i++) {
+                const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished'];
+                const selectedInversions = ['root', 'first', 'second'];
+                const length = 6;
+                
+                const progression1 = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+                const progression2 = generateChordProgression('Am', length, selectedTypes, selectedInversions, 'Random');
+                
+                output += `<h3>Test Run ${i + 1}:</h3>`;
+                output += `<h4>C Major:</h4><ul class="chord-list">`;
+                progression1.forEach((chord, index) => {
+                    output += `<li>${chord.root} ${chord.type} (${chord.inversion}) - Degree: ${chord.degreeIndex}</li>`;
+                });
+                output += `</ul>`;
+                
+                output += `<h4>A Minor:</h4><ul class="chord-list">`;
+                progression2.forEach((chord, index) => {
+                    output += `<li>${chord.root} ${chord.type} (${chord.inversion}) - Degree: ${chord.degreeIndex}</li>`;
+                });
+                output += `</ul><hr>`;
+            }
+            
+            output += '</div>';
+            document.getElementById('output').innerHTML = output;
+        }
+
+        function testRepetitionAvoidance() {
+            const selectedTypes = ['major', 'minor', 'dominant7', 'major7'];
+            const selectedInversions = ['root', 'first', 'second'];
+            const length = 12; // Longer progression to test repetition avoidance
+            
+            const progression = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+            
+            // Count repetitions
+            const repetitionCount = {};
+            progression.forEach(chord => {
+                const key = `${chord.root}-${chord.type}`;
+                repetitionCount[key] = (repetitionCount[key] || 0) + 1;
+            });
+            
+            let output = '<div class="test-results"><h2>Repetition Avoidance Test:</h2>';
+            output += '<h3>Generated Progression:</h3><ul class="chord-list">';
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion}) - Degree: ${chord.degreeIndex}</li>`;
+            });
+            output += '</ul>';
+            
+            output += '<h3>Repetition Analysis:</h3><ul>';
+            Object.entries(repetitionCount).forEach(([chord, count]) => {
+                output += `<li>${chord}: ${count} time(s)</li>`;
+            });
+            output += '</ul></div>';
+            
+            document.getElementById('output').innerHTML = output;
+        }
+    </script>
+</body>
+</html>

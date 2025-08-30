@@ -211,7 +211,7 @@ const progressionStyles = {
         noteValue: 1
     },
 		'Popular Progression Workout': {
-			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I/3',  'I/3','I/3', 'vi/5', 'ii/3', 'V',
+			pattern: ['I/3', 'IV', 'V', 'I/3', 'ii/3', 'V', 'I/3',  'I/3','I/33', 'vi/5', 'ii/3', 'V',
 			          'I/3', 'iii/3', 'vi', 'IV', 'IV/3', 'vi', 'V',  'I/3','V/5', 'iii', 'IV', 'I/3'],
 			length: 24,
 			tempo: 90,
@@ -898,23 +898,103 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
         let degreeIndex;
         const prevDegreeIndex = progression[i-1].degreeIndex || 0;
         
-        // Use appropriate common next degrees based on key type
+        // Enhanced harmonic relationships for European musical styles
         const commonNextDegrees = isMinorKey ? minorKeyNextDegrees : {
-            0: [3, 4, 5],  // I → IV, V, vi
-            1: [4, 6],     // ii → V, vii°
-            2: [5, 3],     // iii → vi, IV
-            3: [4, 0],     // IV → V, I
-            4: [0, 5],     // V → I, vi
-            5: [3, 1],     // vi → IV, ii
-            6: [0]         // vii° → I
+            0: [3, 4, 5, 1, 6],  // I → IV, V, vi, ii, vii° (with added ii for more variety)
+            1: [4, 6, 0, 3],     // ii → V, vii°, I, IV (added I and IV)
+            2: [5, 3, 0, 4],     // iii → vi, IV, I, V (added I and V)
+            3: [4, 0, 1, 5],     // IV → V, I, ii, vi (added ii and vi)
+            4: [0, 5, 3, 1],     // V → I, vi, IV, ii (added IV and ii)
+            5: [3, 1, 0, 4],     // vi → IV, ii, I, V (added I and V)
+            6: [0, 4, 3]         // vii° → I, V, IV
         };
         
-        // Select from common next degrees, or fall back to random selection
-        if (commonNextDegrees[prevDegreeIndex] && Math.random() < 0.8) {
-            const nextOptions = commonNextDegrees[prevDegreeIndex];
-            degreeIndex = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+        // Additional harmonic relationships for more musical progressions
+        const secondaryProgressions = {
+            0: [1, 2, 6],  // I → ii, iii, vii°
+            1: [2, 5],     // ii → iii, vi
+            2: [1, 6],     // iii → ii, vii°
+            3: [2, 6],     // IV → iii, vii°
+            4: [1, 2, 6],  // V → ii, iii, vii°
+            5: [0, 4],     // vi → I, V
+            6: [1, 2, 3]   // vii° → ii, iii, IV
+        };
+        
+        // Avoid too many repetitions of the same chord
+        const repetitionCount = progression.slice(Math.max(0, i - 3)).filter(chord => chord.degreeIndex === prevDegreeIndex).length;
+        const avoidRepetition = repetitionCount >= 2; // Avoid if same chord appeared in last 3 positions
+        
+        // Select from common next degrees with weighted probabilities
+        if (commonNextDegrees[prevDegreeIndex] && Math.random() < 0.7) {
+            // Prefer common progressions
+            let nextOptions = commonNextDegrees[prevDegreeIndex];
+            
+            // If we need to avoid repetition, filter out the previous chord
+            if (avoidRepetition) {
+                nextOptions = nextOptions.filter(degree => degree !== prevDegreeIndex);
+            }
+            
+            // If we still have options, choose from them
+            if (nextOptions.length > 0) {
+                // Weighted selection - prefer certain progressions
+                let weights = nextOptions.map(degree => {
+                    // Prefer dominant-tonic resolutions (V-I, V-vi)
+                    if ((prevDegreeIndex === 4 && (degree === 0 || degree === 5)) ||
+                        (prevDegreeIndex === 6 && degree === 0)) {
+                        return 3; // Strong resolution
+                    }
+                    // Prefer predominant chords (ii, IV) leading to dominant (V)
+                    if ((prevDegreeIndex === 1 && degree === 4) ||
+                        (prevDegreeIndex === 3 && degree === 4)) {
+                        return 2; // Strong progression
+                    }
+                    return 1; // Default weight
+                });
+                
+                // Normalize weights
+                const totalWeight = weights.reduce((a, b) => a + b, 0);
+                let random = Math.random() * totalWeight;
+                
+                for (let j = 0; j < nextOptions.length; j++) {
+                    random -= weights[j];
+                    if (random <= 0) {
+                        degreeIndex = nextOptions[j];
+                        break;
+                    }
+                }
+                
+                // Fallback if something went wrong
+                if (degreeIndex === undefined) {
+                    degreeIndex = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+                }
+            } else {
+                // If all options were filtered out, choose randomly but avoid repetition
+                let availableDegrees = [...Array(scaleDegrees.length).keys()].filter(degree => degree !== prevDegreeIndex);
+                degreeIndex = availableDegrees[Math.floor(Math.random() * availableDegrees.length)];
+            }
+        } else if (secondaryProgressions[prevDegreeIndex] && Math.random() < 0.8) {
+            // Use secondary progressions for more variety
+            let nextOptions = secondaryProgressions[prevDegreeIndex];
+            
+            // If we need to avoid repetition, filter out the previous chord
+            if (avoidRepetition) {
+                nextOptions = nextOptions.filter(degree => degree !== prevDegreeIndex);
+            }
+            
+            if (nextOptions.length > 0) {
+                degreeIndex = nextOptions[Math.floor(Math.random() * nextOptions.length)];
+            } else {
+                // If all options were filtered out, choose randomly but avoid repetition
+                let availableDegrees = [...Array(scaleDegrees.length).keys()].filter(degree => degree !== prevDegreeIndex);
+                degreeIndex = availableDegrees[Math.floor(Math.random() * availableDegrees.length)];
+            }
         } else {
-            degreeIndex = Math.floor(Math.random() * scaleDegrees.length);
+            // Completely random selection but avoid repetition
+            let availableDegrees = [...Array(scaleDegrees.length).keys()];
+            if (avoidRepetition) {
+                availableDegrees = availableDegrees.filter(degree => degree !== prevDegreeIndex);
+            }
+            degreeIndex = availableDegrees[Math.floor(Math.random() * availableDegrees.length)];
         }
         
         // Get chord info for this degree
@@ -974,49 +1054,59 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
         // Enhancements for more musical chord selections in minor keys
         if (isMinorKey) {
             // For minor v chord, sometimes make it a dominant V if selected
-            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.4) {
+            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.6) {
                 type = 'dominant7';
             }
             
             // For III chord, occasionally make it major7 if selected
-            if (degreeIndex === 2 && selectedTypes.includes('major7') && Math.random() < 0.3) {
+            if (degreeIndex === 2 && selectedTypes.includes('major7') && Math.random() < 0.4) {
                 type = 'major7';
             }
             
             // For iv chord, occasionally make it minor7 if selected
-            if (degreeIndex === 3 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
+            if (degreeIndex === 3 && selectedTypes.includes('minor7') && Math.random() < 0.4) {
                 type = 'minor7';
             }
+            
+            // For VI chord, occasionally make it major7 if selected
+            if (degreeIndex === 5 && selectedTypes.includes('major7') && Math.random() < 0.3) {
+                type = 'major7';
+            }
         } else {
-            // Existing major key enhancements
-            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.7) {
+            // Enhanced major key chord substitutions for more European musical styles
+            if (degreeIndex === 4 && selectedTypes.includes('dominant7') && Math.random() < 0.8) {
                 type = 'dominant7';
             }
             
-            if (degreeIndex === 0 && selectedTypes.includes('major7') && Math.random() < 0.3) {
+            if (degreeIndex === 0 && selectedTypes.includes('major7') && Math.random() < 0.5) {
                 type = 'major7';
             }
             
-            if (degreeIndex === 5 && selectedTypes.includes('minor7') && Math.random() < 0.3) {
+            if (degreeIndex === 5 && selectedTypes.includes('minor7') && Math.random() < 0.5) {
+                type = 'minor7';
+            }
+            
+            // Add ii-V-I progression enhancement
+            if (degreeIndex === 1 && selectedTypes.includes('minor7') && Math.random() < 0.7) {
                 type = 'minor7';
             }
         }
         
-        // Choose inversion based on voice leading (existing code)
+        // Choose inversion based on voice leading with enhanced logic
         let inversion;
-        if (i > 0 && Math.random() < 0.7) {
-            // Voice leading code remains unchanged
+        if (i > 0 && Math.random() < 0.8) { // Increased probability for voice leading
+            // Enhanced voice leading code for smoother progressions
             const prevRoot = progression[i-1].root;
             const prevType = progression[i-1].type;
             const prevInv = progression[i-1].inversion;
             
             let prevTopNote;
             if (prevInv === 'root') {
-                prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' ? 7 : 7)) % 12;
+                prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' || prevType === 'diminished' ? 7 : 7)) % 12;
             } else if (prevInv === 'first') {
                 prevTopNote = getNoteIndex(prevRoot);
             } else {
-                prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' ? 3 : 4)) % 12;
+                prevTopNote = (getNoteIndex(prevRoot) + (prevType === 'minor' || prevType === 'diminished' ? 3 : 4)) % 12;
             }
             
             const distances = {};
@@ -1025,11 +1115,11 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
             for (const inv of allowedInversions) {
                 let topNote;
                 if (inv === 'root') {
-                    topNote = (rootIndex + (type === 'minor' ? 7 : 7)) % 12; // 5th
+                    topNote = (rootIndex + (type === 'minor' || type === 'diminished' ? 7 : 7)) % 12; // 5th
                 } else if (inv === 'first') {
                     topNote = rootIndex; // Root
                 } else {
-                    topNote = (rootIndex + (type === 'minor' ? 3 : 4)) % 12; // 3rd
+                    topNote = (rootIndex + (type === 'minor' || type === 'diminished' ? 3 : 4)) % 12; // 3rd
                 }
                 
                 let dist = Math.abs(topNote - prevTopNote);
@@ -1037,9 +1127,21 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
                 distances[inv] = dist;
             }
             
+            // Prefer smaller voice leading distances but with some variety
             const minDist = Math.min(...Object.values(distances));
             const bestInversions = Object.keys(distances).filter(inv => distances[inv] === minDist);
-            inversion = bestInversions[Math.floor(Math.random() * bestInversions.length)];
+            
+            // Add some randomness to avoid always choosing the same inversion
+            if (bestInversions.length > 1 && Math.random() < 0.3) {
+                inversion = bestInversions[Math.floor(Math.random() * bestInversions.length)];
+            } else {
+                // Prefer root position for strong chords like dominants
+                if ((type === 'dominant7' || type === 'major') && selectedInversions.includes('root') && Math.random() < 0.7) {
+                    inversion = 'root';
+                } else {
+                    inversion = bestInversions[Math.floor(Math.random() * bestInversions.length)];
+                }
+            }
         } else {
             inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
         }
