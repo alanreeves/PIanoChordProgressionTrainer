@@ -1,6 +1,6 @@
 {
-  "version": "1.0.11",
+  "version": "1.0.12",
   "buildTime": "2025-08-28T13:53:23Z",
   "description": "Fixed PWA Manager initialization and version display issues",
-  "cacheVersion": "v1.0.10"
+  "cacheVersion": "v1.0.12"
 }
