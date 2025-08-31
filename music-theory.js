@@ -1092,6 +1092,57 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
             }
         }
         
+        // Add logic to generate sus2, sus4, add9, half-diminished, and augmented chords
+        // Only apply these substitutions if the original diatonic type is selected
+        if (isDiatonicTypeSelected) {
+            // For major chords, sometimes substitute with sus2, sus4, or add9
+            if (type === 'major') {
+                const sus2Chance = selectedTypes.includes('sus2') ? 0.15 : 0;
+                const sus4Chance = selectedTypes.includes('sus4') ? 0.15 : 0;
+                const add9Chance = selectedTypes.includes('add9') ? 0.1 : 0;
+                
+                const rand = Math.random();
+                if (rand < sus2Chance) {
+                    type = 'sus2';
+                } else if (rand < sus2Chance + sus4Chance) {
+                    type = 'sus4';
+                } else if (rand < sus2Chance + sus4Chance + add9Chance) {
+                    type = 'add9';
+                }
+            }
+            
+            // For minor chords, sometimes substitute with minor7
+            if (type === 'minor' && selectedTypes.includes('minor7') && Math.random() < 0.25) {
+                type = 'minor7';
+            }
+            
+            // For diminished chords, sometimes substitute with half-diminished
+            if (type === 'diminished' && selectedTypes.includes('half-diminished') && Math.random() < 0.3) {
+                type = 'half-diminished';
+            }
+            
+            // Occasionally, substitute any chord with an augmented version if selected
+            if (selectedTypes.includes('augmented') && Math.random() < 0.05) {
+                // Only apply to major or minor chords
+                if (type === 'major' || type === 'minor') {
+                    type = 'augmented';
+                }
+            }
+        } else {
+            // If the diatonic type isn't selected, randomly choose from selected types
+            // but with a preference for the diatonic function
+            if (selectedTypes.length > 0) {
+                // Add some probability of using the diatonic type even if not selected
+                // to maintain harmonic coherence
+                if (Math.random() < 0.3 && isDiatonicTypeSelected) {
+                    // Keep the diatonic type
+                } else {
+                    // Choose randomly from selected types
+                    type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                }
+            }
+        }
+        
         // Choose inversion based on voice leading with enhanced logic
         let inversion;
         if (i > 0 && Math.random() < 0.8) { // Increased probability for voice leading

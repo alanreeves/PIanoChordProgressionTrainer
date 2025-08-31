@@ -15,6 +15,7 @@
     <h1>Test Improved Chord Progressions</h1>
     <button onclick="testProgression('C', 'Major')">Test C Major</button>
     <button onclick="testProgression('Am', 'Minor')">Test A Minor</button>
+    <button onclick="testAllChordTypes()">Test All Chord Types</button>
     <button onclick="testMultipleProgressions()">Test Multiple Progressions</button>
     <button onclick="testRepetitionAvoidance()">Test Repetition Avoidance</button>
     
@@ -34,7 +35,7 @@
         };
 
         function testProgression(key, mode) {
-            const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished'];
+            const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished', 'half-diminished', 'augmented', 'sus2', 'sus4', 'add9'];
             const selectedInversions = ['root', 'first', 'second'];
             const length = 8;
             
@@ -49,11 +50,40 @@
             document.getElementById('output').innerHTML = output;
         }
 
+        function testAllChordTypes() {
+            const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished', 'half-diminished', 'augmented', 'sus2', 'sus4', 'add9'];
+            const selectedInversions = ['root', 'first', 'second'];
+            const length = 16;
+            
+            const progression = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+            
+            // Count occurrences of each chord type
+            const typeCount = {};
+            progression.forEach(chord => {
+                typeCount[chord.type] = (typeCount[chord.type] || 0) + 1;
+            });
+            
+            let output = '<div class="test-results"><h2>All Chord Types Test:</h2>';
+            output += '<h3>Generated Progression:</h3><ul class="chord-list">';
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion}) - Scale Degree: ${chord.degreeIndex}</li>`;
+            });
+            output += '</ul>';
+            
+            output += '<h3>Chord Type Distribution:</h3><ul>';
+            Object.entries(typeCount).forEach(([type, count]) => {
+                output += `<li>${type}: ${count} chord(s)</li>`;
+            });
+            output += '</ul></div>';
+            
+            document.getElementById('output').innerHTML = output;
+        }
+
         function testMultipleProgressions() {
             let output = '<div class="test-results"><h2>Multiple Progression Test:</h2>';
             
             for (let i = 0; i < 3; i++) {
-                const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished'];
+                const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished', 'half-diminished', 'augmented', 'sus2', 'sus4', 'add9'];
                 const selectedInversions = ['root', 'first', 'second'];
                 const length = 6;
                 
@@ -79,7 +109,7 @@
         }
 
         function testRepetitionAvoidance() {
-            const selectedTypes = ['major', 'minor', 'dominant7', 'major7'];
+            const selectedTypes = ['major', 'minor', 'dominant7', 'major7', 'minor7', 'diminished', 'half-diminished', 'augmented', 'sus2', 'sus4', 'add9'];
             const selectedInversions = ['root', 'first', 'second'];
             const length = 12; // Longer progression to test repetition avoidance
             
