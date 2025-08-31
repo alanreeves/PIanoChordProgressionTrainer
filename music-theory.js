@@ -1099,7 +1099,12 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
             if (type === 'major') {
                 const sus2Chance = selectedTypes.includes('sus2') ? 0.15 : 0;
                 const sus4Chance = selectedTypes.includes('sus4') ? 0.15 : 0;
-                const add9Chance = selectedTypes.includes('add9') ? 0.1 : 0;
+                
+                // Special case for add9 - only generate if first or second inversion is selected
+                const canGenerateAdd9 = selectedTypes.includes('add9') && 
+                                      (selectedInversions.includes('first') || selectedInversions.includes('second'));
+                
+                const add9Chance = canGenerateAdd9 ? 0.1 : 0;
                 
                 const rand = Math.random();
                 if (rand < sus2Chance) {
@@ -1137,8 +1142,18 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
                 if (Math.random() < 0.3 && isDiatonicTypeSelected) {
                     // Keep the diatonic type
                 } else {
-                    // Choose randomly from selected types
-                    type = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                    // Special handling for add9 chords - only select if first or second inversion is selected
+                    let filteredTypes = [...selectedTypes];
+                    if (selectedTypes.includes('add9') && 
+                        !selectedInversions.includes('first') && 
+                        !selectedInversions.includes('second')) {
+                        // Remove add9 from selection if neither first nor second inversion is selected
+                        filteredTypes = selectedTypes.filter(type => type !== 'add9');
+                    }
+                    
+                    if (filteredTypes.length > 0) {
+                        type = filteredTypes[Math.floor(Math.random() * filteredTypes.length)];
+                    }
                 }
             }
         }
@@ -1194,7 +1209,35 @@ function generateChordProgression(key, length, selectedTypes, selectedInversions
                 }
             }
         } else {
-            inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+            // Special handling for add9 chords - only select first or second inversion, never root
+            if (type === 'add9') {
+                // Filter out root position for add9 chords
+                const nonRootInversions = selectedInversions.filter(inv => inv !== 'root');
+                if (nonRootInversions.length > 0) {
+                    inversion = nonRootInversions[Math.floor(Math.random() * nonRootInversions.length)];
+                } else {
+                    // If only root is selected, we can't generate add9 chord
+                    // Fall back to major chord
+                    type = 'major';
+                    inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+                }
+            } else {
+                inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+            }
+        }
+        
+        // Final check to ensure add9 chords never get root position
+        if (type === 'add9' && inversion === 'root') {
+            // If we somehow ended up with root position for add9, switch to a non-root inversion
+            const nonRootInversions = selectedInversions.filter(inv => inv !== 'root');
+            if (nonRootInversions.length > 0) {
+                inversion = nonRootInversions[Math.floor(Math.random() * nonRootInversions.length)];
+            } else {
+                // If only root is selected, we can't generate add9 chord
+                // Fall back to major chord
+                type = 'major';
+                inversion = selectedInversions[Math.floor(Math.random() * selectedInversions.length)];
+            }
         }
         
         progression.push({

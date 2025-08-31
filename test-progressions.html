@@ -9,6 +9,8 @@
         .test-results { margin: 20px 0; padding: 15px; background-color: #f0f0f0; border-radius: 5px; }
         .chord-list { list-style-type: none; padding: 0; }
         .chord-list li { padding: 5px; margin: 2px 0; background-color: #e0e0e0; border-radius: 3px; }
+        .warning { color: orange; font-weight: bold; }
+        .success { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -16,6 +18,7 @@
     <button onclick="testProgression('C', 'Major')">Test C Major</button>
     <button onclick="testProgression('Am', 'Minor')">Test A Minor</button>
     <button onclick="testAllChordTypes()">Test All Chord Types</button>
+    <button onclick="testAdd9SpecialCase()">Test Add9 Special Case</button>
     <button onclick="testMultipleProgressions()">Test Multiple Progressions</button>
     <button onclick="testRepetitionAvoidance()">Test Repetition Avoidance</button>
     
@@ -76,6 +79,83 @@
             });
             output += '</ul></div>';
             
+            document.getElementById('output').innerHTML = output;
+        }
+
+        function testAdd9SpecialCase() {
+            // Test 1: Add9 with root, first, and second inversions selected
+            let selectedTypes = ['major', 'add9'];
+            let selectedInversions = ['root', 'first', 'second'];
+            let length = 16;
+            
+            let progression = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+            
+            // Check if add9 chords are only in first or second inversion
+            let add9Chords = progression.filter(chord => chord.type === 'add9');
+            let add9RootCount = add9Chords.filter(chord => chord.inversion === 'root').length;
+            
+            let output = '<div class="test-results"><h2>Add9 Special Case Test:</h2>';
+            output += '<h3>Test 1: Add9 with all inversions selected</h3>';
+            output += '<p>Generated progression:</p><ul class="chord-list">';
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion})</li>`;
+            });
+            output += '</ul>';
+            
+            if (add9RootCount === 0) {
+                output += '<p class="success">✓ PASS: No add9 chords in root position</p>';
+            } else {
+                output += `<p class="warning">⚠ WARNING: ${add9RootCount} add9 chords found in root position</p>`;
+            }
+            
+            // Test 2: Add9 with only root inversion selected (should not generate add9)
+            selectedTypes = ['major', 'add9'];
+            selectedInversions = ['root'];
+            length = 16;
+            
+            progression = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+            
+            // Check if add9 chords are generated at all
+            add9Chords = progression.filter(chord => chord.type === 'add9');
+            
+            output += '<h3>Test 2: Add9 with only root inversion selected</h3>';
+            output += '<p>Generated progression:</p><ul class="chord-list">';
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion})</li>`;
+            });
+            output += '</ul>';
+            
+            if (add9Chords.length === 0) {
+                output += '<p class="success">✓ PASS: No add9 chords generated when only root inversion is selected</p>';
+            } else {
+                output += `<p class="warning">⚠ WARNING: ${add9Chords.length} add9 chords generated when only root inversion is selected</p>`;
+            }
+            
+            // Test 3: Add9 with only first inversion selected
+            selectedTypes = ['major', 'add9'];
+            selectedInversions = ['first'];
+            length = 16;
+            
+            progression = generateChordProgression('C', length, selectedTypes, selectedInversions, 'Random');
+            
+            // Check if add9 chords are only in first inversion
+            add9Chords = progression.filter(chord => chord.type === 'add9');
+            let add9NonFirstCount = add9Chords.filter(chord => chord.inversion !== 'first').length;
+            
+            output += '<h3>Test 3: Add9 with only first inversion selected</h3>';
+            output += '<p>Generated progression:</p><ul class="chord-list">';
+            progression.forEach((chord, index) => {
+                output += `<li>Chord ${index + 1}: ${chord.root} ${chord.type} (${chord.inversion})</li>`;
+            });
+            output += '</ul>';
+            
+            if (add9NonFirstCount === 0) {
+                output += '<p class="success">✓ PASS: All add9 chords in first inversion only</p>';
+            } else {
+                output += `<p class="warning">⚠ WARNING: ${add9NonFirstCount} add9 chords found in non-first inversion</p>`;
+            }
+            
+            output += '</div>';
             document.getElementById('output').innerHTML = output;
         }
 
