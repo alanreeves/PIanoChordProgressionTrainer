@@ -1485,3 +1485,103 @@ input[type="number"]::-webkit-inner-spin-button {
         font-size: 0.65rem;
     }
 }
+
+/* Song Player Specific Styles */
+
+/* Duration badge on chord pills */
+.duration-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    background-color: var(--accent1) !important;
+    color: white;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    border: 1px solid white;
+    z-index: 10;
+}
+
+/* Chord pill with position relative for badge positioning */
+.chord-pill {
+    position: relative;
+}
+
+/* Song metadata display styling */
+#song-info {
+    background-color: rgba(76, 182, 172, 0.1);
+    border-left: 3px solid var(--accent1);
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+#song-info div {
+    color: var(--light-text);
+}
+
+/* Step mode active indicator */
+.step-active {
+    border-color: var(--accent1) !important;
+    box-shadow: 0 0 8px rgba(38, 166, 154, 0.5) !important;
+}
+
+/* Transposition key selector styling */
+#transpose-key {
+    border-color: var(--accent1);
+}
+
+#transpose-key:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(126, 87, 194, 0.25);
+}
+
+/* Song display at bottom styling */
+#song-display-container {
+    flex-grow: 1;
+}
+
+/* Ensure chord pill transitions are smooth */
+.progression-pill {
+    transition: all 0.2s ease;
+}
+
+/* Active pill with enhanced styling */
+.progression-pill.active {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(126, 87, 194, 0.6);
+}
+
+/* Song player responsive adjustments */
+@media (max-width: 768px) {
+    .duration-badge {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.3rem;
+        top: -3px;
+        right: -3px;
+    }
+    
+    #song-info {
+        font-size: 0.85rem;
+    }
+}
+
+/* BPM slider disabled state */
+#bpm-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Random practice button in song player */
+#random-practice-btn {
+    border-color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+}
+
+#random-practice-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: white;
+}

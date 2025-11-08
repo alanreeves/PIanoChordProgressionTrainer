@@ -1,0 +1,781 @@
+{
+  "songs": [
+    {
+      "id": "autumn-leaves",
+      "title": "Autumn Leaves",
+      "composer": "Joseph Kosma, Jacques Prévert, Johnny Mercer",
+      "key": "G minor",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "G", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Eb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "diminished", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "minor", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "fly-me-to-the-moon",
+      "title": "Fly Me to the Moon",
+      "composer": "Bart Howard",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 4000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "E", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "all-the-things-you-are",
+      "title": "All the Things You Are",
+      "composer": "Jerome Kern, Oscar Hammerstein II",
+      "key": "Ab major",
+      "timeSignature": "4/4",
+      "tempo": 130,
+      "chords": [
+        { "root": "Ab", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Eb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Ab", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Db", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Eb", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Ab", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "summertime",
+      "title": "Summertime",
+      "composer": "George Gershwin, DuBose Heyward",
+      "key": "A minor",
+      "timeSignature": "4/4",
+      "tempo": 80,
+      "chords": [
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "E", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "blue-moon",
+      "title": "Blue Moon",
+      "composer": "Richard Rodgers, Lorenz Hart",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "the-way-you-look-tonight",
+      "title": "The Way You Look Tonight",
+      "composer": "Jerome Kern, Dorothy Fields",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "E", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "B", "type": "diminished", "inversion": "root", "duration": 2000 }
+      ]
+    },
+    {
+      "id": "im-gonna-wash-that-man",
+      "title": "I'm Gonna Wash That Man Right Outa My Hair",
+      "composer": "Richard Rodgers, Oscar Hammerstein II",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "night-and-day",
+      "title": "Night and Day",
+      "composer": "Cole Porter",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 8000 }
+      ]
+    },
+    {
+      "id": "love-for-sale",
+      "title": "Love for Sale",
+      "composer": "Cole Porter",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "easy-to-love",
+      "title": "Easy to Love",
+      "composer": "Cole Porter",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "i-cant-get-started",
+      "title": "I Can't Get Started",
+      "composer": "Vernon Duke, Ira Gershwin",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "the-nearness-of-you",
+      "title": "The Nearness of You",
+      "composer": "Hoagy Carmichael, Jack Mercer",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "stardust",
+      "title": "Stardust",
+      "composer": "Hoagy Carmichael, Mitchell Parish",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "diminished", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "georgia-on-my-mind",
+      "title": "Georgia On My Mind",
+      "composer": "Hoagy Carmichael, Stuart Gorrell",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "mood-indigo",
+      "title": "Mood Indigo",
+      "composer": "Duke Ellington, Irving Mills",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 80,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "A", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "solitude",
+      "title": "Solitude",
+      "composer": "Duke Ellington, Irving Mills, Eddie Delange",
+      "key": "Dm major",
+      "timeSignature": "4/4",
+      "tempo": 70,
+      "chords": [
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "dont-get-around-much",
+      "title": "Don't Get Around Much Anymore",
+      "composer": "Duke Ellington, Bob Russell",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "take-the-a-train",
+      "title": "Take the A Train",
+      "composer": "Billy Strayhorn",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 140,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "sweet-georgia-brown",
+      "title": "Sweet Georgia Brown",
+      "composer": "Ben Bernie, Maceo Pinkard, Kenneth Casey",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 130,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "tea-for-two",
+      "title": "Tea for Two",
+      "composer": "Vincent Youmans, Irving Caesar",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "aint-misbehavin",
+      "title": "Ain't Misbehavin'",
+      "composer": "Thomas Waller, Andy Razaf, Harry Brooks",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "st-louis-blues",
+      "title": "St. Louis Blues",
+      "composer": "William Christopher Handy",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "tuxedo-junction",
+      "title": "Tuxedo Junction",
+      "composer": "Erskine Hawkins, William Johnson, Julian Dash, Buddy Feyne",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 130,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "april-in-paris",
+      "title": "April in Paris",
+      "composer": "Vernon Duke, Yip Harburg",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "sweet-and-lovely",
+      "title": "Sweet and Lovely",
+      "composer": "Gus Arnheim, Charles Grean, Harry Tobias",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "body-and-soul",
+      "title": "Body and Soul",
+      "composer": "John W. Green, Robert Sour, Frank Eyton, Edward Heyman",
+      "key": "Dm major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "who-cares",
+      "title": "Who Cares?",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "D major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "D", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Bm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "someone-to-watch-over-me",
+      "title": "Someone to Watch Over Me",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "embraceable-you",
+      "title": "Embraceable You",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "the-man-i-love",
+      "title": "The Man I Love",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "rhapsody-in-blue",
+      "title": "Rhapsody in Blue (Theme)",
+      "composer": "George Gershwin",
+      "key": "B major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "B", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "G#", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C#", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F#", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "i-got-rhythm",
+      "title": "I Got Rhythm",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "B major",
+      "timeSignature": "4/4",
+      "tempo": 140,
+      "chords": [
+        { "root": "B", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G#", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C#", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F#", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "B", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "over-the-rainbow",
+      "title": "Over the Rainbow",
+      "composer": "Harold Arlen, Yip Harburg",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "as-time-goes-by",
+      "title": "As Time Goes By",
+      "composer": "Herman Hupfeld",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "smoke-gets-in-your-eyes",
+      "title": "Smoke Gets in Your Eyes",
+      "composer": "Jerome Kern, Otto Harbach",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "whats-love-got-to-do-with-it",
+      "title": "What's Love Got to Do with It",
+      "composer": "Cole Porter",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "begin-the-beguine",
+      "title": "Begin the Beguine",
+      "composer": "Cole Porter",
+      "key": "Dm major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "these-foolish-things",
+      "title": "These Foolish Things",
+      "composer": "Harry Link, Holt Marvell, Jack Strachey",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "my-funny-valentine",
+      "title": "My Funny Valentine",
+      "composer": "Richard Rodgers, Lorenz Hart",
+      "key": "Dm major",
+      "timeSignature": "4/4",
+      "tempo": 80,
+      "chords": [
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "A", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "love-walked-in",
+      "title": "Love Walked In",
+      "composer": "George Gershwin, Ira Gershwin",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "what-a-wonderful-world",
+      "title": "What a Wonderful World (Theme)",
+      "composer": "Bob Thiele, George David Weiss",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "unforgettable",
+      "title": "Unforgettable",
+      "composer": "Irving Gordon",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "puttin-on-the-ritz",
+      "title": "Puttin' on the Ritz",
+      "composer": "Irving Berlin",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 130,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "there-is-no-greater-love",
+      "title": "There Is No Greater Love",
+      "composer": "Isham Jones, Marty Symes, Al J. Neiburg",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "time-on-my-hands",
+      "title": "Time on My Hands",
+      "composer": "Vincent Youmans, Harold Adamson, Moe Jaffe",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "ill-be-seeing-you",
+      "title": "I'll Be Seeing You",
+      "composer": "Sammy Fain, Irving Kahal",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "sweet-sue",
+      "title": "Sweet Sue, Just You",
+      "composer": "Victor Young, Will J. Harris",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 110,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "the-lady-is-a-tramp",
+      "title": "The Lady Is a Tramp",
+      "composer": "Richard Rodgers, Lorenz Hart",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "tempo": 120,
+      "chords": [
+        { "root": "F", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "i-should-care",
+      "title": "I Should Care",
+      "composer": "Paul Weston, Axel Stordahl, Carl Sigman",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Gm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Cm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "F", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "Bb", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "moonlight-in-vermont",
+      "title": "Moonlight in Vermont",
+      "composer": "Karl Suessdorf, John Blackman, Margaret Whiting",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "poor-butterfly",
+      "title": "Poor Butterfly",
+      "composer": "John L. Golden, Raymond Hubbell",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "tempo": 100,
+      "chords": [
+        { "root": "G", "type": "major", "inversion": "root", "duration": 4000 },
+        { "root": "Em", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "D", "type": "dominant7", "inversion": "root", "duration": 4000 }
+      ]
+    },
+    {
+      "id": "east-of-the-sun",
+      "title": "East of the Sun (West of the Moon)",
+      "composer": "Brooks Bowman",
+      "key": "C major",
+      "timeSignature": "4/4",
+      "tempo": 90,
+      "chords": [
+        { "root": "C", "type": "major", "inversion": "root", "duration": 2000 },
+        { "root": "Am", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "Dm", "type": "minor", "inversion": "root", "duration": 2000 },
+        { "root": "G", "type": "dominant7", "inversion": "root", "duration": 2000 },
+        { "root": "C", "type": "major", "inversion": "root", "duration": 4000 }
+      ]
+    }
+  ]
+}
