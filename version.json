@@ -1,6 +1,6 @@
 {
-  "version": "1.1.1",
-  "buildTime": "2025-11-08T21:10:00Z",
-  "description": "Verify navigation between song library and random practice modes",
-  "cacheVersion": "v1.1.1"
+  "version": "1.1.2",
+  "buildTime": "2025-11-08T21:13:00Z",
+  "description": "Fix navigation issue - force page reload when returning from songs to random",
+  "cacheVersion": "v1.1.2"
 }

@@ -698,6 +698,7 @@ async function initSongPlayer() {
     if (randomPracticeBtn) {
         randomPracticeBtn.addEventListener('click', () => {
             window.location.href = 'index.html';
+            window.location.reload();
         });
     }
     
