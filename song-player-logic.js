@@ -697,8 +697,8 @@ async function initSongPlayer() {
     const randomPracticeBtn = document.getElementById('random-practice-btn');
     if (randomPracticeBtn) {
         randomPracticeBtn.addEventListener('click', () => {
-            window.location.href = 'index.html';
-            window.location.reload();
+            // Force a fresh page load of index.html
+            window.location.replace('index.html');
         });
     }
     
