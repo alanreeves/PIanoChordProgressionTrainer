@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "buildTime": "2025-11-08T20:52:00Z",
-  "description": "Intelligent inversions and expanded 50-song GASB library with Take Five, Stella by Starlight, and more",
-  "cacheVersion": "v1.1.0"
+  "version": "1.1.1",
+  "buildTime": "2025-11-08T21:10:00Z",
+  "description": "Verify navigation between song library and random practice modes",
+  "cacheVersion": "v1.1.1"
 }
