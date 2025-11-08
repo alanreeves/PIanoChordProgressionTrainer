@@ -1488,6 +1488,26 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* Song Player Specific Styles */
 
+/* Bar separator in progression display */
+.bar-separator {
+    display: inline-block;
+    margin: 0 0.3rem;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.1rem;
+    align-self: center;
+}
+
+/* Separator between multiple chords in the same bar */
+.chord-separator {
+    display: inline-block;
+    margin: 0 0.2rem;
+    color: var(--accent2);
+    font-weight: bold;
+    font-size: 1rem;
+    align-self: center;
+}
+
 /* Duration badge on chord pills */
 .duration-badge {
     position: absolute;

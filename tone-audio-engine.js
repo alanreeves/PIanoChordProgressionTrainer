@@ -374,3 +374,38 @@ function playChordSound(root, type, inversion) {
     // Play the chord (apply 50% duration for staccato)
     playChord(notes, duration * 0.5, arpeggiate);
 }
+
+// Function to play a chord based on root, type, and inversion with explicit duration (for song player)
+// durationMs is in milliseconds
+function playChordSoundWithDuration(root, type, inversion, durationMs) {
+    // Convert milliseconds to seconds
+    const durationSeconds = durationMs / 1000;
+    
+    // Calculate MIDI note numbers for the chord using our conversion function
+    const rootIndex = getNoteIndex(root);
+    console.log(`Playing chord sound with duration: ${root} ${type} ${inversion} - duration: ${durationSeconds}s`);
+    
+    // Get hand selection (default to right hand in song player)
+    let isRightHand = true;
+    if (document.getElementById('right-hand')) {
+        isRightHand = document.getElementById('right-hand').checked;
+    }
+    if (document.getElementById('left-hand') && document.getElementById('left-hand').checked) {
+        isRightHand = false;
+    }
+    
+    // Calculate the starting MIDI note
+    const startNote = getChordStartNote(rootIndex, type, inversion, isRightHand);
+    
+    // Get the chord intervals
+    const intervals = getChordIntervals(type, inversion);
+    
+    // Calculate actual MIDI notes
+    const notes = intervals.map(interval => startNote + interval);
+    
+    // Check if arpeggiation is enabled (if available)
+    const arpeggiate = document.getElementById('arpeggiate-chord') ? document.getElementById('arpeggiate-chord').checked : false;
+    
+    // Play the chord with full duration (no staccato reduction)
+    playChord(notes, durationSeconds, arpeggiate);
+}
