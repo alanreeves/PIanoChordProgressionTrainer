@@ -694,13 +694,7 @@ async function initSongPlayer() {
     await loadSongLibrary();
     
     // Wire up event listeners with null checks
-    const randomPracticeBtn = document.getElementById('random-practice-btn');
-    if (randomPracticeBtn) {
-        randomPracticeBtn.addEventListener('click', () => {
-            // Force a fresh page load of index.html
-            window.location.replace('index.html');
-        });
-    }
+    // Random Practice button is now an <a> link, no event listener needed
     
     const songSelect = document.getElementById('song-select');
     if (songSelect) {
