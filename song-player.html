@@ -214,6 +214,17 @@
                             </div>
                         </div>
                         <div class="col-12 mb-2">
+                            <label for="rhythm-selector" class="form-label">Rhythm</label>
+                            <select id="rhythm-selector" class="form-select">
+                                <option value="none" selected>None (Straight)</option>
+                                <option value="swing">Swing</option>
+                                <option value="bossaNova">Bossa Nova</option>
+                                <option value="rock">Rock</option>
+                                <option value="jazzWaltz">Jazz Waltz</option>
+                            </select>
+                            <small class="form-text text-muted">Apply rhythmic feel to chord playback</small>
+                        </div>
+                        <div class="col-12 mb-2">
                             <div class="d-flex align-items-center">
                                 <label for="octave-selector" class="me-2">
                                     <span class="fw-bold">Octave:</span>
@@ -499,6 +510,7 @@
     <!-- App Scripts -->
     <script src="security.js"></script>
     <script src="music-theory.js"></script>
+    <script src="rhythm-patterns.js"></script>
     <script src="tone-audio-engine.js"></script>
     <script src="piano-display.js"></script>
     <script src="song-player-audio.js"></script>

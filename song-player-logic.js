@@ -13,6 +13,7 @@ let songPlaybackInterval = null;
 let songMetronomeInterval = null;  // Track metronome interval for cleanup
 let songStepMode = false;
 let songWaitingForStep = false;
+let currentRhythm = 'none';  // Track selected rhythm pattern
 
 // Function to load songs from JSON library
 async function loadSongLibrary() {
@@ -85,6 +86,24 @@ function selectSong(songId) {
     updateSongDisplay();
     
     return true;
+}
+
+// Get current rhythm pattern
+function getCurrentRhythm() {
+    return currentRhythm;
+}
+
+// Initialize rhythm selector event listener
+function initializeRhythmSelector() {
+    const rhythmSelector = document.getElementById('rhythm-selector');
+    if (rhythmSelector) {
+        rhythmSelector.addEventListener('change', (e) => {
+            currentRhythm = e.target.value;
+            console.log(`[Rhythm] Pattern changed to: ${currentRhythm}`);
+        });
+        // Initialize with default value
+        currentRhythm = rhythmSelector.value || 'none';
+    }
 }
 
 // Extract root note from key string (e.g., "C Major" -> "C")
@@ -527,7 +546,8 @@ function playNextSongChord() {
     
     // Play chord sound with duration matching the chord duration
     if (document.getElementById('play-sound').checked) {
-        playChordSoundWithDuration(chord.root, chord.type, chord.inversion, chordDurationMs);
+        const rhythmPattern = getCurrentRhythm();
+        playChordSoundWithDuration(chord.root, chord.type, chord.inversion, chordDurationMs, rhythmPattern);
     }
     
     // Highlight on piano
@@ -613,7 +633,8 @@ function rewindSongChord() {
         const effectiveBPM = bpmSlider ? parseInt(bpmSlider.value, 10) : currentSong.tempo;
         // Duration is stored at 120 BPM, scale based on current BPM
         const chordDurationMs = chord.duration * (120 / effectiveBPM);
-        playChordSoundWithDuration(chord.root, chord.type, chord.inversion, chordDurationMs);
+        const rhythmPattern = getCurrentRhythm();
+        playChordSoundWithDuration(chord.root, chord.type, chord.inversion, chordDurationMs, rhythmPattern);
     }
     
     // Highlight on piano
@@ -692,6 +713,9 @@ async function initSongPlayer() {
     
     // Load song library
     await loadSongLibrary();
+    
+    // Initialize rhythm selector
+    initializeRhythmSelector();
     
     // Wire up event listeners with null checks
     // Random Practice button is now an <a> link, no event listener needed

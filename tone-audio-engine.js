@@ -376,14 +376,14 @@ function playChordSound(root, type, inversion) {
 }
 
 // Function to play a chord based on root, type, and inversion with explicit duration (for song player)
-// durationMs is in milliseconds
-function playChordSoundWithDuration(root, type, inversion, durationMs) {
+// durationMs is in milliseconds, rhythmPattern is optional rhythm pattern name
+function playChordSoundWithDuration(root, type, inversion, durationMs, rhythmPattern = 'none') {
     // Convert milliseconds to seconds
     const durationSeconds = durationMs / 1000;
     
     // Calculate MIDI note numbers for the chord using our conversion function
     const rootIndex = getNoteIndex(root);
-    console.log(`Playing chord sound with duration: ${root} ${type} ${inversion} - duration: ${durationSeconds}s`);
+    console.log(`Playing chord sound with duration: ${root} ${type} ${inversion} - duration: ${durationSeconds}s - rhythm: ${rhythmPattern}`);
     
     // Get hand selection (default to right hand in song player)
     let isRightHand = true;
@@ -406,6 +406,86 @@ function playChordSoundWithDuration(root, type, inversion, durationMs) {
     // Check if arpeggiation is enabled (if available)
     const arpeggiate = document.getElementById('arpeggiate-chord') ? document.getElementById('arpeggiate-chord').checked : false;
     
-    // Play the chord with full duration (no staccato reduction)
-    playChord(notes, durationSeconds, arpeggiate);
+    // Play the chord with rhythm pattern applied
+    playChordWithRhythm(notes, durationSeconds, arpeggiate, rhythmPattern);
+}
+
+// Function to play a chord with rhythm pattern applied
+async function playChordWithRhythm(notes, durationSeconds, arpeggiate = false, rhythmPattern = 'none') {
+    // Ensure audio context is started
+    if (!toneStarted) {
+        const started = await ensureAudioContext();
+        if (!started) {
+            console.error('Cannot play chord: Audio context failed to start');
+            return;
+        }
+    }
+    
+    // Initialize audio components if not already done
+    if (!pianoSampler && audioInitialized) {
+        try {
+            await initializeAudioComponents();
+        } catch (error) {
+            console.error('Failed to initialize audio components:', error);
+            return;
+        }
+    }
+    
+    if (!pianoSampler) {
+        console.error('Piano sampler not initialized');
+        return;
+    }
+    
+    const now = Tone.now();
+    
+    // Apply rhythm pattern if available
+    let playableNotes = notes.map(note => ({
+        note: note,
+        velocity: 0.8,
+        duration: durationSeconds
+    }));
+    
+    // Apply rhythm modifications using the rhythm patterns module
+    if (typeof applyRhythmToNotes === 'function' && rhythmPattern && rhythmPattern !== 'none') {
+        playableNotes = applyRhythmToNotes(playableNotes, rhythmPattern, now);
+    } else {
+        // No rhythm - just use baseline timing
+        playableNotes = playableNotes.map(note => ({
+            ...note,
+            time: now
+        }));
+    }
+    
+    // Play notes with their rhythm timing
+    if (arpeggiate) {
+        // Arpeggiation: add delay between notes
+        const arpeggiateDelay = 0.05; // 50ms between notes
+        playableNotes.forEach((noteData, index) => {
+            const arpTime = noteData.time + (index * arpeggiateDelay);
+            try {
+                pianoSampler.triggerAttackRelease(
+                    noteData.note,
+                    noteData.duration,
+                    arpTime,
+                    noteData.velocity
+                );
+            } catch (error) {
+                console.error('Error playing arpeggiated note with rhythm:', error);
+            }
+        });
+    } else {
+        // Block chord: play all notes with rhythm timing
+        playableNotes.forEach(noteData => {
+            try {
+                pianoSampler.triggerAttackRelease(
+                    noteData.note,
+                    noteData.duration,
+                    noteData.time,
+                    noteData.velocity
+                );
+            } catch (error) {
+                console.error('Error playing chord note with rhythm:', error);
+            }
+        });
+    }
 }

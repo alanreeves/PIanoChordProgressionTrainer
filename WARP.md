@@ -265,6 +265,50 @@ To add new songs:
 4. Duration should reflect actual song bar structure (typical quarter note = 500ms at 120 BPM)
 5. Test by loading song-player.html and selecting the new song
 
+### Rhythm Patterns Feature
+
+The song player includes an optional rhythm feature that applies musical rhythmic feels to chord playback, allowing chords to be played with swing, bossa nova, rock, and jazz waltz characteristics rather than straight timing.
+
+**rhythm-patterns.js**
+- Defines 5 rhythm patterns: None, Swing, Bossa Nova, Rock, Jazz Waltz
+- Each pattern includes timing offsets, velocity multipliers, and duration multipliers
+- Patterns apply cyclically to notes within each chord (bass note, then chord tones)
+- Extensible design allows easy addition of new rhythm patterns
+
+**Rhythm Data Structure**
+- `offset`: Timing offset in seconds from chord start time (creates rhythmic delay)
+- `velocityMultiplier`: Scales note velocity (0.0-1.0) for dynamic accents and volume variation
+- `durationMultiplier`: Scales note duration (0.0-1.0) for articulation control (affects how long notes sustain)
+- Patterns repeat through chord notes to create the desired rhythmic feel
+
+**Rhythm Application Flow**
+1. User selects rhythm from dropdown in song player settings (default: "None")
+2. During chord playback, `playChordSoundWithDuration()` receives rhythm pattern name
+3. New `playChordWithRhythm()` function applies `applyRhythmToNotes()` to modify note timing and articulation
+4. If arpeggiation is enabled, it applies AFTER rhythm timing (rhythm and arpeggiation are independent)
+5. Metronome continues with standard beat timing, completely independent of rhythm patterns
+
+**Key Design Principles**
+- Rhythm and arpeggiation are independent features that can combine
+- Metronome timing is unaffected by rhythm patterns
+- Rhythm applies to note-level timing/articulation, not chord-level duration
+- Each chord maintains its original duration from the song data
+- Rhythm patterns modify HOW notes are played (timing offset, velocity, duration) but not WHEN chords change
+
+**Available Rhythm Patterns**
+- **None**: Straight timing with no rhythmic variation (baseline, all notes at same time)
+- **Swing**: Jazz triplet feel with syncopation and varying articulation
+- **Bossa Nova**: Brazilian rhythmic pattern with syncopated timing and accent placement
+- **Rock**: Driving rhythm with strong downbeats and punchy articulation
+- **Jazz Waltz**: 3/4 jazz feel with emphasis on beat 1 and varied articulation
+
+**To Add New Rhythm Patterns**
+1. Edit `rhythm-patterns.js`
+2. Add new entry to `RHYTHM_PATTERNS` object with pattern name and note pattern array
+3. Define `offset`, `velocityMultiplier`, and `durationMultiplier` for each note in pattern
+4. Add option to rhythm selector dropdown in `song-player.html`
+5. Existing playback system automatically handles the new pattern
+
 ---
 
 ## Conventions
