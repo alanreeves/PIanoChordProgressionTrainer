@@ -438,9 +438,17 @@ async function playChordWithRhythm(notes, durationSeconds, arpeggiate = false, r
     
     const now = Tone.now();
     
+    // Convert MIDI note numbers to note names for Tone.js
+    const noteNames = notes.map(midiNote => {
+        const octave = Math.floor(midiNote / 12) - 1;
+        const noteIndex = midiNote % 12;
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        return notes[noteIndex] + octave;
+    });
+    
     // Apply rhythm pattern if available
-    let playableNotes = notes.map(note => ({
-        note: note,
+    let playableNotes = noteNames.map(noteName => ({
+        note: noteName,
         velocity: 0.8,
         duration: durationSeconds
     }));
